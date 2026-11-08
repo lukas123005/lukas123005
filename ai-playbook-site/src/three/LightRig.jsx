@@ -57,10 +57,10 @@ export function LightRig({ shadows }) {
       const inside = t >= 31 && t < 43 ? 1 : 0
       const product = t >= 43 && t < 51 ? 1 : 0
       const cta = t >= 51 ? smooth(seg(t, 51, 52.2)) : 0
-      k = 5.5 * (0.8 * intro + reveal + 0.42 * inside + 0.5 * product + 0.8 * cta)
-      rl = 9 * (0.6 * intro + reveal + 0.45 * inside + 0.35 * product + cta)
+      k = 5.5 * (0.8 * intro + reveal + 0.42 * inside + 0.5 * product + 1.25 * cta)
+      rl = 9 * (0.6 * intro + reveal + 0.45 * inside + 0.35 * product + 1.2 * cta)
       rr = 7 * (0.35 * intro + reveal + 0.45 * inside + 0.6 * product + cta)
-      s = 40 * (0.35 * intro + reveal + 0.32 * inside + 0.35 * product + 0.7 * cta)
+      s = 40 * (0.35 * intro + reveal + 0.32 * inside + 0.35 * product + 1.15 * cta)
       sun.current.position.set(O.x + 2.6, O.y + 7.5, O.z + 4.2)
       sun.current.target.position.copy(bookLive.position)
       // 05 · a narrow light travels slowly across the cover

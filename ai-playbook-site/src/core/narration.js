@@ -13,6 +13,7 @@ export const plan = {
   knots: [[0, 0], [DURATION, DURATION]],
   total: DURATION,
   segments: [], // { id, text, start, dur, buffer }
+  byId: {},
 }
 
 export function toMaster(f) {
@@ -82,6 +83,7 @@ function buildPlan(manifest, durations) {
   plan.knots = knots
   plan.total = master
   plan.segments = segments
+  plan.byId = Object.fromEntries(segments.map((s) => [s.id, s]))
   plan.ready = true
 }
 

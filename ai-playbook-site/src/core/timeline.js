@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 /** Master duration of the animation in film seconds (narration stretches it at load). */
-export const DURATION = 57
+export const DURATION = 69
 
 export const SCENES = [
   { id: 'intro', label: 'Introduction', start: 0, end: 7 },
@@ -9,7 +9,8 @@ export const SCENES = [
   { id: 'reveal', label: 'The Playbook', start: 19, end: 31 },
   { id: 'content', label: 'Inside', start: 31, end: 43 },
   { id: 'product', label: 'The Product', start: 43, end: 51 },
-  { id: 'cta', label: 'Your Copy', start: 51, end: 57 },
+  { id: 'value', label: 'What You Get', start: 51, end: 63 },
+  { id: 'cta', label: 'Your Copy', start: 63, end: 69 },
 ]
 
 /** World-space origins: one photographic studio, one workspace set. */

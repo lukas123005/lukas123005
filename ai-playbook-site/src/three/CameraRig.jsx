@@ -49,8 +49,13 @@ const SHOTS = [
     from: { pos: V(3.1, 3.2, 3.9), target: V(0, 0.12, 0) },
     to: { pos: V(1.9, 2.25, 2.55), target: V(0, 0.12, 0) },
   },
-  { // 06 · call to action — locked-off product shot
-    a: 51.0, b: 99, stage: 'book', fov: 30, keep: 0.5, dof: 1.2,
+  { // 06 · what you get — slow dolly-in on the product while the facts land
+    a: 51.0, b: 63.0, stage: 'book', fov: 30, keep: 0.5, dof: 1.4,
+    from: { pos: V(0.6, 1.75, 9.4), target: V(0, 1.4, 0) },
+    to: { pos: V(0.1, 1.62, 7.9), target: V(0, 1.4, 0) },
+  },
+  { // 07 · call to action — locked-off product shot
+    a: 63.0, b: 99, stage: 'book', fov: 30, keep: 0.5, dof: 1.2,
     from: { pos: V(0, 1.62, 7.8), target: V(0, 1.4, 0) },
     to: { pos: V(0, 1.55, 7.35), target: V(0, 1.4, 0) },
   },

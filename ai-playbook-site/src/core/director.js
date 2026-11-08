@@ -25,10 +25,16 @@ export function createDirector(root, { onPlayingChange } = {}) {
     },
   }, 0)
 
+  // narration clips (master seconds) — screen text is cued from the words themselves
+  const segStart = (id) => plan.byId?.[id]?.start
+  const segEnd = (id) => (plan.byId?.[id] ? plan.byId[id].start + plan.byId[id].dur : undefined)
+
   // editorial lines: rise out of a mask, settle their tracking, then fade
   root.querySelectorAll('[data-line]').forEach((el) => {
-    const tin = M(parseFloat(el.dataset.in))
-    const tout = M(parseFloat(el.dataset.out))
+    const s = el.dataset.seg && segStart(el.dataset.seg)
+    const tin = s != null ? Math.max(0.2, s - 0.15) : M(parseFloat(el.dataset.in))
+    const e = el.dataset.seg && segEnd(el.dataset.seg)
+    const tout = Math.max(M(parseFloat(el.dataset.out)), e != null ? e + 0.9 : 0)
     const inner = el.querySelector('.in')
     const track = getComputedStyle(el).letterSpacing
     tl.set(el, { autoAlpha: 1 }, tin - 0.01)
@@ -63,11 +69,48 @@ export function createDirector(root, { onPlayingChange } = {}) {
     })
   }
 
+  // 06 · what's inside / why this book — every item lands on the word that names it
+  root.querySelectorAll('[data-panel]').forEach((panel) => {
+    const a = (segStart(panel.dataset.from) ?? M(51.5)) - 0.7
+    const b = (segStart(panel.dataset.to) ?? M(63)) - 0.6
+    tl.fromTo(panel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out', immediateRender: false }, a)
+    tl.fromTo(panel.querySelector('.panel-title'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', immediateRender: false }, a + 0.05)
+    panel.querySelectorAll('li[data-seg]').forEach((li) => {
+      const at = (segStart(li.dataset.seg) ?? a + 1) - 0.12
+      tl.fromTo(li, { opacity: 0, x: 26 }, { opacity: 1, x: 0, duration: 0.9, ease: 'expo.out', immediateRender: false }, at)
+      const rule = li.querySelector('.rule')
+      if (rule) tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: 'expo.out', immediateRender: false }, at + 0.1)
+      const n = parseInt(li.dataset.count, 10)
+      const big = li.querySelector('.big')
+      if (big && n) {
+        const o = { v: 0 }
+        tl.fromTo(o, { v: 0 }, { v: n, duration: 1.0, ease: 'power3.out', immediateRender: false, onUpdate: () => { big.textContent = String(Math.round(o.v)) } }, at)
+      } else if (big) {
+        tl.fromTo(big, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: 'back.out(2)', immediateRender: false }, at + 0.05)
+      }
+      const check = li.querySelector('svg path')
+      if (check) tl.fromTo(check, { strokeDashoffset: 18 }, { strokeDashoffset: 0, duration: 0.7, ease: 'power2.out', immediateRender: false }, at + 0.2)
+      // keep earlier items visible but let the current one lead
+      tl.to(li, { opacity: 0.55, duration: 0.6 }, at + 1.6)
+    })
+    const moment = panel.querySelector('.moment')
+    if (moment) {
+      const at = (segStart(moment.dataset.seg) ?? b - 3) - 0.1
+      tl.fromTo(moment, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out', immediateRender: false }, at)
+      tl.fromTo(moment.querySelector('em'), { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.out', immediateRender: false }, (segEnd(moment.dataset.seg) ?? at + 3) - 1.0)
+    }
+    tl.to(panel, { autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, b)
+  })
+
   const cta = root.querySelector('[data-cta]')
   if (cta) {
     const parts = cta.querySelectorAll('[data-cta-part]')
-    tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, immediateRender: false }, M(51.6))
-    tl.fromTo(parts, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 1.4, stagger: 0.28, ease: 'expo.out', immediateRender: false }, M(51.7))
+    const at = (segStart('08-future') ?? M(63.6)) - 0.3
+    tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, immediateRender: false }, at)
+    tl.fromTo(parts, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 1.4, stagger: 0.28, ease: 'expo.out', immediateRender: false }, at + 0.1)
+    const price = cta.querySelector('.cta-price')
+    const ps = segStart('11-price')
+    if (price && ps != null) tl.fromTo(price, { scale: 1 }, { scale: 1.12, duration: 0.45, yoyo: true, repeat: 1, ease: 'power2.out', immediateRender: false }, ps + 1.6)
   }
 
   const st = ScrollTrigger.create({

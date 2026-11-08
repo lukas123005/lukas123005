@@ -3,17 +3,17 @@ import { LEAF_TIMES, OPEN_AT } from './bookPose'
 import { plan, toMaster, voiceAt } from './narration'
 
 /**
- * Restrained studio sound (Web Audio API).
+ * Studio sound (Web Audio API).
  *
- *   voice ─► light voice chain ──────────────────────┐
- *   music (ambient piano, soft pad, low air) ─► DUCK ─┼─► master ─► end fade ─► gentle limiter ─► out
- *   details (paper, hardcover, keys, one impact) ─────┘          (+ one shared room reverb)
+ *   voice ─► light voice chain ─────────────────────────────┐
+ *   music (groove: kick, rim, shaker, bass, arp, piano, pad) ─► DUCK ─┼─► master ─► end fade ─► limiter
+ *   details (paper, hardcover, keys, one impact) ───────────┘          (+ one shared room reverb)
  *
- * The narrator always leads: music rests at ~38 % in pauses and dips to ~13 % while he speaks
- * (look-ahead, ~0.7 s fades). Sound details are skipped or nearly silent under spoken words.
+ * A modern, elegant groove (96 bpm) that grows with the story and peaks on "what you get".
+ * The narrator always leads: music rests at ~42 % in pauses and dips to ~15 % while he speaks.
  */
-const MUSIC_FULL = 0.38
-const MUSIC_DUCKED = 0.13
+const MUSIC_FULL = 0.42
+const MUSIC_DUCKED = 0.15
 const DUCK_TC = 0.24
 
 const CUES = [
@@ -23,16 +23,32 @@ const CUES = [
   ...LEAF_TIMES.map((t) => ({ t: t + 0.25, type: 'page' })),
   { t: 43.15, type: 'place' },
   { t: 51.15, type: 'place' },
+  { t: 68.0, type: 'final', loud: true },
 ]
 
-// a slow, warm progression; one chord every 4 beats at 60 bpm
+// warm, optimistic progression; one chord per bar at 96 bpm
 const CHORDS = [
   [53, 57, 60, 64], // Fmaj7
+  [48, 55, 60, 64], // C
   [57, 60, 64, 67], // Am7
-  [50, 57, 60, 65], // Dm(add9)
-  [48, 55, 59, 64], // Cmaj7
+  [55, 59, 62, 67], // G
 ]
-const BEAT = 1.0
+const BPM = 96
+const STEP = 60 / BPM / 4 // sixteenth
+const BAR = STEP * 16
+
+/** Musical energy of the story (film seconds) — drives which instruments play. */
+function energy(t) {
+  if (t < 7) return 0.15
+  if (t < 19) return 0.42
+  if (t < 20.4) return 0.08 // hold the breath before the reveal
+  if (t < 31) return 0.55
+  if (t < 43) return 0.68
+  if (t < 51) return 0.5
+  if (t < 63) return 0.9 // what you get / why this book
+  if (t < 68.0) return 0.62
+  return 0.12 // resolve
+}
 const hz = (m) => 440 * Math.pow(2, (m - 69) / 12)
 
 export class SoundEngine {
@@ -207,31 +223,24 @@ export class SoundEngine {
     this.music.gain.setTargetAtTime(this.duck, now, DUCK_TC)
 
     const t = film
-    this.padGain.gain.setTargetAtTime(0.55 * win(t, 0.3, 57, 4, 3) + 0.25 * win(t, 19.5, 31, 2, 1.5), now, 0.8)
-    this.padFilter.frequency.setTargetAtTime(560 + 520 * win(t, 19, 51, 3, 3), now, 0.9)
-    this.subGain.gain.setTargetAtTime(0.18 * win(t, 0.2, 56, 3, 3) + 0.12 * win(t, 19, 23, 1, 2), now, 0.9)
-    this.airGain.gain.setTargetAtTime(0.05 * win(t, 0, 57, 2, 3), now, 0.9)
+    this.padGain.gain.setTargetAtTime(0.5 * win(t, 0.3, 69, 4, 3) + 0.25 * win(t, 19.5, 31, 2, 1.5) + 0.2 * win(t, 51, 63, 1, 1), now, 0.8)
+    this.padFilter.frequency.setTargetAtTime(560 + 520 * win(t, 19, 67, 3, 3) + 500 * win(t, 51, 63, 1, 1), now, 0.9)
+    this.subGain.gain.setTargetAtTime(0.14 * win(t, 0.2, 68, 3, 3) + 0.12 * win(t, 19, 23, 1, 2), now, 0.9)
+    this.airGain.gain.setTargetAtTime(0.05 * win(t, 0, 69, 2, 3), now, 0.9)
 
-    // harmony moves in master time
-    const ci = Math.floor(master / (BEAT * 4)) % CHORDS.length
+    // harmony moves in master time, one chord per bar
+    const ci = Math.floor(master / BAR) % CHORDS.length
     if (ci !== this.chord) {
       this.chord = ci
-      CHORDS[ci].forEach((m, i) => this.padOsc[i].frequency.setTargetAtTime(hz(m), now, 0.6))
+      CHORDS[ci].forEach((m, i) => this.padOsc[i].frequency.setTargetAtTime(hz(m), now, 0.35))
     }
-    // sparse ambient piano: a few notes per bar, quieter under the voice
-    if (forward && t > 1.0 && t < 55.5) {
-      if (this.nextNote < master) this.nextNote = Math.ceil(master / BEAT) * BEAT
-      while (this.nextNote < master + 0.15) {
-        const k = Math.round(this.nextNote / BEAT)
-        const pattern = [0, 2, 1, -1, 3, -1, 2, -1]
-        const idx = pattern[k % pattern.length]
-        if (idx >= 0) {
-          const chord = CHORDS[Math.floor(this.nextNote / (BEAT * 4)) % CHORDS.length]
-          const m = chord[idx % chord.length] + 12 + (k % 16 === 4 ? 12 : 0)
-          const vel = (0.05 + 0.02 * ((k * 7) % 3)) * (voiceAt(this.nextNote, 0.2, 0.3) ? 0.7 : 1)
-          this.piano(hz(m), now + (this.nextNote - master) + ((k * 13) % 5) * 0.012, vel)
-        }
-        this.nextNote += BEAT
+    // step sequencer on the master-time sixteenth grid (with look-ahead)
+    if (forward && t > 0.6 && t < 68.4) {
+      if (this.nextNote < master) this.nextNote = Math.ceil(master / STEP) * STEP
+      while (this.nextNote < master + 0.2) {
+        const at = now + (this.nextNote - master)
+        this.step(Math.round(this.nextNote / STEP), at, film + (this.nextNote - master))
+        this.nextNote += STEP
       }
     }
 
@@ -311,6 +320,95 @@ export class SoundEngine {
     n.start(at, Math.random())
     n.stop(at + dur + 0.1)
     return n
+  }
+
+  /** One sixteenth of the groove. k = global step index, ft = film time at that step. */
+  step(k, at, ft) {
+    const E = energy(ft)
+    const s = k % 16
+    const chord = CHORDS[Math.floor(k / 16) % CHORDS.length]
+    // kick: 1 (+3 when the story moves, + a ghost at peak)
+    if (E > 0.3 && (s === 0 || (E > 0.6 && s === 8) || (E > 0.85 && s === 10))) this.kick(at, s === 10 ? 0.35 : 0.75)
+    // rim on 2 and 4
+    if (E > 0.5 && (s === 4 || s === 12)) this.rim(at, 0.5)
+    // shaker: eighths, sixteenths at the peak
+    if (E > 0.35 && s % 2 === 0) this.shaker(at, s % 4 === 2 ? 0.55 : 0.32)
+    else if (E > 0.8 && s % 2 === 1) this.shaker(at, 0.18)
+    // syncopated bass on the root
+    if (E > 0.35 && [0, 3, 6, 10, 14].includes(s)) this.bass(hz(chord[0] - 12 - (chord[0] > 52 ? 12 : 0)), at, STEP * (s === 0 ? 2.6 : 1.6), s === 0 ? 1 : 0.7)
+    // arpeggio
+    const arpEvery = E > 0.8 ? 1 : E > 0.5 ? 2 : 0
+    if (arpEvery && s % arpEvery === 0) {
+      const order = [0, 1, 2, 3, 2, 1, 3, 2]
+      const m = chord[order[(s / arpEvery) % 8]] + 12
+      this.arp(hz(m), at, E > 0.8 ? 0.05 : 0.04)
+    }
+    // felt piano phrases in the quiet moments
+    if (E < 0.5 && E > 0.1 && (s === 0 || s === 6 || s === 10)) {
+      const m = chord[(k >> 2) % chord.length] + 12 + (s === 10 ? 12 : 0)
+      this.piano(hz(m), at, s === 0 ? 0.07 : 0.05)
+    }
+  }
+
+  kick(at, v) {
+    const o = this.osc('sine', 120, at, 0.45)
+    o.frequency.exponentialRampToValueAtTime(44, at + 0.13)
+    const g = this.ctx.createGain()
+    this.env(g, at, 0.003, 0.36, 0.55 * v)
+    o.connect(g).connect(this.musicIn)
+  }
+
+  rim(at, v) {
+    const n = this.noiseSrc(at, 0.08)
+    const bp = this.ctx.createBiquadFilter()
+    bp.type = 'bandpass'
+    bp.frequency.value = 1900
+    bp.Q.value = 2
+    const g = this.ctx.createGain()
+    this.env(g, at, 0.001, 0.07, 0.22 * v)
+    n.connect(bp).connect(g).connect(this.musicIn)
+    const o = this.osc('triangle', 820, at, 0.05)
+    const og = this.ctx.createGain()
+    this.env(og, at, 0.001, 0.04, 0.05 * v)
+    o.connect(og).connect(this.musicIn)
+  }
+
+  shaker(at, v) {
+    const n = this.noiseSrc(at, 0.06)
+    const hp = this.ctx.createBiquadFilter()
+    hp.type = 'highpass'
+    hp.frequency.value = 6500
+    const g = this.ctx.createGain()
+    this.env(g, at, 0.004, 0.05, 0.09 * v)
+    n.connect(hp).connect(g).connect(this.musicIn)
+  }
+
+  bass(f, at, dur, v) {
+    const lp = this.ctx.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = 520
+    lp.connect(this.musicIn)
+    ;[['triangle', 1, 0.22], ['sine', 0.5, 0.26]].forEach(([type, mul, amp]) => {
+      const o = this.osc(type, f * mul, at, dur)
+      const g = this.ctx.createGain()
+      g.gain.setValueAtTime(0.0001, at)
+      g.gain.exponentialRampToValueAtTime(amp * v, at + 0.012)
+      g.gain.exponentialRampToValueAtTime(0.0001, at + dur)
+      o.connect(g).connect(lp)
+    })
+  }
+
+  arp(f, at, peak) {
+    const lp = this.ctx.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = 3200
+    lp.connect(this.musicIn)
+    ;[[1, 1, 0.42], [2, 0.25, 0.22]].forEach(([h, a, d]) => {
+      const o = this.osc(h === 1 ? 'triangle' : 'sine', f * h, at, d + 0.1)
+      const g = this.ctx.createGain()
+      this.env(g, at, 0.004, d, peak * a)
+      o.connect(g).connect(lp)
+    })
   }
 
   /** Soft felt-piano voice: decaying partials with a gentle low-pass. */
@@ -405,6 +503,11 @@ export class SoundEngine {
         g.gain.exponentialRampToValueAtTime(0.06, at + 0.22)
         g.gain.exponentialRampToValueAtTime(0.0001, at + 0.72)
         n.connect(hp).connect(g).connect(out)
+        break
+      }
+      case 'final': {
+        // a warm closing chord as the groove stops
+        CHORDS[0].concat([CHORDS[0][0] + 12]).forEach((m, i) => this.piano(hz(m + 12), at + i * 0.04, 0.06))
         break
       }
       case 'place': {

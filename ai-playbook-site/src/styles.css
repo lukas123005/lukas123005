@@ -31,13 +31,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ───────── typography over the film ───────── */
 .overlay { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
-.line { position: absolute; visibility: hidden; opacity: 0; white-space: nowrap; text-shadow: 0 1px 24px rgba(8, 8, 8, 0.85), 0 0 2px rgba(8, 8, 8, 0.6); }
+.line { position: absolute; visibility: hidden; opacity: 0; white-space: nowrap; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.95), 0 0 3px rgba(0, 0, 0, 0.8); }
+.scrim { position: fixed; inset: auto 0 0 0; height: 46vh; background: linear-gradient(to top, rgba(8, 8, 8, 0.82) 0%, rgba(8, 8, 8, 0.45) 40%, rgba(8, 8, 8, 0) 100%); pointer-events: none; }
 .line .mask { display: block; overflow: hidden; padding-block: 0.08em; }
 .line .in { display: block; will-change: transform; }
 
-.serif-xl { font-family: var(--serif); font-weight: 400; font-size: clamp(1.45rem, 3.3vw, 3.4rem); letter-spacing: 0.06em; line-height: 1.1; color: var(--ivory); }
-.serif-lg { font-family: var(--serif); font-weight: 400; font-size: clamp(1.5rem, 3vw, 3rem); letter-spacing: 0.04em; color: var(--ivory); }
-.label { font-size: clamp(0.66rem, 0.9vw, 0.8rem); font-weight: 500; letter-spacing: 0.42em; color: var(--ivory); }
+.serif-xl { font-family: var(--serif); font-weight: 700; font-size: clamp(1.7rem, 4vw, 4.2rem); letter-spacing: 0.04em; line-height: 1.12; color: #ffffff; }
+.serif-lg { font-family: var(--serif); font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 3.4rem); letter-spacing: 0.03em; color: #ffffff; }
+.label { font-size: clamp(0.8rem, 1.1vw, 1rem); font-weight: 600; letter-spacing: 0.36em; color: #ffffff; }
 .label.dim { color: var(--silver); opacity: 0.85; }
 .tagline { font-size: clamp(0.62rem, 0.85vw, 0.76rem); font-weight: 500; letter-spacing: 0.32em; color: var(--ivory-dim); }
 
@@ -47,25 +48,42 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .pos-p3 { left: var(--gutter); bottom: calc(15vh + 5.4rem + var(--safe-b)); }
 .pos-p4 { left: var(--gutter); bottom: calc(15vh + 3.2rem + var(--safe-b)); }
 
+/* 06 · what's inside / why this book */
+.panel { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); width: min(520px, 42vw); visibility: hidden; opacity: 0; text-shadow: 0 2px 24px rgba(0, 0, 0, 0.9); }
+.panel-title { margin: 0 0 18px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.42em; color: var(--silver); }
+.panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.inside li { position: relative; display: grid; grid-template-columns: 7.2rem 1fr; align-items: center; padding: 14px 0; opacity: 0; }
+.inside .big { font-family: var(--serif); font-weight: 700; font-size: clamp(2.4rem, 4vw, 3.6rem); line-height: 1; color: #fff; font-variant-numeric: lining-nums tabular-nums; }
+.inside .txt { display: grid; gap: 4px; }
+.inside strong { font-family: var(--serif); font-weight: 700; font-size: clamp(1.15rem, 1.7vw, 1.55rem); color: #fff; letter-spacing: 0.01em; }
+.inside small { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--silver); }
+.inside .rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(243, 240, 233, 0.22); transform-origin: left; transform: scaleX(0); }
+.why li { display: grid; grid-template-columns: 38px 1fr; gap: 16px; align-items: start; padding: 14px 0; border-bottom: 1px solid rgba(243, 240, 233, 0.16); opacity: 0; }
+.why li span { font-family: var(--serif); font-weight: 700; font-size: clamp(1.15rem, 1.7vw, 1.5rem); line-height: 1.3; color: #fff; }
+.why svg { width: 30px; height: 30px; fill: none; stroke: #fff; stroke-width: 1.4; margin-top: 2px; }
+.why svg path { stroke-dasharray: 18; stroke-dashoffset: 18; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.moment { margin: 28px 0 0; font-family: var(--serif); font-weight: 700; font-size: clamp(1.4rem, 2.3vw, 2.1rem); line-height: 1.25; color: #fff; opacity: 0; text-wrap: balance; }
+.moment em { display: block; font-style: italic; color: var(--ivory); margin-top: 6px; }
+
 /* contents index beside the open book */
 .index { position: absolute; left: var(--gutter); top: 50%; transform: translateY(-50%); visibility: hidden; opacity: 0; width: 240px; }
-.index-title { margin: 0 0 22px; font-size: 0.62rem; letter-spacing: 0.4em; color: var(--silver); }
+.index-title { margin: 0 0 22px; font-weight: 600; font-size: 0.74rem; letter-spacing: 0.4em; color: var(--silver); }
 .index ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; border-top: 1px solid var(--hair); padding-top: 18px; }
 .index li { display: grid; grid-template-columns: 34px 1fr; align-items: baseline; opacity: 0; }
 .index .num { font-size: 0.62rem; letter-spacing: 0.12em; color: var(--silver); font-variant-numeric: tabular-nums; }
-.index .name { font-family: var(--serif); font-size: 1.02rem; letter-spacing: 0.02em; color: var(--ivory); }
+.index .name { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.02em; color: var(--ivory); }
 
 .cut { position: fixed; inset: 0; background: var(--black); opacity: 1; }
 
 /* ───────── call to action ───────── */
 .cta { position: fixed; z-index: 3; visibility: hidden; opacity: 0; pointer-events: auto; right: var(--gutter); top: 50%; transform: translateY(-50%); width: min(470px, 40vw); }
 .cta-kicker { margin: 0 0 26px; font-size: 0.64rem; letter-spacing: 0.42em; color: var(--silver); }
-.cta h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(2rem, 3.4vw, 3.3rem); line-height: 1.08; letter-spacing: 0.03em; text-transform: uppercase; text-wrap: balance; }
+.cta h2 { margin: 0; font-family: var(--serif); font-weight: 700; font-size: clamp(2rem, 3.4vw, 3.3rem); line-height: 1.08; letter-spacing: 0.03em; text-transform: uppercase; text-wrap: balance; }
 .cta-row { display: flex; align-items: center; gap: 34px; margin: 40px 0 34px; padding-top: 30px; border-top: 1px solid var(--hair); }
 .cta-price { font-family: var(--serif); font-size: clamp(2.6rem, 4vw, 3.6rem); line-height: 1; letter-spacing: 0.01em; font-variant-numeric: lining-nums; }
-.cta-meta { margin: 0; font-size: 0.66rem; letter-spacing: 0.16em; color: var(--ivory-faint); }
+.cta-meta { margin: 0; font-size: 0.74rem; letter-spacing: 0.14em; color: var(--ivory-dim); }
 
-.buy { display: inline-flex; align-items: center; gap: 14px; padding: 16px 0 14px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.32em; color: var(--ivory); text-decoration: none; position: relative; }
+.buy { display: inline-flex; align-items: center; gap: 14px; padding: 16px 0 14px; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.32em; color: var(--ivory); text-decoration: none; position: relative; }
 .buy::after { content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px; background: var(--silver); transform-origin: left; transition: transform 0.7s var(--ease), background 0.4s; }
 .buy:hover::after { transform: scaleX(0.4); background: var(--ivory); }
 .buy svg { width: 18px; height: 18px; transition: transform 0.7s var(--ease); }
@@ -74,9 +92,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* ───────── HUD ───────── */
 .hud { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
 .hud-top { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: max(24px, env(safe-area-inset-top)) var(--gutter) 0; }
-.brand { white-space: nowrap; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.46em; color: var(--ivory); }
+.brand { white-space: nowrap; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.46em; color: var(--ivory); }
 .hud-actions { display: flex; gap: clamp(14px, 2.4vw, 26px); pointer-events: auto; }
-.text-btn { white-space: nowrap; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.32em; color: var(--ivory-dim); padding: 10px 0; transition: color 0.4s; }
+.text-btn { white-space: nowrap; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.3em; color: var(--ivory); padding: 10px 0; transition: color 0.4s; }
 .text-btn:hover { color: var(--ivory); }
 .hud-bottom { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 var(--gutter) calc(26px + var(--safe-b)); display: grid; grid-template-columns: 200px 1fr auto; align-items: center; gap: 30px; }
 .scene-label { font-size: 0.6rem; letter-spacing: 0.32em; color: var(--ivory-faint); text-transform: uppercase; white-space: nowrap; }
@@ -101,7 +119,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .enter-muted { font-size: 0.58rem; letter-spacing: 0.3em; color: var(--ivory-faint); }
 
 /* narration captions (muted mode) */
-.captions { text-shadow: 0 1px 14px rgba(8, 8, 8, 0.95); position: fixed; z-index: 3; left: 50%; bottom: calc(76px + var(--safe-b)); transform: translateX(-50%); width: min(86vw, 640px); margin: 0; text-align: center; pointer-events: none; font-family: var(--serif); font-style: italic; font-size: clamp(0.86rem, 1.3vw, 1rem); line-height: 1.5; color: var(--ivory-dim); opacity: 0; transition: opacity 0.6s var(--ease); }
+.captions { text-shadow: 0 1px 14px rgba(0, 0, 0, 1); position: fixed; z-index: 3; left: 50%; bottom: calc(76px + var(--safe-b)); transform: translateX(-50%); width: min(86vw, 640px); margin: 0; text-align: center; pointer-events: none; font-family: var(--sans); font-weight: 500; font-size: clamp(0.95rem, 1.5vw, 1.15rem); line-height: 1.5; color: #ffffff; opacity: 0; transition: opacity 0.6s var(--ease); }
 .captions.on { opacity: 1; }
 
 /* ───────── Fallback (no WebGL) ───────── */
@@ -126,6 +144,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .pos-p3 { bottom: calc(17vh + 3.1rem + var(--safe-b)); }
   .pos-p4 { bottom: calc(17vh + var(--safe-b)); letter-spacing: 0.22em; }
   .index { display: none; }
+  .panel { left: 50%; right: auto; top: auto; bottom: calc(80px + var(--safe-b)); transform: translateX(-50%); width: calc(100% - 2 * var(--gutter)); }
+  .inside li { grid-template-columns: 5rem 1fr; padding: 9px 0; }
+  .inside .big { font-size: 2.2rem; }
+  .inside strong { font-size: 1.08rem; }
+  .why li { padding: 9px 0; grid-template-columns: 30px 1fr; gap: 12px; }
+  .why li span { font-size: 1.05rem; }
+  .why svg { width: 24px; height: 24px; }
+  .moment { font-size: 1.3rem; margin-top: 16px; }
+  .scrim { height: 70vh; }
   .hud-top { gap: 12px; }
   .text-btn, .brand { font-size: 0.54rem; letter-spacing: 0.24em; }
   .cta { left: 50%; right: auto; top: auto; bottom: calc(92px + var(--safe-b)); transform: translateX(-50%); width: calc(100% - 2 * var(--gutter)); text-align: center; }

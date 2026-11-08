@@ -33,13 +33,14 @@ export function bookPose(t, portrait = false) {
   if (t < 51.0) {
     return { x: 0, y: BT / 2 + 0.002, z: 0, rx: FLAT, ry: 0.32 + 0.03 * smooth(seg(t, 43, 51)), rz: 0, s: 1, open: 0, visible: true }
   }
-  // 06 · call to action — upright product mockup
+  // 06 · what you get → 07 · call to action — upright product mockup, turning gently
+  const u = smooth(seg(t, 51, 66))
   return {
     x: portrait ? 0 : -1.3,
     y: BH / 2,
     z: 0,
     rx: 0,
-    ry: portrait ? -0.24 : 0.36,
+    ry: portrait ? lerp(-0.5, -0.24, u) : lerp(0.75, 0.36, u),
     rz: 0,
     s: 1,
     open: 0,

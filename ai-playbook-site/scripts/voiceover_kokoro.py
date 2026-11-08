@@ -36,7 +36,7 @@ def main(model_dir):
             if isinstance(part, dict):
                 chunks.append(np.zeros(int(part["pause"] * SR)))
                 continue
-            a, sr = k.create(part, voice=style, speed=0.96, lang="en-us")
+            a, sr = k.create(part, voice=style, speed=seg.get("speed", 0.96), lang="en-us")
             a = signal.resample_poly(a, SR, sr)
             idx = np.where(np.abs(a) > 0.008)[0]
             a = a[max(0, idx[0] - 300): idx[-1] + 1800]
