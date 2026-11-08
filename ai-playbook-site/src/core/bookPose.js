@@ -4,7 +4,7 @@ import { lerp, seg, smooth, STAGE } from './timeline'
 /** Book dimensions in world units (cover ratio 827 × 1169). */
 export const BW = 2.0
 export const BH = 2.0 * (1169 / 827)
-export const BT = 0.26
+export const BT = 0.17
 export const BB = 0.035 // board thickness
 
 // four leaves turn during "Inside"

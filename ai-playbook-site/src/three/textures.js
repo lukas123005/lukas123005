@@ -155,16 +155,25 @@ export function spineTex() {
 /** Fore-edge / head of the text block: fine ivory paper stack. */
 export function pageEdgeTex(vertical = true) {
   const L = 2048
-  const S = 128
+  const S = 256
   const [c, ctx] = canvas(vertical ? S : L, vertical ? L : S)
-  ctx.fillStyle = '#e9e4d8'
+  ctx.fillStyle = '#ece6da'
   ctx.fillRect(0, 0, c.width, c.height)
-  for (let k = 0; k < S; k++) {
-    const a = 0.04 + Math.random() * 0.1
-    ctx.fillStyle = `rgba(110,98,82,${a})`
-    if (vertical) ctx.fillRect(k, 0, 1, c.height)
-    else ctx.fillRect(0, k, c.width, 1)
+  // individual leaves: hairline gaps of varying strength
+  for (let k = 0; k < S; k += 2.6) {
+    const a = 0.05 + Math.random() * 0.16
+    ctx.fillStyle = `rgba(96,86,72,${a})`
+    if (vertical) ctx.fillRect(k, 0, 0.9, c.height)
+    else ctx.fillRect(0, k, c.width, 0.9)
   }
+  // soft occlusion where the boards overhang the text block
+  const g = vertical ? ctx.createLinearGradient(0, 0, S, 0) : ctx.createLinearGradient(0, 0, 0, S)
+  g.addColorStop(0, 'rgba(40,34,26,0.45)')
+  g.addColorStop(0.12, 'rgba(40,34,26,0)')
+  g.addColorStop(0.88, 'rgba(40,34,26,0)')
+  g.addColorStop(1, 'rgba(40,34,26,0.45)')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, c.width, c.height)
   return tex(c)
 }
 
@@ -176,37 +185,6 @@ export function endpaperTex() {
   ctx.strokeStyle = 'rgba(191,192,194,0.35)'
   ctx.lineWidth = 1.5
   ctx.strokeRect(30, 30, 452, 664)
-  return tex(c)
-}
-
-/** Laptop keyboard deck (graphite keys on silver aluminium). */
-export function keyboardTex() {
-  const W = 1536
-  const H = 1056
-  const [c, ctx] = canvas(W, H)
-  const g = ctx.createLinearGradient(0, 0, 0, H)
-  g.addColorStop(0, '#c4c5c7')
-  g.addColorStop(1, '#a9aaad')
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, W, H)
-  const kx0 = 150
-  const kw = (W - 300) / 14
-  ctx.fillStyle = '#1b1b1c'
-  for (let r = 0; r < 6; r++) {
-    for (let k = 0; k < 14; k++) {
-      const x = kx0 + k * kw
-      const y = 70 + r * 78
-      const h = r === 0 ? 40 : 66
-      roundRect(ctx, x + 5, y + (r === 0 ? 20 : 4), kw - 10, h, 9)
-      ctx.fill()
-    }
-  }
-  ctx.fillStyle = '#b3b4b7'
-  roundRect(ctx, W / 2 - 330, 600, 660, 400, 26)
-  ctx.fill()
-  ctx.strokeStyle = 'rgba(0,0,0,0.12)'
-  ctx.lineWidth = 2
-  ctx.stroke()
   return tex(c)
 }
 
@@ -250,104 +228,228 @@ function tracked(ctx, text, x, y, spacing, align = 'left') {
 }
 
 /**
- * Laptop screen. mode 'prompt': typing a request in a clean writing tool.
- * mode 'product': a digital-product page built around the real cover.
+ * Laptop screen (2048 × 1280). mode 'prompt': a vivid AI writing workspace where the request is typed
+ * and the plan streams in. mode 'product': a store page built around the real cover.
  */
 export function drawScreen(ctx, W, H, mode, typed, coverImg, reveal = 1) {
+  const S = W / 2048
+  ctx.save()
+  ctx.scale(S, S)
+  const w = 2048
+  const h = 1280
   if (mode === 'prompt') {
-    ctx.fillStyle = '#161616'
-    ctx.fillRect(0, 0, W, H)
-    ctx.fillStyle = '#1d1d1d'
-    ctx.fillRect(0, 0, 300, H)
-    ctx.fillStyle = 'rgba(243,240,233,0.45)'
-    ctx.font = `500 22px ${SANS}`
-    tracked(ctx, 'DRAFTS', 48, 92, 4)
-    ;['Launch plan', 'Product outline', 'Notes'].forEach((s, i) => {
-      ctx.fillStyle = i === 0 ? '#F3F0E9' : 'rgba(243,240,233,0.5)'
-      ctx.font = `400 26px ${SANS}`
-      ctx.fillText(s, 48, 150 + i * 52)
-    })
-    ctx.fillStyle = '#F3F0E9'
-    ctx.font = `400 58px ${SERIF}`
-    ctx.fillText('Launch plan', 380, 150)
-    ctx.fillStyle = 'rgba(191,192,194,0.6)'
-    ctx.font = `400 22px ${SANS}`
-    ctx.fillText('Draft · Today', 382, 192)
-    ctx.strokeStyle = 'rgba(191,192,194,0.35)'
-    ctx.lineWidth = 1.5
-    roundRect(ctx, 380, 240, W - 460, 150, 18)
-    ctx.stroke()
-    ctx.fillStyle = '#F3F0E9'
-    ctx.font = `400 30px ${SANS}`
-    const full = 'Outline a 30-day plan to launch my first digital product.'
-    const s = full.slice(0, Math.floor(full.length * typed))
-    const cut = s.length > 40 ? s.lastIndexOf(' ', 40) : -1
-    if (cut > 0) {
-      ctx.fillText(s.slice(0, cut), 412, 300)
-      ctx.fillText(s.slice(cut + 1), 412, 344)
-    } else ctx.fillText(s, 412, 300)
-    if (typed < 1) {
-      const last = cut > 0 ? s.slice(cut + 1) : s
-      const cx = 412 + ctx.measureText(last).width + 4
-      ctx.fillRect(cx, cut > 0 ? 318 : 274, 2, 34)
-    }
-    // the answer arrives as quiet lines of text
-    const rows = [0.92, 0.84, 0.88, 0.6, 0.9, 0.76, 0.5]
-    rows.forEach((w, i) => {
-      const a = Math.max(0, Math.min(1, reveal * 7 - i))
-      ctx.fillStyle = `rgba(243,240,233,${0.18 * a})`
-      roundRect(ctx, 380, 440 + i * 44, (W - 460) * w * a, 14, 7)
+    const bg = ctx.createLinearGradient(0, 0, w, h)
+    bg.addColorStop(0, '#121318')
+    bg.addColorStop(1, '#0d0e12')
+    ctx.fillStyle = bg
+    ctx.fillRect(0, 0, w, h)
+    // window chrome
+    ctx.fillStyle = '#1a1b21'
+    ctx.fillRect(0, 0, w, 72)
+    ;['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => {
+      ctx.fillStyle = c
+      ctx.beginPath()
+      ctx.arc(40 + i * 34, 36, 11, 0, Math.PI * 2)
       ctx.fill()
     })
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'
+    ctx.font = `500 26px ${SANS}`
+    ctx.textAlign = 'center'
+    ctx.fillText('AI Workspace — Launch plan', w / 2, 46)
+    ctx.textAlign = 'left'
+    // sidebar
+    ctx.fillStyle = '#16171c'
+    ctx.fillRect(0, 72, 420, h - 72)
+    const av = ctx.createLinearGradient(40, 110, 110, 180)
+    av.addColorStop(0, '#5b8cff')
+    av.addColorStop(1, '#a970ff')
+    ctx.fillStyle = av
+    ctx.beginPath()
+    ctx.arc(80, 150, 34, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#fff'
+    ctx.font = `600 30px ${SANS}`
+    ctx.fillText('Creator Lab', 132, 145)
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'
+    ctx.font = `400 22px ${SANS}`
+    ctx.fillText('Workspace', 132, 176)
+    const items = ['Launch plan', 'Product outline', 'Store page', 'Content ideas', 'Prompt library']
+    items.forEach((it, i) => {
+      const y = 260 + i * 70
+      if (i === 0) {
+        ctx.fillStyle = 'rgba(91,140,255,0.18)'
+        roundRect(ctx, 24, y - 40, 372, 58, 14)
+        ctx.fill()
+      }
+      ctx.fillStyle = i === 0 ? '#9fbcff' : 'rgba(255,255,255,0.62)'
+      ctx.font = `${i === 0 ? 600 : 400} 26px ${SANS}`
+      ctx.fillText(it, 64, y)
+    })
+    // conversation
+    const x0 = 500
+    ctx.fillStyle = '#ffffff'
+    ctx.font = `700 54px ${SERIF}`
+    ctx.fillText('Launch plan', x0, 170)
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'
+    ctx.font = `400 24px ${SANS}`
+    ctx.fillText('Draft · edited just now', x0 + 2, 212)
+    // user prompt bubble
+    const full = 'Outline a 30-day plan to launch my first digital product.'
+    const s = full.slice(0, Math.floor(full.length * typed))
+    const bw = 1080
+    const bx = w - 80 - bw
+    const grad = ctx.createLinearGradient(bx, 260, bx + bw, 380)
+    grad.addColorStop(0, '#4c7dff')
+    grad.addColorStop(1, '#8a5cff')
+    ctx.fillStyle = grad
+    roundRect(ctx, bx, 262, bw, 122, 30)
+    ctx.fill()
+    ctx.fillStyle = '#ffffff'
+    ctx.font = `500 34px ${SANS}`
+    ctx.fillText(s, bx + 40, 336)
+    if (typed < 1) ctx.fillRect(bx + 44 + ctx.measureText(s).width, 306, 3, 40)
+    // AI answer streaming in, with real content
+    const lines = [
+      ['Here is a 30-day plan for your first digital product:', 'lead'],
+      ['Week 1', 'Choose your niche and validate the idea'],
+      ['Week 2', 'Create the product with AI tools'],
+      ['Week 3', 'Build your store page on Whop'],
+      ['Week 4', 'Launch, share your story, collect feedback'],
+    ]
+    const ai = ctx.createLinearGradient(x0, 430, x0 + 64, 494)
+    ai.addColorStop(0, '#ffb347')
+    ai.addColorStop(1, '#ff7a59')
+    if (reveal > 0) {
+      ctx.fillStyle = ai
+      ctx.beginPath()
+      ctx.arc(x0 + 32, 462, 30, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.font = `700 26px ${SANS}`
+      ctx.textAlign = 'center'
+      ctx.fillText('AI', x0 + 32, 471)
+      ctx.textAlign = 'left'
+    }
+    lines.forEach(([a, b], i) => {
+      const k = Math.max(0, Math.min(1, reveal * 5.5 - i))
+      if (k <= 0) return
+      const y = 470 + i * 120
+      ctx.globalAlpha = k
+      if (b === 'lead') {
+        ctx.fillStyle = '#ffffff'
+        ctx.font = `500 34px ${SANS}`
+        ctx.fillText(a, x0 + 96, y + 10)
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.06)'
+        roundRect(ctx, x0 + 96, y - 44, 1300, 96, 20)
+        ctx.fill()
+        const pill = ['#5b8cff', '#a970ff', '#ff9f5a', '#3fd29b'][i - 1]
+        ctx.fillStyle = pill
+        roundRect(ctx, x0 + 124, y - 20, 132, 48, 24)
+        ctx.fill()
+        ctx.fillStyle = '#0e0f13'
+        ctx.font = `700 24px ${SANS}`
+        ctx.textAlign = 'center'
+        ctx.fillText(a, x0 + 190, y + 12)
+        ctx.textAlign = 'left'
+        ctx.fillStyle = '#f2f3f7'
+        ctx.font = `500 32px ${SANS}`
+        ctx.fillText(b, x0 + 290, y + 14)
+      }
+      ctx.globalAlpha = 1
+    })
+    // composer
+    ctx.fillStyle = '#1b1c22'
+    roundRect(ctx, x0, h - 130, w - x0 - 80, 84, 42)
+    ctx.fill()
+    ctx.fillStyle = 'rgba(255,255,255,0.4)'
+    ctx.font = `400 28px ${SANS}`
+    ctx.fillText('Ask anything…', x0 + 44, h - 78)
+    ctx.fillStyle = grad
+    ctx.beginPath()
+    ctx.arc(w - 132, h - 88, 28, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
     return
   }
-  // product page (ivory)
-  ctx.fillStyle = '#F3F0E9'
-  ctx.fillRect(0, 0, W, H)
+  // product page
+  const bg = ctx.createLinearGradient(0, 0, 0, h)
+  bg.addColorStop(0, '#f6f2ea')
+  bg.addColorStop(1, '#ebe4d6')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, w, h)
   ctx.fillStyle = '#1c1b19'
-  ctx.font = `600 20px ${SANS}`
-  tracked(ctx, 'CREATOR LAB', 64, 72, 5)
+  ctx.font = `700 26px ${SANS}`
+  tracked(ctx, 'CREATOR LAB', 90, 92, 7)
   ctx.fillStyle = '#6f6b63'
-  ctx.font = `400 20px ${SANS}`
-  ctx.fillText('Library', W - 230, 72)
-  ctx.fillText('About', W - 130, 72)
+  ctx.font = `500 26px ${SANS}`
+  ctx.fillText('Library', w - 330, 92)
+  ctx.fillText('About', w - 180, 92)
   ctx.fillStyle = 'rgba(28,27,25,0.12)'
-  ctx.fillRect(64, 104, W - 128, 1)
+  ctx.fillRect(90, 132, w - 180, 2)
+  // warm halo behind the book
+  const halo = ctx.createRadialGradient(470, 640, 40, 470, 640, 520)
+  halo.addColorStop(0, 'rgba(255,190,110,0.35)')
+  halo.addColorStop(1, 'rgba(255,190,110,0)')
+  ctx.fillStyle = halo
+  ctx.fillRect(0, 140, 1000, 1100)
   if (coverImg) {
-    const ch = 640
+    const ch = 860
     const cw = (ch * coverImg.width) / coverImg.height
     ctx.save()
-    ctx.shadowColor = 'rgba(0,0,0,0.28)'
-    ctx.shadowBlur = 40
-    ctx.shadowOffsetY = 22
-    ctx.drawImage(coverImg, 120, 190, cw, ch)
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'
+    ctx.shadowBlur = 60
+    ctx.shadowOffsetY = 34
+    ctx.drawImage(coverImg, 470 - cw / 2, 220, cw, ch)
     ctx.restore()
   }
-  const x = 760
-  ctx.fillStyle = '#6f6b63'
-  ctx.font = `500 20px ${SANS}`
-  tracked(ctx, 'DIGITAL GUIDE · PDF', x, 250, 4)
+  const x = 1020
+  ctx.fillStyle = '#b5651d'
+  ctx.font = `700 24px ${SANS}`
+  tracked(ctx, 'NEW · DIGITAL GUIDE', x, 300, 5)
   ctx.fillStyle = '#1c1b19'
-  ctx.font = `400 74px ${SERIF}`
-  ctx.fillText('The AI Money', x, 350)
-  ctx.fillText('Playbook', x, 432)
-  ctx.font = `italic 400 30px ${SERIF}`
+  ctx.font = `700 96px ${SERIF}`
+  ctx.fillText('The AI Money', x, 420)
+  ctx.fillText('Playbook', x, 520)
+  ctx.font = `italic 400 38px ${SERIF}`
   ctx.fillStyle = '#3d3a35'
-  ctx.fillText('Nga fillestar në sipërmarrës me AI', x, 492)
-  ctx.font = `400 24px ${SANS}`
+  ctx.fillText('Nga fillestar në sipërmarrës me AI', x, 590)
+  ctx.font = `500 30px ${SANS}`
   ctx.fillStyle = '#6f6b63'
-  ctx.fillText('Luka Shehu', x, 548)
-  ctx.fillStyle = 'rgba(28,27,25,0.12)'
-  ctx.fillRect(x, 590, 640, 1)
+  ctx.fillText('Luka Shehu  ·  97 pages  ·  PDF', x, 650)
+  const pts = ['100 ready-to-use prompts', '10 business models', '30-day action plan']
+  pts.forEach((p, i) => {
+    ctx.fillStyle = '#2f7d4f'
+    ctx.font = `700 30px ${SANS}`
+    ctx.fillText('✓', x, 730 + i * 54)
+    ctx.fillStyle = '#2b2925'
+    ctx.font = `500 30px ${SANS}`
+    ctx.fillText(p, x + 46, 730 + i * 54)
+  })
   ctx.fillStyle = '#1c1b19'
-  ctx.font = `400 64px ${SERIF}`
-  ctx.fillText(CONFIG_PRICE, x, 682)
-  ctx.strokeStyle = '#1c1b19'
-  ctx.lineWidth = 1.5
-  roundRect(ctx, x, 724, 300, 66, 33)
-  ctx.stroke()
-  ctx.font = `600 18px ${SANS}`
-  tracked(ctx, 'GET YOUR COPY', x + 150, 765, 3.5, 'center')
+  ctx.font = `700 92px ${SERIF}`
+  ctx.fillText(CONFIG_PRICE, x, 1000)
+  ctx.fillStyle = '#1c1b19'
+  roundRect(ctx, x + 300, 930, 480, 96, 48)
+  ctx.fill()
+  ctx.fillStyle = '#f6f2ea'
+  ctx.font = `700 26px ${SANS}`
+  tracked(ctx, 'GET YOUR COPY', x + 540, 988, 5, 'center')
+  ctx.restore()
+}
+
+/** Speaker grille: fine perforation for the laptop deck. */
+export function grilleTex() {
+  const [c, ctx] = canvas(64, 1024)
+  ctx.fillStyle = '#b8b9bc'
+  ctx.fillRect(0, 0, 64, 1024)
+  ctx.fillStyle = '#2a2a2c'
+  for (let y = 6; y < 1024; y += 12) for (let x = 8; x < 64; x += 12) {
+    ctx.beginPath()
+    ctx.arc(x + ((y / 12) % 2) * 6, y, 2.2, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  return tex(c)
 }
 
 /* ───────── Editorial pages inside the book ───────── */
@@ -549,6 +651,13 @@ export function coverMaps(image) {
   const orm = cx.createImageData(w, h)
   const bump = cbx.createImageData(w, h)
   for (let i = 0; i < src.data.length; i += 4) {
+    const px = (i / 4) % w
+    const py = Math.floor(i / 4 / w)
+    const u = px / w
+    const vv = py / h
+    // distance to the board edge (for subtle wear) and the hinge groove beside the spine
+    const edge = Math.min(u, 1 - u, vv * (h / w), (1 - vv) * (h / w))
+    const groove = Math.exp(-Math.pow((u - 0.042) / 0.006, 2))
     const r = src.data[i] / 255
     const g = src.data[i + 1] / 255
     const b = src.data[i + 2] / 255
@@ -557,10 +666,13 @@ export function coverMaps(image) {
     const white = Math.min(1, Math.max(0, (lum - 0.55) * 3))
     const metal = Math.min(1, gold + white * 0.6)
     orm.data[i] = 255
-    orm.data[i + 1] = Math.round(255 * (0.72 - 0.42 * metal)) // roughness (G)
+    const wear = Math.max(0, 1 - edge / 0.012) * 0.18
+    const grain = (Math.random() - 0.5) * 0.06
+    orm.data[i + 1] = Math.round(255 * Math.min(1, Math.max(0.05, 0.7 - 0.42 * metal + wear + grain))) // roughness (G)
     orm.data[i + 2] = Math.round(255 * metal * 0.85) // metalness (B)
     orm.data[i + 3] = 255
-    const v = Math.round(255 * Math.min(1, Math.max(gold, white)))
+    // emboss + paper grain + the pressed hinge groove of a real case binding
+    const v = Math.round(255 * Math.min(1, Math.max(0, 0.35 + 0.6 * Math.max(gold, white) + (Math.random() - 0.5) * 0.05 - 0.3 * groove)))
     bump.data[i] = bump.data[i + 1] = bump.data[i + 2] = v
     bump.data[i + 3] = 255
   }

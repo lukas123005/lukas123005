@@ -18,6 +18,7 @@ export function LightRig({ shadows }) {
   const rimR = useRef()
   const sun = useRef()
   const sweep = useRef()
+  const lamp = useRef()
 
   useFrame(() => {
     const t = store.time
@@ -32,6 +33,7 @@ export function LightRig({ shadows }) {
     let rr = 0
     let s = 0
     let sw = 0
+    let lp = 0
     if (desk) {
       // window-like softbox from the left, a soft top fill, and the screen's own glow
       aim(key.current, [-7, 4.2, 2.2], [0, 0.4, 0])
@@ -44,6 +46,8 @@ export function LightRig({ shadows }) {
       rl = 1.2 * lift
       rr = (t < 12.8 ? 0.8 : 1.4) * lift
       s = 16 * lift
+      lp = 7 * lift
+      lamp.current.position.set(O.x - 2.6, O.y + 1.55, O.z - 0.5)
       sun.current.position.set(O.x - 5, O.y + 6, O.z + 3)
       sun.current.target.position.set(O.x, O.y, O.z)
     } else {
@@ -74,6 +78,7 @@ export function LightRig({ shadows }) {
     rimR.current.intensity = rr
     sun.current.intensity = s
     sweep.current.intensity = sw
+    lamp.current.intensity = lp
     sun.current.target.updateMatrixWorld()
     sweep.current.target.updateMatrixWorld()
   })
@@ -95,6 +100,7 @@ export function LightRig({ shadows }) {
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
       />
+      <pointLight ref={lamp} color="#ffc98c" distance={9} decay={2} intensity={0} />
       <spotLight ref={sweep} angle={0.16} penumbra={0.9} distance={20} decay={2} color="#fffdf8" intensity={0} />
     </>
   )

@@ -1,13 +1,14 @@
 import { Suspense, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Environment, Lightformer } from '@react-three/drei'
-import { Bloom, DepthOfField, EffectComposer, SMAA, ToneMapping, Vignette } from '@react-three/postprocessing'
+import { ContactShadows, Environment, Lightformer, SoftShadows } from '@react-three/drei'
+import { Bloom, DepthOfField, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
 import * as THREE from 'three'
 import { QUALITY } from '../core/quality'
-import { store } from '../core/timeline'
+import { STAGE, store } from '../core/timeline'
 import { sound } from '../core/audio'
 import { Book } from './Book'
+import { bookLive } from '../core/bookPose'
 import { CameraRig, focus } from './CameraRig'
 import { Studio } from './Studio'
 import { Workspace } from './Workspace'
@@ -53,6 +54,7 @@ function FX({ quality }) {
   })
   return (
     <EffectComposer multisampling={lite ? 0 : 4} disableNormalPass frameBufferType={fbType}>
+      {!lite && <N8AO aoRadius={0.35} distanceFalloff={0.6} intensity={2.2} quality="medium" halfRes />}
       {!lite && <DepthOfField ref={dof} target={focus.point} focusRange={0.02} bokehScale={2} resolutionScale={0.75} />}
       <Bloom mipmapBlur intensity={0.22} luminanceThreshold={0.86} luminanceSmoothing={0.12} radius={0.6} />
       <Vignette eskil={false} offset={0.32} darkness={0.55} />
@@ -63,6 +65,17 @@ function FX({ quality }) {
 }
 
 
+/** Soft contact shadow where the book touches the stone (grounds it physically). */
+function BookContact() {
+  const ref = useRef()
+  useFrame(() => {
+    const t = store.time
+    ref.current.visible = t > 19
+    ref.current.position.set(bookLive.position.x, STAGE.book.y + 0.004, bookLive.position.z)
+  })
+  return <ContactShadows ref={ref} frames={Infinity} scale={6} resolution={512} blur={2.2} far={2.2} opacity={0.75} color="#000000" />
+}
+
 export function Experience({ quality }) {
   const Q = QUALITY[quality]
   const shadows = Q.post === 'full'
@@ -71,12 +84,14 @@ export function Experience({ quality }) {
       <color attach="background" args={['#080808']} />
       <CameraRig />
       <ambientLight intensity={0.02} />
+      {shadows && <SoftShadows size={22} samples={12} focus={0.6} />}
       <LightRig shadows={shadows} />
       <Suspense fallback={null}>
         <Reflections />
         <Studio quality={quality} />
         <Workspace quality={quality} />
         <Book shadows={shadows} />
+        <BookContact />
       </Suspense>
       {!NO_FX && <FX quality={quality} />}
     </>

@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { CONFIG } from '../config'
 import { BB, BH, BT, BW, bookLive, bookPose, LEAF_DUR, LEAF_TIMES, poseMatrix } from '../core/bookPose'
 import { seg, smooth, store } from '../core/timeline'
@@ -38,9 +39,9 @@ export function Book({ shadows = true }) {
       roughness: 1,
       metalness: 1,
       bumpMap: bump,
-      bumpScale: 0.9,
-      clearcoat: 0.18,
-      clearcoatRoughness: 0.45,
+      bumpScale: 1.6,
+      clearcoat: 0.12,
+      clearcoatRoughness: 0.55,
       sheen: 0.25,
       sheenColor: new THREE.Color('#2a2a2a'),
       envMapIntensity: 0.9,
@@ -68,7 +69,21 @@ export function Book({ shadows = true }) {
       return { geo, front, back: backM }
     })
     const spineGeo = new THREE.CylinderGeometry(BT / 2, BT / 2, BH + 0.004, 48, 1, true, Math.PI, Math.PI)
-    return { coverMat, board, back, end, spine, edgeV, edgeH, paperTop, paperPlain, leafData, spineGeo }
+    // boards with softly rounded edges and corners, like real case-bound covers
+    const boardGeo = new RoundedBoxGeometry(BW, BH, BB, 4, 0.0075)
+    // text block: a slightly concave fore-edge (the natural shape of a rounded-spine book)
+    const pw = BW - 0.05
+    const ph = BH - 0.07
+    const pd = BT - 2 * BB
+    const blockGeo = new THREE.BoxGeometry(pw, ph, pd, 1, 1, 18)
+    const bp = blockGeo.attributes.position
+    for (let i = 0; i < bp.count; i++) {
+      const x = bp.getX(i)
+      const z = bp.getZ(i)
+      if (x > 0) bp.setX(i, x - 0.012 * (1 - Math.pow((2 * z) / pd, 2)))
+    }
+    blockGeo.computeVertexNormals()
+    return { boardGeo, blockGeo, coverMat, board, back, end, spine, edgeV, edgeH, paperTop, paperPlain, leafData, spineGeo }
   }, [cover, gl])
 
   useFrame((state, dt) => {
@@ -128,13 +143,9 @@ export function Book({ shadows = true }) {
   const pb = { w: BW - 0.05, h: BH - 0.07, d: BT - 2 * BB }
   return (
     <group ref={root}>
-      <mesh position={[0, 0, -BT / 2 + BB / 2]} castShadow={shadows} receiveShadow material={[L.board, L.board, L.board, L.board, L.end, L.back]}>
-        <boxGeometry args={[BW, BH, BB]} />
-      </mesh>
+      <mesh position={[0, 0, -BT / 2 + BB / 2]} geometry={L.boardGeo} castShadow={shadows} receiveShadow material={[L.board, L.board, L.board, L.board, L.end, L.back]} />
       <mesh position={[-BW / 2, 0, 0]} geometry={L.spineGeo} material={L.spine} castShadow={shadows} />
-      <mesh position={[0.018, 0, 0]} castShadow={shadows} receiveShadow material={[L.edgeV, L.paperPlain, L.edgeH, L.edgeH, L.paperTop, L.paperPlain]}>
-        <boxGeometry args={[pb.w, pb.h, pb.d]} />
-      </mesh>
+      <mesh position={[0.018, 0, 0]} geometry={L.blockGeo} castShadow={shadows} receiveShadow material={[L.edgeV, L.paperPlain, L.edgeH, L.edgeH, L.paperTop, L.paperPlain]} />
       <group position={[-BW / 2 + 0.035, 0, pb.d / 2 + 0.002]}>
         {L.leafData.map((lf, k) => (
           <group key={k} ref={(el) => (leaves.current[k] = el)} visible={false}>
@@ -144,9 +155,7 @@ export function Book({ shadows = true }) {
         ))}
       </group>
       <group ref={frontPivot} position={[-BW / 2, 0, BT / 2 - BB / 2]}>
-        <mesh position={[BW / 2, 0, 0]} castShadow={shadows} receiveShadow material={[L.board, L.board, L.board, L.board, L.coverMat, L.end]}>
-          <boxGeometry args={[BW, BH, BB]} />
-        </mesh>
+        <mesh position={[BW / 2, 0, 0]} geometry={L.boardGeo} castShadow={shadows} receiveShadow material={[L.board, L.board, L.board, L.board, L.coverMat, L.end]} />
       </group>
     </group>
   )
