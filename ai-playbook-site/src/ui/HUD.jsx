@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { DURATION, SCENES, sceneAt, store } from '../core/timeline'
+import { SCENES, sceneAt, store } from '../core/timeline'
+import { plan, toMaster } from '../core/narration'
 
 /** Top bar (brand, sound, play) + bottom cinematic progress / chapter navigation + replay. */
 export function HUD({ visible, muted, onMute, playing, onPlay, onReplay, onSeek }) {
@@ -11,7 +12,7 @@ export function HUD({ visible, muted, onMute, playing, onPlay, onReplay, onSeek 
     let raf
     const loop = () => {
       const t = store.time
-      if (bar.current) bar.current.style.transform = `scaleX(${t / DURATION})`
+      if (bar.current) bar.current.style.transform = `scaleX(${store.master / plan.total})`
       const s = sceneAt(t)
       setScene((p) => (p === s ? p : s))
       raf = requestAnimationFrame(loop)
@@ -53,7 +54,7 @@ export function HUD({ visible, muted, onMute, playing, onPlay, onReplay, onSeek 
             <button
               key={s.id}
               className={`marker ${i <= scene ? 'on' : ''}`}
-              style={{ left: `${(s.start / DURATION) * 100}%` }}
+              style={{ left: `${(toMaster(s.start) / plan.total) * 100}%` }}
               onClick={() => onSeek(s.start + 0.05)}
               aria-label={`Go to ${s.label}`}
               title={s.label}

@@ -131,7 +131,7 @@ function Shadows() {
 }
 
 function SoundSync() {
-  useFrame(() => sound.update(store.time))
+  useFrame(() => sound.update(store.time, store.master))
   return null
 }
 

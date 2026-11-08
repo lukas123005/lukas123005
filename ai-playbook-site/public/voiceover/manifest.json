@@ -1,0 +1,159 @@
+{
+  "about": "Narration for the experience. Replace any .mp3 with your own recording (same file name) — the film retimes itself to the real audio length at load. Film anchors are in film-seconds of the 53 s animation.",
+  "voice": "Kokoro TTS (local) — blend am_michael 0.6 / am_onyx 0.4, speed 0.9",
+  "windows": [
+    {
+      "from": 0.0,
+      "to": 4.5,
+      "lead": 1.0,
+      "tail": 0.8,
+      "segments": [
+        "01-future"
+      ]
+    },
+    {
+      "from": 6.2,
+      "to": 11.0,
+      "lead": 0.7,
+      "tail": 0.6,
+      "segments": [
+        "02-opportunity"
+      ]
+    },
+    {
+      "from": 22.9,
+      "to": 29.0,
+      "lead": 0.8,
+      "tail": 0.9,
+      "segments": [
+        "03-introducing"
+      ]
+    },
+    {
+      "from": 31.0,
+      "to": 38.9,
+      "lead": 0.5,
+      "tail": 0.9,
+      "gap": 1.1,
+      "segments": [
+        "04-inside",
+        "05-value"
+      ]
+    },
+    {
+      "from": 42.4,
+      "to": 48.0,
+      "lead": 0.9,
+      "tail": 1.2,
+      "segments": [
+        "06-final"
+      ]
+    },
+    {
+      "from": 48.0,
+      "to": 53.0,
+      "lead": 1.4,
+      "tail": 3.2,
+      "segments": [
+        "07-signature"
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "id": "01-future",
+      "file": "voiceover/01-future.mp3",
+      "parts": [
+        "Everything is changing.",
+        {
+          "pause": 0.55
+        },
+        "The way we work, create, communicate and build businesses."
+      ],
+      "duration": 5.62,
+      "text": "Everything is changing. The way we work, create, communicate and build businesses."
+    },
+    {
+      "id": "02-opportunity",
+      "file": "voiceover/02-opportunity.mp3",
+      "parts": [
+        "Artificial intelligence is opening new possibilities.",
+        {
+          "pause": 0.6
+        },
+        "But knowing how to use it,",
+        {
+          "pause": 0.75
+        },
+        "is what makes the difference."
+      ],
+      "duration": 8.344,
+      "text": "Artificial intelligence is opening new possibilities. But knowing how to use it, is what makes the difference."
+    },
+    {
+      "id": "03-introducing",
+      "file": "voiceover/03-introducing.mp3",
+      "parts": [
+        "Introducing The AI Money Playbook.",
+        {
+          "pause": 0.6
+        },
+        "A practical guide designed to take you from complete beginner to confident AI entrepreneur."
+      ],
+      "duration": 9.254,
+      "text": "Introducing The AI Money Playbook. A practical guide designed to take you from complete beginner to confident AI entrepreneur."
+    },
+    {
+      "id": "04-inside",
+      "file": "voiceover/04-inside.mp3",
+      "parts": [
+        "Discover powerful AI tools, professional prompting techniques, digital product creation, online business models, and the strategies to build your own digital brand."
+      ],
+      "duration": 11.133,
+      "text": "Discover powerful AI tools, professional prompting techniques, digital product creation, online business models, and the strategies to build your own digital brand."
+    },
+    {
+      "id": "05-value",
+      "file": "voiceover/05-value.mp3",
+      "parts": [
+        "With practical examples, ready-to-use prompts, and a structured thirty-day action plan,",
+        {
+          "pause": 0.3
+        },
+        "you'll have a clear starting point to turn knowledge into action."
+      ],
+      "duration": 9.067,
+      "text": "With practical examples, ready-to-use prompts, and a structured thirty-day action plan, you'll have a clear starting point to turn knowledge into action."
+    },
+    {
+      "id": "06-final",
+      "file": "voiceover/06-final.mp3",
+      "parts": [
+        "The future isn't something you wait for.",
+        {
+          "pause": 0.7
+        },
+        "It's something you build."
+      ],
+      "duration": 4.404,
+      "text": "The future isn't something you wait for. It's something you build."
+    },
+    {
+      "id": "07-signature",
+      "file": "voiceover/07-signature.mp3",
+      "parts": [
+        "The AI Money Playbook.",
+        {
+          "pause": 0.55
+        },
+        "By Luka Shehu.",
+        {
+          "pause": 0.8
+        },
+        "Your journey starts here."
+      ],
+      "duration": 6.093,
+      "text": "The AI Money Playbook. By Luka Shehu. Your journey starts here."
+    }
+  ]
+}

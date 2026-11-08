@@ -4,13 +4,15 @@ import { PerformanceMonitor } from '@react-three/drei'
 import * as THREE from 'three'
 import { createDirector } from './core/director'
 import { detectQuality, hasWebGL, prefersReducedMotion, QUALITY } from './core/quality'
-import { DURATION, store } from './core/timeline'
+import { store } from './core/timeline'
+import { loadNarration, plan, toMaster } from './core/narration'
 import { sound } from './core/audio'
 import { Experience } from './three/Experience'
 import { Overlay } from './ui/Overlay'
 import { Loader } from './ui/Loader'
 import { HUD } from './ui/HUD'
 import { Fallback } from './ui/Fallback'
+import { Captions } from './ui/Captions'
 
 const params = new URLSearchParams(window.location.search)
 const DEBUG_T = params.has('t') ? parseFloat(params.get('t')) : null
@@ -24,10 +26,12 @@ export default function App() {
   const [entered, setEntered] = useState(false)
   const [muted, setMuted] = useState(true)
   const [playing, setPlaying] = useState(false)
+  const [voiceReady, setVoiceReady] = useState(false)
   const overlay = useRef()
   const director = useRef()
 
   store.quality = quality
+  if (params.has('debug')) Object.assign(window, { __sound: sound, __plan: plan, __store: store })
 
   // fonts must be ready before canvas textures are painted
   useEffect(() => {
@@ -39,9 +43,14 @@ export default function App() {
     ]).finally(() => setFontsReady(true))
   }, [])
 
+  // narration first: its real clip lengths define the film's timing
+  useEffect(() => {
+    loadNarration().finally(() => setVoiceReady(true))
+  }, [])
+
   // master timeline
   useEffect(() => {
-    if (!overlay.current) return
+    if (!voiceReady || !overlay.current) return
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
     window.scrollTo(0, 0)
     director.current = createDirector(overlay.current, { onPlayingChange: setPlaying })
@@ -50,11 +59,11 @@ export default function App() {
       store.time = DEBUG_T
       requestAnimationFrame(() => {
         const max = document.documentElement.scrollHeight - window.innerHeight
-        window.scrollTo(0, (DEBUG_T / DURATION) * max)
+        window.scrollTo(0, (toMaster(DEBUG_T) / plan.total) * max)
       })
     }
     return () => director.current?.destroy()
-  }, [])
+  }, [voiceReady])
 
   // lock scrolling until the visitor enters
   useEffect(() => {
@@ -105,8 +114,8 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (SKIP_LOADER) enter(false)
-  }, [enter])
+    if (SKIP_LOADER && voiceReady) enter(false)
+  }, [enter, voiceReady])
 
   const toggleMute = async () => {
     const m = !muted
@@ -143,8 +152,9 @@ export default function App() {
 
       {webgl && (
         <>
-          <Overlay ref={overlay} />
-          <div id="scroll-track" style={{ height: `${Math.round(DURATION * 15)}vh` }} />
+          {voiceReady && <Overlay ref={overlay} />}
+          <div id="scroll-track" style={{ height: `${Math.round(plan.total * 12)}vh` }} />
+          <Captions visible={entered && muted} />
           <HUD
             visible={entered}
             muted={muted}
@@ -154,7 +164,7 @@ export default function App() {
             onReplay={() => director.current?.replay()}
             onSeek={(t) => director.current?.seek(t)}
           />
-          <Loader visible={!entered && DEBUG_T == null && !SKIP_LOADER} onEnter={enter} />
+          <Loader visible={!entered && DEBUG_T == null && !SKIP_LOADER} ready={voiceReady} onEnter={enter} />
         </>
       )}
     </>

@@ -26,7 +26,8 @@ export const IMPACTS = [5.45, 12.0, 19.0, 22.6, 41.6]
 
 /** Shared mutable state (read every frame — never triggers React renders). */
 export const store = {
-  time: 0,
+  time: 0, // film seconds (what the visuals use)
+  master: 0, // wall-clock seconds of the narrated film
   frozen: null, // ?t=12.5 freezes time for debugging / screenshots
   mouse: new THREE.Vector2(0, 0), // -1..1
   mouseSmooth: new THREE.Vector2(0, 0),

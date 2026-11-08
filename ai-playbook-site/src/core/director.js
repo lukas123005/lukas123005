@@ -1,7 +1,8 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
-import { DURATION, store } from './timeline'
+import { store } from './timeline'
+import { plan, toFilm, toMaster as M } from './narration'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
@@ -14,29 +15,32 @@ const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=/<>'
  * ScrollTrigger scrubs it from the scroll position; autoplay simply scrolls the page.
  */
 export function createDirector(root, { onPlayingChange } = {}) {
+  // timeline runs in master (narration) seconds; visuals read film time through the map
+  const TOTAL = plan.total
   const proxy = { t: 0 }
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
   tl.to(proxy, {
-    t: DURATION,
-    duration: DURATION,
+    t: TOTAL,
+    duration: TOTAL,
     ease: 'none',
     onUpdate: () => {
-      if (store.frozen == null) store.time = proxy.t
+      store.master = proxy.t
+      if (store.frozen == null) store.time = toFilm(proxy.t)
     },
   }, 0)
 
   root.querySelectorAll('[data-line]').forEach((el) => addLine(tl, el))
   root.querySelectorAll('[data-flash]').forEach((el) => {
     String(el.dataset.flash).split(',').map(Number).forEach((at) => {
-      tl.fromTo(el, { opacity: 0 }, { opacity: 0.85, duration: 0.06, immediateRender: false }, at - 0.06)
-      tl.to(el, { opacity: 0, duration: 0.9, ease: 'power2.out' }, at)
+      tl.fromTo(el, { opacity: 0 }, { opacity: 0.85, duration: 0.06, immediateRender: false }, M(at) - 0.06)
+      tl.to(el, { opacity: 0, duration: 0.9, ease: 'power2.out' }, M(at))
     })
   })
   const cta = root.querySelector('[data-cta]')
   if (cta) {
     const parts = cta.querySelectorAll('[data-cta-part]')
-    tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, immediateRender: false }, 48.4)
-    tl.fromTo(parts, { opacity: 0, y: 40, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.22, ease: 'expo.out', immediateRender: false }, 48.6)
+    tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, immediateRender: false }, M(48.4))
+    tl.fromTo(parts, { opacity: 0, y: 40, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.22, ease: 'expo.out', immediateRender: false }, M(48.6))
   }
   const hint = root.querySelector('[data-hint]')
   if (hint) tl.to(hint, { autoAlpha: 0, duration: 0.6 }, 1.0)
@@ -57,15 +61,14 @@ export function createDirector(root, { onPlayingChange } = {}) {
   const play = () => {
     const max = ScrollTrigger.maxScroll(window)
     if (window.scrollY >= max - 2) window.scrollTo(0, 0)
-    const remaining = (1 - window.scrollY / max) * DURATION
+    const remaining = (1 - window.scrollY / max) * TOTAL
     auto?.kill()
     setPlaying(true)
     auto = gsap.to(window, {
-      scrollTo: { y: 'max', autoKill: true },
+      scrollTo: { y: 'max', autoKill: true, onAutoKill: () => setPlaying(false) },
       duration: Math.max(0.5, remaining),
       ease: 'none',
       onComplete: () => setPlaying(false),
-      onAutoKill: () => setPlaying(false),
     })
   }
   const pause = () => {
@@ -78,14 +81,15 @@ export function createDirector(root, { onPlayingChange } = {}) {
     tl.progress(0)
     proxy.t = 0
     store.time = 0
+    store.master = 0
     ScrollTrigger.update()
     gsap.delayedCall(0.35, play)
   }
-  const seek = (t) => {
+  const seek = (t) => { // t in film seconds
     auto?.kill()
     setPlaying(false)
     const max = ScrollTrigger.maxScroll(window)
-    gsap.to(window, { scrollTo: { y: (t / DURATION) * max }, duration: 1.2, ease: 'power2.inOut' })
+    gsap.to(window, { scrollTo: { y: (M(t) / TOTAL) * max }, duration: 1.2, ease: 'power2.inOut' })
   }
   // user interaction stops autoplay
   const stop = () => auto && auto.isActive() && pause()
@@ -94,7 +98,7 @@ export function createDirector(root, { onPlayingChange } = {}) {
   window.addEventListener('keydown', stop)
 
   return {
-    tl, st, play, pause, replay, seek,
+    tl, st, play, pause, replay, seek, total: TOTAL,
     destroy() {
       window.removeEventListener('wheel', stop)
       window.removeEventListener('touchstart', stop)
@@ -108,8 +112,8 @@ export function createDirector(root, { onPlayingChange } = {}) {
 
 /** Morphing typography: chars fly in from depth with blur, tracking collapses; exit dissolves upward. */
 function addLine(tl, el) {
-  const tin = parseFloat(el.dataset.in)
-  const tout = parseFloat(el.dataset.out)
+  const tin = M(parseFloat(el.dataset.in))
+  const tout = M(parseFloat(el.dataset.out))
   const fx = el.dataset.fx || 'depth'
   const chars = el.querySelectorAll('.ch')
   tl.set(el, { autoAlpha: 1 }, tin - 0.01)

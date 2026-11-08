@@ -25,7 +25,7 @@ VITE_CHECKOUT_URL=https://whop.com/checkout/your-product-id
 
 Price, title, subtitle, author, brand and the 9 chapter holograms are also configured in `src/config.js`.
 
-## The film (53 s, scroll-scrubbed or autoplay)
+## The film (53 s of animation, ~85 s with narration; scroll-scrubbed or autoplay)
 
 | Time | Scene | What happens |
 |---|---|---|
@@ -45,6 +45,31 @@ The book is a real 3D object: boards with thickness, rounded spine, page block, 
 - Chapter markers in the progress bar jump to scenes; **Replay** restarts.
 - Mouse moves particles and adds parallax; drag horizontally to spin the book.
 - Sound is fully procedural (Web Audio): deep bass, ambience, activation blips, mechanical clicks, page turns, impacts. Mute/unmute top right.
+
+## Narration & sound design
+
+A male narrator speaks throughout (7 clips in `public/voiceover/`, script in `public/voiceover/manifest.json`).
+
+- **The film retimes itself to the voice.** At load, every clip is decoded and its real length measured; each narrated
+  window of the animation is stretched to fit (with lead-in, natural pauses and a tail), while transitions and impacts
+  between windows stay real-time. The 53 s animation becomes a ~85 s narrated film. Replace any MP3 with your own
+  recording (same file name) — no code changes needed.
+- **Mix:** separate voice / music / effects buses. Music sits at ~40 % in pauses and is ducked to ~15 % while the
+  narrator speaks (look-ahead, ~0.65 s fades). Loud effects (impacts, risers, whooshes, mechanics) are skipped if they
+  would land on spoken words; particle and activation sounds stay underneath at low level. Soft sub-led bass impact on
+  the book reveal, gentle fade-out at the end, master limiter.
+- **Muted visitors** get the narration as subtitles.
+
+### Regenerate the voice
+
+- **ElevenLabs** (recommended for the final production):
+  `ELEVENLABS_API_KEY=… ELEVENLABS_VOICE_ID=… node scripts/voiceover_elevenlabs.mjs`
+  Choose a warm, deep, calm male narrator from the ElevenLabs voice library.
+- **Local fallback (included clips):** Kokoro TTS —
+  `python3 scripts/voiceover_kokoro.py /path/to/kokoro-model-dir`
+- Or record a human narrator and drop the files in `public/voiceover/`.
+
+If a clip fails to load, the film keeps its timing (from `duration` in the manifest) and simply runs without that line.
 
 ## Performance
 

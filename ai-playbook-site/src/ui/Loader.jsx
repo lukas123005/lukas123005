@@ -4,7 +4,7 @@ import { useProgress } from '@react-three/drei'
 import { CONFIG } from '../config'
 
 /** Futuristic loading screen with real asset progress and an entry gate (unlocks audio). */
-export function Loader({ visible, onEnter, minTime = 1600 }) {
+export function Loader({ visible, onEnter, ready: voiceReady = true, minTime = 1600 }) {
   const { progress, active } = useProgress()
   const [shown, setShown] = useState(0)
   const [elapsed, setElapsed] = useState(false)
@@ -27,7 +27,7 @@ export function Loader({ visible, onEnter, minTime = 1600 }) {
     return () => cancelAnimationFrame(raf)
   }, [progress, elapsed])
 
-  const ready = elapsed && !active && progress >= 100 && shown > 99
+  const ready = voiceReady && elapsed && !active && progress >= 100 && shown > 99
   const pct = Math.min(100, Math.round(shown))
   const R = 92
   const C = 2 * Math.PI * R
@@ -65,7 +65,7 @@ export function Loader({ visible, onEnter, minTime = 1600 }) {
               >
                 <motion.button className="enter" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={() => onEnter(true)}>
                   ENTER THE EXPERIENCE
-                  <em>with sound</em>
+                  <em>with narration &amp; sound</em>
                 </motion.button>
                 <button className="enter-muted" onClick={() => onEnter(false)}>
                   enter muted
