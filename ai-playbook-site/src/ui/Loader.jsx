@@ -3,9 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useProgress } from '@react-three/drei'
 import { CONFIG } from '../config'
 
-/** Futuristic loading screen with real asset progress and an entry gate (unlocks audio). */
-export function Loader({ visible, onEnter, ready: voiceReady = true, minTime = 1600 }) {
-  const { progress, active } = useProgress()
+/** Quiet entry screen: title, a hairline progress bar, and the entry choice (which unlocks audio). */
+export function Loader({ visible, onEnter, ready: voiceReady = true, minTime = 1400 }) {
+  const { progress, active, total } = useProgress()
   const [shown, setShown] = useState(0)
   const [elapsed, setElapsed] = useState(false)
 
@@ -17,58 +17,34 @@ export function Loader({ visible, onEnter, ready: voiceReady = true, minTime = 1
   useEffect(() => {
     let raf
     const tick = () => {
-      setShown((s) => {
-        const target = elapsed ? progress : Math.min(progress, 92)
-        return s + (target - s) * 0.08
-      })
+      setShown((s) => s + ((elapsed ? (total === 0 ? 100 : progress) : Math.min(total === 0 ? 100 : progress, 90)) - s) * 0.07)
       raf = requestAnimationFrame(tick)
     }
     tick()
     return () => cancelAnimationFrame(raf)
-  }, [progress, elapsed])
+  }, [progress, elapsed, total])
 
-  const ready = voiceReady && elapsed && !active && progress >= 100 && shown > 99
+  const ready = voiceReady && elapsed && !active && (progress >= 100 || total === 0) && shown > 99
   const pct = Math.min(100, Math.round(shown))
-  const R = 92
-  const C = 2 * Math.PI * R
 
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
-          className="loader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, filter: 'blur(20px)', scale: 1.08 }}
-          transition={{ duration: 1.1, ease: [0.7, 0, 0.2, 1] }}
-        >
-          <div className="loader-grid" aria-hidden="true" />
-          <div className="loader-core">
-            <svg viewBox="0 0 220 220" className="loader-ring" aria-hidden="true">
-              <circle cx="110" cy="110" r={R} className="track" />
-              <circle cx="110" cy="110" r={R} className="bar" strokeDasharray={C} strokeDashoffset={C * (1 - pct / 100)} />
-              <circle cx="110" cy="110" r="104" className="ticks" />
-            </svg>
-            <div className="loader-pct">
-              <span>{String(pct).padStart(3, '0')}</span>
-              <small>%</small>
-            </div>
-          </div>
-          <p className="loader-status">{ready ? 'SYSTEM READY' : 'INITIALISING NEURAL ENGINE'}</p>
+        <motion.div className="loader" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1] }}>
           <p className="loader-title">{CONFIG.book.title}</p>
+          <p className="loader-sub">{CONFIG.book.author} · {CONFIG.book.brand}</p>
+          <div className="loader-bar" aria-hidden="true">
+            <i style={{ transform: `scaleX(${pct / 100})` }} />
+          </div>
+          <p className="loader-pct">{String(pct).padStart(3, '0')}</p>
           <AnimatePresence>
             {ready && (
-              <motion.div
-                className="loader-actions"
-                initial={{ opacity: 0, y: 24, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <motion.button className="enter" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={() => onEnter(true)}>
-                  ENTER THE EXPERIENCE
-                  <em>with narration &amp; sound</em>
-                </motion.button>
+              <motion.div className="loader-actions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}>
+                <button className="enter" onClick={() => onEnter(true)}>
+                  BEGIN WITH SOUND
+                </button>
                 <button className="enter-muted" onClick={() => onEnter(false)}>
-                  enter muted
+                  WITHOUT SOUND
                 </button>
               </motion.div>
             )}

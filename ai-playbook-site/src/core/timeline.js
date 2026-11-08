@@ -1,28 +1,28 @@
 import * as THREE from 'three'
 
-/** Master duration of the film (seconds). Scroll and autoplay both drive `store.time`. */
-export const DURATION = 53
+/** Master duration of the animation in film seconds (narration stretches it at load). */
+export const DURATION = 57
 
 export const SCENES = [
-  { id: 'void', label: 'The Void', start: 0, end: 5 },
-  { id: 'awakening', label: 'AI Awakening', start: 5, end: 12 },
-  { id: 'revolution', label: 'Digital Revolution', start: 12, end: 19 },
-  { id: 'reveal', label: 'The Reveal', start: 19, end: 29 },
-  { id: 'knowledge', label: 'Knowledge', start: 29, end: 39 },
-  { id: 'impact', label: 'Final Impact', start: 39, end: 48 },
-  { id: 'purchase', label: 'Get the Playbook', start: 48, end: 53 },
+  { id: 'intro', label: 'Introduction', start: 0, end: 7 },
+  { id: 'idea', label: 'The Idea', start: 7, end: 19 },
+  { id: 'reveal', label: 'The Playbook', start: 19, end: 31 },
+  { id: 'content', label: 'Inside', start: 31, end: 43 },
+  { id: 'product', label: 'The Product', start: 43, end: 51 },
+  { id: 'cta', label: 'Your Copy', start: 51, end: 57 },
 ]
 
-/** World-space origins of each stage (scenes live far apart and are culled by time). */
+/** World-space origins: one photographic studio, one workspace set. */
 export const STAGE = {
-  void: new THREE.Vector3(0, 0, 0),
-  city: new THREE.Vector3(0, 0, -1000),
+  desk: new THREE.Vector3(0, 0, -1000),
   book: new THREE.Vector3(0, 0, -2000),
 }
 
-/** Bass hits — shared by the visuals (pulses, shake, bloom) and by the audio engine. */
-export const PULSES = [1.0, 1.8, 2.6, 3.4, 4.2, 5.45, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 22.6, 41.6]
-export const IMPACTS = [5.45, 12.0, 19.0, 22.6, 41.6]
+/** Editorial cuts — each is a short dip to black. */
+export const CUTS = [7.0, 12.8, 19.0, 24.3, 27.3, 31.0, 43.0, 51.0]
+
+/** The single restrained impact: the book emerging from darkness. */
+export const REVEAL_AT = 20.4
 
 /** Shared mutable state (read every frame — never triggers React renders). */
 export const store = {
@@ -53,8 +53,8 @@ export function win(t, a, b, fi = 0.5, fo = 0.5) {
   return Math.min(fi > 0 ? smooth(clamp01((t - a) / fi)) : 1, fo > 0 ? smooth(clamp01((b - t) / fo)) : 1)
 }
 
-/** Decaying pulse after each bass hit. */
-export function pulseAt(t, list = PULSES, decay = 5.5) {
+/** Decaying envelope after events. */
+export function pulseAt(t, list = [REVEAL_AT], decay = 5.5) {
   let v = 0
   for (const p of list) {
     if (t >= p && t - p < 1.5) v = Math.max(v, Math.exp(-(t - p) * decay))

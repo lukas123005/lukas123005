@@ -6,16 +6,12 @@ import { plan, toFilm, toMaster as M } from './narration'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
-const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=/<>'
-
 /**
- * One master timeline (0 → DURATION seconds) drives everything:
- *  - store.time (read by Three.js every frame)
- *  - all DOM typography / flashes / CTA
- * ScrollTrigger scrubs it from the scroll position; autoplay simply scrolls the page.
+ * One master timeline drives everything. It runs in master (narrated, wall-clock) seconds;
+ * visuals read film time through the narration map. ScrollTrigger scrubs it from the scroll
+ * position, and autoplay simply scrolls the page at real-time speed.
  */
 export function createDirector(root, { onPlayingChange } = {}) {
-  // timeline runs in master (narration) seconds; visuals read film time through the map
   const TOTAL = plan.total
   const proxy = { t: 0 }
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
@@ -29,27 +25,56 @@ export function createDirector(root, { onPlayingChange } = {}) {
     },
   }, 0)
 
-  root.querySelectorAll('[data-line]').forEach((el) => addLine(tl, el))
-  root.querySelectorAll('[data-flash]').forEach((el) => {
-    String(el.dataset.flash).split(',').map(Number).forEach((at) => {
-      tl.fromTo(el, { opacity: 0 }, { opacity: 0.85, duration: 0.06, immediateRender: false }, M(at) - 0.06)
-      tl.to(el, { opacity: 0, duration: 0.9, ease: 'power2.out' }, M(at))
-    })
+  // editorial lines: rise out of a mask, settle their tracking, then fade
+  root.querySelectorAll('[data-line]').forEach((el) => {
+    const tin = M(parseFloat(el.dataset.in))
+    const tout = M(parseFloat(el.dataset.out))
+    const inner = el.querySelector('.in')
+    const track = getComputedStyle(el).letterSpacing
+    tl.set(el, { autoAlpha: 1 }, tin - 0.01)
+    tl.fromTo(inner, { yPercent: 108 }, { yPercent: 0, duration: 1.5, ease: 'expo.out', immediateRender: false }, tin)
+    tl.fromTo(el, { letterSpacing: '0.2em' }, { letterSpacing: track && track !== 'normal' ? track : '0.06em', duration: 3, ease: 'power3.out', immediateRender: false }, tin)
+    tl.to(el, { autoAlpha: 0, duration: 0.9, ease: 'power2.inOut' }, Math.max(tin + 1.6, tout - 0.9))
   })
+
+  // contents index beside the open book
+  const index = root.querySelector('[data-index]')
+  if (index) {
+    const a = M(parseFloat(index.dataset.in))
+    const b = M(parseFloat(index.dataset.out))
+    const items = index.querySelectorAll('li')
+    tl.fromTo(index, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2, ease: 'power2.out', immediateRender: false }, a)
+    tl.fromTo(items, { opacity: 0, y: 10 }, { opacity: 0.32, y: 0, duration: 0.9, stagger: 0.09, ease: 'power3.out', immediateRender: false }, a + 0.2)
+    items.forEach((li) => {
+      const on = M(parseFloat(li.dataset.on))
+      tl.to(li, { opacity: 1, duration: 0.8, ease: 'power2.out' }, on)
+    })
+    tl.to(index, { autoAlpha: 0, duration: 0.6 }, b - 0.6)
+  }
+
+  // dips to black at every editorial cut (and a slow fade up from black at the start)
+  const cut = root.querySelector('[data-cuts]')
+  if (cut) {
+    tl.fromTo(cut, { opacity: 1 }, { opacity: 0, duration: 1.8, ease: 'power2.inOut' }, 0.1)
+    String(cut.dataset.cuts).split(',').map(Number).forEach((c) => {
+      const m = M(c)
+      tl.fromTo(cut, { opacity: 0 }, { opacity: 1, duration: 0.38, ease: 'power2.in', immediateRender: false }, m - 0.4)
+      tl.to(cut, { opacity: 0, duration: 0.7, ease: 'power2.out' }, m + 0.06)
+    })
+  }
+
   const cta = root.querySelector('[data-cta]')
   if (cta) {
     const parts = cta.querySelectorAll('[data-cta-part]')
-    tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, immediateRender: false }, M(48.4))
-    tl.fromTo(parts, { opacity: 0, y: 40, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.22, ease: 'expo.out', immediateRender: false }, M(48.6))
+    tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, immediateRender: false }, M(51.6))
+    tl.fromTo(parts, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 1.4, stagger: 0.28, ease: 'expo.out', immediateRender: false }, M(51.7))
   }
-  const hint = root.querySelector('[data-hint]')
-  if (hint) tl.to(hint, { autoAlpha: 0, duration: 0.6 }, 1.0)
 
   const st = ScrollTrigger.create({
     trigger: '#scroll-track',
     start: 'top top',
     end: 'bottom bottom',
-    scrub: 0.85,
+    scrub: 1.0,
     animation: tl,
   })
 
@@ -85,13 +110,12 @@ export function createDirector(root, { onPlayingChange } = {}) {
     ScrollTrigger.update()
     gsap.delayedCall(0.35, play)
   }
-  const seek = (t) => { // t in film seconds
+  const seek = (t) => {
     auto?.kill()
     setPlaying(false)
     const max = ScrollTrigger.maxScroll(window)
-    gsap.to(window, { scrollTo: { y: (M(t) / TOTAL) * max }, duration: 1.2, ease: 'power2.inOut' })
+    gsap.to(window, { scrollTo: { y: (M(t) / TOTAL) * max }, duration: 1.4, ease: 'power2.inOut' })
   }
-  // user interaction stops autoplay
   const stop = () => auto && auto.isActive() && pause()
   window.addEventListener('wheel', stop, { passive: true })
   window.addEventListener('touchstart', stop, { passive: true })
@@ -108,44 +132,4 @@ export function createDirector(root, { onPlayingChange } = {}) {
       tl.kill()
     },
   }
-}
-
-/** Morphing typography: chars fly in from depth with blur, tracking collapses; exit dissolves upward. */
-function addLine(tl, el) {
-  const tin = M(parseFloat(el.dataset.in))
-  const tout = M(parseFloat(el.dataset.out))
-  const fx = el.dataset.fx || 'depth'
-  const chars = el.querySelectorAll('.ch')
-  tl.set(el, { autoAlpha: 1 }, tin - 0.01)
-  tl.set(el, { autoAlpha: 0 }, tout + 0.01)
-  if (fx === 'scramble') {
-    const finals = [...chars].map((c) => c.textContent)
-    const o = { p: 0 }
-    tl.fromTo(chars, { opacity: 0 }, { opacity: 1, duration: 0.25, stagger: 0.012, immediateRender: false }, tin)
-    tl.fromTo(o, { p: 0 }, {
-      p: 1,
-      duration: 1.0,
-      immediateRender: false,
-      onUpdate: () => {
-        const n = finals.length
-        const tick = Math.floor(o.p * 24)
-        chars.forEach((c, i) => {
-          if (finals[i] === ' ') return
-          const settled = o.p >= 0.999 || o.p * 1.25 * (n + 6) - i > 6
-          c.textContent = settled ? finals[i] : GLYPHS[(i * 7 + tick * 13) % GLYPHS.length]
-        })
-      },
-    }, tin)
-    tl.fromTo(el, { letterSpacing: '0.5em' }, { letterSpacing: el.dataset.track || '0.02em', duration: 1.1, ease: 'expo.out', immediateRender: false }, tin)
-  } else {
-    tl.fromTo(
-      chars,
-      { opacity: 0, yPercent: 120, z: -400, rotateX: -95, filter: 'blur(16px)' },
-      { opacity: 1, yPercent: 0, z: 0, rotateX: 0, filter: 'blur(0px)', duration: 1.0, ease: 'expo.out', stagger: { each: 0.028, from: fx === 'center' ? 'center' : 'start' }, immediateRender: false },
-      tin
-    )
-    tl.fromTo(el, { letterSpacing: '0.35em' }, { letterSpacing: el.dataset.track || '0.0em', duration: 1.4, ease: 'expo.out', immediateRender: false }, tin)
-  }
-  const ex = Math.max(tin + 1.2, tout - 0.55)
-  tl.to(chars, { opacity: 0, yPercent: -60, scale: 1.25, filter: 'blur(12px)', duration: 0.5, ease: 'power2.in', stagger: { each: 0.012, from: 'center' } }, ex)
 }

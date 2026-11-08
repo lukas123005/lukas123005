@@ -70,6 +70,17 @@ export default function App() {
     document.documentElement.classList.toggle('locked', webgl && !entered && DEBUG_T == null && !SKIP_LOADER)
   }, [entered, webgl])
 
+  // audio follows the master clock on its own loop (independent of WebGL frame rate)
+  useEffect(() => {
+    let raf
+    const loop = () => {
+      sound.update(store.time, store.master)
+      raf = requestAnimationFrame(loop)
+    }
+    loop()
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
   // pointer → interactive particles, parallax, drag-to-rotate the book
   useEffect(() => {
     const move = (e) => {
@@ -125,14 +136,14 @@ export default function App() {
 
   return (
     <>
-      {webgl ? (
+      {webgl && params.has('nocanvas') ? null : webgl ? (
         <div className="stage" aria-hidden="true">
           {fontsReady && (
             <Canvas
               dpr={dpr}
               shadows={QUALITY[quality].post === 'full'}
               gl={{ antialias: false, powerPreference: 'high-performance', toneMapping: THREE.NoToneMapping, preserveDrawingBuffer: params.has('shot') }}
-              camera={{ fov: 55, near: 0.1, far: 1200, position: [0, 0, 30] }}
+              camera={{ fov: 30, near: 0.05, far: 90, position: [0, 0, 30] }}
               onCreated={(st) => { if (params.has('debug')) window.__three = st }}
             >
               <PerformanceMonitor

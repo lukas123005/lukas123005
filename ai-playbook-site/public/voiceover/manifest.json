@@ -1,142 +1,159 @@
 {
-  "about": "Narration for the experience. Replace any .mp3 with your own recording (same file name) — the film retimes itself to the real audio length at load. Film anchors are in film-seconds of the 53 s animation.",
-  "voice": "Kokoro TTS (local) — blend am_michael 0.6 / am_onyx 0.4, speed 0.9",
+  "about": "Narration for the experience. Replace any .mp3 with your own recording (same file name) — the film retimes itself to the real audio length at load. Window anchors are in film seconds of the 57 s animation.",
+  "voice": "Kokoro TTS (local) — am_michael, natural speed, light processing",
   "windows": [
     {
       "from": 0.0,
-      "to": 4.5,
-      "lead": 1.0,
-      "tail": 0.8,
+      "to": 6.8,
+      "lead": 1.9,
+      "tail": 1.6,
       "segments": [
-        "01-future"
+        "01-changing"
       ]
     },
     {
-      "from": 6.2,
-      "to": 11.0,
-      "lead": 0.7,
-      "tail": 0.6,
-      "segments": [
-        "02-opportunity"
-      ]
-    },
-    {
-      "from": 22.9,
-      "to": 29.0,
-      "lead": 0.8,
-      "tail": 0.9,
-      "segments": [
-        "03-introducing"
-      ]
-    },
-    {
-      "from": 31.0,
-      "to": 38.9,
-      "lead": 0.5,
-      "tail": 0.9,
-      "gap": 1.1,
-      "segments": [
-        "04-inside",
-        "05-value"
-      ]
-    },
-    {
-      "from": 42.4,
-      "to": 48.0,
+      "from": 7.3,
+      "to": 12.6,
       "lead": 0.9,
-      "tail": 1.2,
+      "tail": 0.7,
       "segments": [
-        "06-final"
+        "02-possibilities"
       ]
     },
     {
-      "from": 48.0,
-      "to": 53.0,
-      "lead": 1.4,
-      "tail": 3.2,
+      "from": 13.2,
+      "to": 18.7,
+      "lead": 0.6,
+      "tail": 1.0,
+      "segments": [
+        "03-difference"
+      ]
+    },
+    {
+      "from": 21.6,
+      "to": 30.6,
+      "lead": 0.9,
+      "tail": 1.4,
+      "segments": [
+        "04-together"
+      ]
+    },
+    {
+      "from": 31.4,
+      "to": 42.6,
+      "lead": 1.6,
+      "tail": 1.0,
+      "gap": 1.3,
+      "segments": [
+        "05-explore",
+        "06-begin"
+      ]
+    },
+    {
+      "from": 43.6,
+      "to": 50.6,
+      "lead": 1.6,
+      "tail": 1.6,
       "segments": [
         "07-signature"
+      ]
+    },
+    {
+      "from": 51.4,
+      "to": 57.0,
+      "lead": 1.0,
+      "tail": 3.4,
+      "segments": [
+        "08-future"
       ]
     }
   ],
   "segments": [
     {
-      "id": "01-future",
-      "file": "voiceover/01-future.mp3",
+      "id": "01-changing",
+      "file": "voiceover/01-changing.mp3",
       "parts": [
-        "Everything is changing.",
-        {
-          "pause": 0.55
-        },
-        "The way we work, create, communicate and build businesses."
+        "The way we work is changing."
       ],
-      "duration": 5.62,
-      "text": "Everything is changing. The way we work, create, communicate and build businesses."
+      "duration": 1.593,
+      "text": "The way we work is changing."
     },
     {
-      "id": "02-opportunity",
-      "file": "voiceover/02-opportunity.mp3",
+      "id": "02-possibilities",
+      "file": "voiceover/02-possibilities.mp3",
       "parts": [
-        "Artificial intelligence is opening new possibilities.",
+        "Artificial intelligence is creating new possibilities,",
         {
-          "pause": 0.6
+          "pause": 0.32
         },
-        "But knowing how to use it,",
-        {
-          "pause": 0.75
-        },
-        "is what makes the difference."
+        "for people who are ready to learn, create, and think differently."
       ],
-      "duration": 8.344,
-      "text": "Artificial intelligence is opening new possibilities. But knowing how to use it, is what makes the difference."
+      "duration": 7.516,
+      "text": "Artificial intelligence is creating new possibilities, for people who are ready to learn, create, and think differently."
     },
     {
-      "id": "03-introducing",
-      "file": "voiceover/03-introducing.mp3",
+      "id": "03-difference",
+      "file": "voiceover/03-difference.mp3",
       "parts": [
-        "Introducing The AI Money Playbook.",
+        "But knowing which tools to use,",
         {
-          "pause": 0.6
+          "pause": 0.28
         },
-        "A practical guide designed to take you from complete beginner to confident AI entrepreneur."
+        "and how to use them effectively,",
+        {
+          "pause": 0.42
+        },
+        "makes all the difference."
       ],
-      "duration": 9.254,
-      "text": "Introducing The AI Money Playbook. A practical guide designed to take you from complete beginner to confident AI entrepreneur."
+      "duration": 5.681,
+      "text": "But knowing which tools to use, and how to use them effectively, makes all the difference."
     },
     {
-      "id": "04-inside",
-      "file": "voiceover/04-inside.mp3",
+      "id": "04-together",
+      "file": "voiceover/04-together.mp3",
       "parts": [
-        "Discover powerful AI tools, professional prompting techniques, digital product creation, online business models, and the strategies to build your own digital brand."
-      ],
-      "duration": 11.133,
-      "text": "Discover powerful AI tools, professional prompting techniques, digital product creation, online business models, and the strategies to build your own digital brand."
-    },
-    {
-      "id": "05-value",
-      "file": "voiceover/05-value.mp3",
-      "parts": [
-        "With practical examples, ready-to-use prompts, and a structured thirty-day action plan,",
+        "The AI Money Playbook brings everything together,",
         {
           "pause": 0.3
         },
-        "you'll have a clear starting point to turn knowledge into action."
+        "in one practical guide."
       ],
-      "duration": 9.067,
-      "text": "With practical examples, ready-to-use prompts, and a structured thirty-day action plan, you'll have a clear starting point to turn knowledge into action."
+      "duration": 4.887,
+      "text": "The AI Money Playbook brings everything together, in one practical guide."
     },
     {
-      "id": "06-final",
-      "file": "voiceover/06-final.mp3",
+      "id": "05-explore",
+      "file": "voiceover/05-explore.mp3",
       "parts": [
-        "The future isn't something you wait for.",
+        "Explore essential AI tools,",
         {
-          "pause": 0.7
+          "pause": 0.22
         },
-        "It's something you build."
+        "master better prompts,",
+        {
+          "pause": 0.25
+        },
+        "discover digital business models,",
+        {
+          "pause": 0.3
+        },
+        "and learn how to create and sell digital products."
       ],
-      "duration": 4.404,
-      "text": "The future isn't something you wait for. It's something you build."
+      "duration": 9.249,
+      "text": "Explore essential AI tools, master better prompts, discover digital business models, and learn how to create and sell digital products."
+    },
+    {
+      "id": "06-begin",
+      "file": "voiceover/06-begin.mp3",
+      "parts": [
+        "With practical examples and a structured thirty-day action plan,",
+        {
+          "pause": 0.38
+        },
+        "you have a place to begin."
+      ],
+      "duration": 5.931,
+      "text": "With practical examples and a structured thirty-day action plan, you have a place to begin."
     },
     {
       "id": "07-signature",
@@ -144,16 +161,21 @@
       "parts": [
         "The AI Money Playbook.",
         {
-          "pause": 0.55
+          "pause": 0.62
         },
-        "By Luka Shehu.",
-        {
-          "pause": 0.8
-        },
-        "Your journey starts here."
+        "By Luka Shehu."
       ],
-      "duration": 6.093,
-      "text": "The AI Money Playbook. By Luka Shehu. Your journey starts here."
+      "duration": 3.278,
+      "text": "The AI Money Playbook. By Luka Shehu."
+    },
+    {
+      "id": "08-future",
+      "file": "voiceover/08-future.mp3",
+      "parts": [
+        "A smarter way to start building your future."
+      ],
+      "duration": 2.483,
+      "text": "A smarter way to start building your future."
     }
   ]
 }

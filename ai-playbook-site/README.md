@@ -25,37 +25,39 @@ VITE_CHECKOUT_URL=https://whop.com/checkout/your-product-id
 
 Price, title, subtitle, author, brand and the 9 chapter holograms are also configured in `src/config.js`.
 
-## The film (53 s of animation, ~85 s with narration; scroll-scrubbed or autoplay)
+## The film — quiet-luxury edition (57 s of animation, ~72 s narrated)
 
-| Time | Scene | What happens |
+| Scene | Picture | On screen |
 |---|---|---|
-| 0–5 s | The Void | A blue spark → 70k-particle energy sphere (GPU shader, curl noise, bass pulses, energy waves, depth-of-field, mouse-reactive) |
-| 5–12 s | AI Awakening | Camera dives into the sphere and flies through an endless AI universe: neural networks, data structures, circuits, holographic UIs |
-| 12–19 s | Digital Revolution | Explosive cut into a procedural glowing city (instanced shader skyscrapers), orbiting holograms, light trails |
-| 19–29 s | The Reveal | Blue energy explosion; particles gather into the exact surface of the book (density sampled from the real cover) and the hardcover materialises with a dissolve shader; energy rings, gold orbit particles, lightning, light rays, camera shake |
-| 29–39 s | Knowledge | The book opens; real interior pages turn with paper bend; 9 chapter holograms emerge and form an ecosystem |
-| 39–48 s | Final Impact | Holograms are pulled into the book, it closes, blue-gold shockwave, golden title light |
-| 48–53 s | Purchase | 3D product mockup + "GET YOUR COPY TODAY · ONLY €9" + metallic CTA |
+| 01 Introduction | Dark studio; a soft light grazes a honed black-stone plinth | THE WAY WE CREATE IS CHANGING. |
+| 02 The Idea | Workspace: aluminium laptop (live writing tool, then a product page built around the real cover), notebook, pen, ceramic cup | INTELLIGENCE IS A TOOL. / KNOWLEDGE IS YOUR ADVANTAGE. |
+| 03 The Playbook | The book emerges from darkness; slow orbit from fore-edge to cover, macro on the embossed title, round to the spine | — |
+| 04 Inside | The book opens on the stone; four leaves turn through editorial spreads for the seven themes (real chapter titles and page numbers) | Contents index |
+| 05 The Product | Closed book lying on stone, a narrow light travels across the cover, gentle push-in | Title · Luka Shehu · Creator Lab · BUILD YOUR KNOWLEDGE. CREATE YOUR OPPORTUNITY. |
+| 06 Your Copy | Product shot with a soft stone reflection | YOUR NEXT CHAPTER STARTS HERE. · €9 · GET YOUR COPY |
 
-The book is a real 3D object: boards with thickness, rounded spine, page block, hinged cover, turning leaves. The front cover uses the **original cover image** (`public/textures/cover.jpg`, exported from the PDF); metalness/roughness and emboss maps are derived from it at runtime so the gold rules and title read as metallic. Interior pages (`public/textures/page-*.jpg`) are real pages from the PDF.
+Look: palette #080808 / #171717 / #292929 / #BFC0C2 / #F3F0E9; Caladea serif (the cover's typeface) for statements, Inter for
+technical labels. Physically based materials (cloth-bump boards, metallic/embossed cover maps derived from the real cover,
+paper fore-edge), RectAreaLight softboxes + one soft shadow key, reflective honed stone, depth of field, MSAA,
+subtle bloom and vignette. One constant light rig is moved between sets, so shaders compile once.
 
 ## Interaction
 
 - Scroll (or swipe) scrubs the film forwards/backwards; the ▶ button / "Enter" autoplays it; any scroll takes control back.
 - Chapter markers in the progress bar jump to scenes; **Replay** restarts.
-- Mouse moves particles and adds parallax; drag horizontally to spin the book.
-- Sound is fully procedural (Web Audio): deep bass, ambience, activation blips, mechanical clicks, page turns, impacts. Mute/unmute top right.
+- Subtle mouse parallax; drag horizontally to inspect the upright book.
+- Sound is procedural (Web Audio): ambient felt piano, soft pad, low air, paper turns, hardcover movement, soft keyboard, one restrained reveal impact. Sound on/off top right.
 
 ## Narration & sound design
 
-A male narrator speaks throughout (7 clips in `public/voiceover/`, script in `public/voiceover/manifest.json`).
+A male narrator speaks throughout (8 clips in `public/voiceover/`, script in `public/voiceover/manifest.json`).
 
 - **The film retimes itself to the voice.** At load, every clip is decoded and its real length measured; each narrated
   window of the animation is stretched to fit (with lead-in, natural pauses and a tail), while transitions and impacts
-  between windows stay real-time. The 53 s animation becomes a ~85 s narrated film. Replace any MP3 with your own
+  between windows stay real-time. The 57 s animation becomes a ~72 s narrated film. Replace any MP3 with your own
   recording (same file name) — no code changes needed.
-- **Mix:** separate voice / music / effects buses. Music sits at ~40 % in pauses and is ducked to ~15 % while the
-  narrator speaks (look-ahead, ~0.65 s fades). Loud effects (impacts, risers, whooshes, mechanics) are skipped if they
+- **Mix:** separate voice / music / effects buses. Music sits at ~38 % in pauses and is ducked to ~13 % while the
+  narrator speaks (look-ahead, ~0.7 s fades). Loud effects (impacts, risers, whooshes, mechanics) are skipped if they
   would land on spoken words; particle and activation sounds stay underneath at low level. Soft sub-led bass impact on
   the book reveal, gentle fade-out at the end, master limiter.
 - **Muted visitors** get the narration as subtitles.

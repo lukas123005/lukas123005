@@ -1,143 +1,135 @@
 import { useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { bookLive } from '../core/bookPose'
-import { easeIn, hash, IMPACTS, lerp, seg, smooth, STAGE, store } from '../core/timeline'
+import { lerp, seg, smooth, STAGE, store } from '../core/timeline'
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z)
 
-/** Keyframed cinematic camera: returns { pos, target, roll, hfov } for time t. */
-function makeShots() {
-  const city = STAGE.city
-  const cityCurve = new THREE.CatmullRomCurve3(
-    [V(-70, 90, 120), V(-28, 48, 48), V(0, 24, 4), V(0, 13, -42), V(0, 17, -105), V(0, 32, -170)].map((v) => v.add(city)),
-    false,
-    'centripetal'
-  )
-  const book = STAGE.book
-  return {
-    void(t) {
-      const p = smooth(seg(t, 0, 4.6))
-      const r = lerp(32, 10.5, p)
-      const a = lerp(-0.55, 0.22, p)
-      const pos = V(Math.sin(a) * r, lerp(4.5, 0.5, p), Math.cos(a) * r)
-      const target = V(0, 0, 0)
-      const d = easeIn(seg(t, 4.55, 5.6))
-      pos.lerp(V(0, 0, -5), d)
-      target.lerp(V(0, 0, -40), d)
-      return { pos, target, roll: -0.08 * d, hfov: 58 }
-    },
-    universe(t) {
-      const u = seg(t, 5.6, 12.0)
-      const k = 0.55 * u + 0.45 * smooth(u)
-      const z = lerp(-5, -238, k)
-      const pos = V(3.2 * Math.sin(u * 5.2), 1.4 * Math.sin(u * 3.6), z)
-      const target = V(3.2 * Math.sin(u * 5.2 + 0.7) * 1.4, 0.6 + 1.2 * Math.sin(u * 3.6 + 0.5), z - 24)
-      return { pos, target, roll: 0.14 * Math.sin(u * 4.2), hfov: 64 }
-    },
-    city(t) {
-      const u = seg(t, 12.0, 19.0)
-      const k = 0.35 * u + 0.65 * smooth(u)
-      const pos = cityCurve.getPointAt(Math.min(0.999, k))
-      const target = cityCurve.getPointAt(Math.min(1, k + 0.08)).add(V(0, -6, 0))
-      const tan = cityCurve.getTangentAt(Math.min(0.999, k))
-      return { pos, target, roll: -tan.x * 0.25, hfov: 66 }
-    },
-    reveal(t) {
-      const u = smooth(seg(t, 19.0, 29.0))
-      const a = lerp(-0.75, 0.42, u)
-      const r = lerp(9.6, 7.0, u)
-      const pos = V(book.x + Math.sin(a) * r, book.y + lerp(1.8, 0.55, u), book.z + Math.cos(a) * r)
-      return { pos, target: book.clone().add(V(0, 0.05, 0)), roll: 0.03 * Math.sin(t * 0.4), hfov: 40 }
-    },
-    knowledge(t) {
-      const u = smooth(seg(t, 29.0, 39.0))
-      const pull = smooth(seg(t, 30.5, 34.0))
-      const r = lerp(7.4, 11.2, pull)
-      const pos = V(book.x + 0.9 * Math.sin(t * 0.25), book.y + 0.9 + 0.6 * pull, book.z + r)
-      return { pos, target: book.clone().add(V(0, -0.1 + 0.05 * u, 0)), roll: 0, hfov: 44 }
-    },
-    impact(t) {
-      const z = smooth(seg(t, 41.5, 48.0))
-      const pos = V(book.x + 0.25 * Math.sin(t * 0.3), book.y + 0.35, book.z + lerp(11.0, 9.2, z))
-      return { pos, target: book.clone().add(V(0, 0.1, 0)), roll: 0, hfov: 56 }
-    },
-    purchase(t) {
-      const pos = V(book.x + 0.2 * Math.sin(t * 0.3), book.y + 0.35, book.z + 7.6)
-      return { pos, target: book.clone().add(V(0, 0.15, 0)), roll: 0, hfov: 42 }
-    },
-  }
-}
-
-const ORDER = [
-  ['void', 0, 5.6],
-  ['universe', 5.6, 12.0],
-  ['city', 12.0, 19.0],
-  ['reveal', 19.0, 29.0],
-  ['knowledge', 29.0, 39.0],
-  ['impact', 39.0, 48.0],
-  ['purchase', 48.0, 99],
+/**
+ * Shot list. Each shot is a slow, motivated move between two framings (dolly / orbit / push-in),
+ * on one lens, with its own focus point and depth of field. Shots are joined by editorial cuts.
+ *   fov     vertical field of view on a 16:9 screen
+ *   keep    share of the 16:9 frame width that must stay visible on a portrait phone
+ *   dof     bokeh scale (0 = deep focus)
+ */
+const SHOTS = [
+  { // 01 · grazing light across the stone plinth
+    a: 0, b: 7.0, stage: 'book', fov: 30, keep: 0.6, dof: 3.2, range: 1.6,
+    from: { pos: V(-3.6, 0.38, 5.2), target: V(0.9, 0.02, -0.4) },
+    to: { pos: V(-1.9, 0.52, 4.5), target: V(0.6, 0.06, -0.7) },
+  },
+  { // 02a · symmetrical, frontal dolly-in to the laptop
+    a: 7.0, b: 12.8, stage: 'desk', fov: 30, keep: 0.62, dof: 2.0,
+    from: { pos: V(0, 1.5, 5.0), target: V(0, 0.82, -0.62) },
+    to: { pos: V(0, 1.32, 4.05), target: V(0, 0.82, -0.62) },
+  },
+  { // 02b · macro across the desk, focus on the screen
+    a: 12.8, b: 19.0, stage: 'desk', fov: 26, keep: 0.6, dof: 4.0, range: 1.0,
+    from: { pos: V(3.9, 0.56, 2.7), target: V(0.1, 0.8, -0.68) },
+    to: { pos: V(3.2, 0.5, 2.05), target: V(0.05, 0.8, -0.68) },
+  },
+  { // 03a · the book emerges; slow orbit from the fore-edge toward the cover
+    a: 19.0, b: 24.3, stage: 'book', fov: 28, keep: 0.5, dof: 2.4, orbit: { r: [6.6, 5.7], ang: [0.82, 0.24], y: [1.95, 1.6], target: V(0, 1.38, 0) },
+  },
+  { // 03b · macro on the title typography
+    a: 24.3, b: 27.3, stage: 'book', fov: 22, keep: 0.9, dof: 5.5, range: 0.45,
+    from: { pos: V(0.62, 1.12, 1.62), target: V(0.0, 0.84, 0.13) },
+    to: { pos: V(0.3, 1.0, 1.42), target: V(0.0, 0.84, 0.13) },
+  },
+  { // 03c · around to the spine and the hardcover boards
+    a: 27.3, b: 31.0, stage: 'book', fov: 28, keep: 0.5, dof: 2.4, orbit: { r: [5.0, 4.6], ang: [-0.62, -1.08], y: [1.72, 1.52], target: V(-0.15, 1.38, 0) },
+  },
+  { // 04 · above the open book, a slow descent while the pages turn
+    a: 31.0, b: 43.0, stage: 'book', fov: 32, keep: 0.92, dof: 1.6,
+    from: { pos: V(0.0, 5.7, 3.35), target: V(0, 0.1, 0.12) },
+    to: { pos: V(0.0, 4.75, 2.6), target: V(0, 0.1, 0.12) },
+  },
+  { // 05 · three-quarter view on stone, gentle push-in
+    a: 43.0, b: 51.0, stage: 'book', fov: 28, keep: 0.66, dof: 2.6,
+    from: { pos: V(3.1, 3.2, 3.9), target: V(0, 0.12, 0) },
+    to: { pos: V(1.9, 2.25, 2.55), target: V(0, 0.12, 0) },
+  },
+  { // 06 · call to action — locked-off product shot
+    a: 51.0, b: 99, stage: 'book', fov: 30, keep: 0.5, dof: 1.2,
+    from: { pos: V(0, 1.62, 7.8), target: V(0, 1.4, 0) },
+    to: { pos: V(0, 1.55, 7.35), target: V(0, 1.4, 0) },
+  },
 ]
-// smooth blends between consecutive shots (seconds); hard cuts happen behind flashes
-const BLEND = { knowledge: 1.3, impact: 1.6, purchase: 1.6 }
+
+export const focus = { point: new THREE.Vector3(), bokeh: 2, range: 1 }
 
 export function CameraRig() {
   const { camera, size } = useThree()
-  const shots = useMemo(makeShots, [])
   const look = useMemo(() => new THREE.Vector3(), [])
-  const up = useMemo(() => new THREE.Vector3(), [])
 
   useFrame((state, dt) => {
     const t = store.time
     store.aspect = size.width / size.height
-    // smoothed mouse for parallax
-    store.mouseSmooth.lerp(store.mouse, Math.min(1, dt * 3))
-
-    let i = ORDER.findIndex(([, a, b]) => t >= a && t < b)
-    if (i < 0) i = ORDER.length - 1
-    const [name, start] = ORDER[i]
-    let s = shots[name](t)
-    const bl = BLEND[name]
-    if (bl && i > 0 && t < start + bl) {
-      const prev = shots[ORDER[i - 1][0]](t)
-      const w = smooth(seg(t, start, start + bl))
-      s = {
-        pos: prev.pos.lerp(s.pos, w),
-        target: prev.target.lerp(s.target, w),
-        roll: lerp(prev.roll, s.roll, w),
-        hfov: lerp(prev.hfov, s.hfov, w),
+    store.mouseSmooth.lerp(store.mouse, Math.min(1, dt * 1.6))
+    const portrait = store.aspect < 0.9
+    const shot = SHOTS.find((s) => t >= s.a && t < s.b) || SHOTS[SHOTS.length - 1]
+    const O = STAGE[shot.stage]
+    const u = smooth(seg(t, shot.a, Math.min(shot.b, shot.a + 12)))
+    let pos
+    let target
+    if (shot.orbit) {
+      const o = shot.orbit
+      const ang = lerp(o.ang[0], o.ang[1], u)
+      const r = lerp(o.r[0], o.r[1], u)
+      target = o.target.clone()
+      pos = V(Math.sin(ang) * r, lerp(o.y[0], o.y[1], u), Math.cos(ang) * r)
+    } else {
+      pos = shot.from.pos.clone().lerp(shot.to.pos, u)
+      target = shot.from.target.clone().lerp(shot.to.target, u)
+    }
+    // landscape compositions leave room for the typography
+    if (!portrait && t >= 31 && t < 43) {
+      target.x -= 0.72
+      pos.x -= 0.72
+      pos.sub(target).multiplyScalar(1.3).add(target)
+    }
+    if (t >= 43 && t < 51) {
+      if (portrait) {
+        target.y -= 0.35
+      } else {
+        target.x -= 0.75
+        target.z += 0.35
       }
     }
-
-    // mouse parallax (stronger in open space, gentle on the product)
-    const par = name === 'void' || name === 'universe' || name === 'city' ? 1.2 : 0.35
-    s.pos.x += store.mouseSmooth.x * par
-    s.pos.y += store.mouseSmooth.y * par * 0.6
-
-    // physical camera shake after impacts
-    let shake = 0
-    for (const p of IMPACTS) if (t >= p && t - p < 1.2) shake = Math.max(shake, Math.exp(-(t - p) * 4.5) * (p === 19.0 || p === 41.6 ? 0.22 : 0.12))
-    if (shake > 0.001) {
-      const n = Math.floor(t * 60)
-      s.pos.x += (hash(n) - 0.5) * shake
-      s.pos.y += (hash(n + 7) - 0.5) * shake
-      s.roll += (hash(n + 3) - 0.5) * shake * 0.15
+    // the final shot frames the book to one side on wide screens, above the text on phones
+    if (t >= 51) {
+      if (portrait) {
+        target.y = 0.55
+        pos.y = 1.25
+      } else {
+        target.x = 0.05
+      }
     }
-
-    camera.position.copy(s.pos)
-    look.copy(s.target)
-    camera.up.set(Math.sin(s.roll), Math.cos(s.roll), 0)
+    if (portrait) {
+      // pull back until the chosen share of the landscape composition fits the narrow frame
+      const vf = THREE.MathUtils.degToRad(shot.fov / 2)
+      const vfp = THREE.MathUtils.degToRad((shot.fov * 1.12) / 2)
+      const ratio = (Math.tan(vf) * (16 / 9)) / (Math.tan(vfp) * store.aspect)
+      pos.sub(target).multiplyScalar(Math.max(1, ratio * shot.keep)).add(target)
+      if (t < 7) pos.y += 1.2
+    }
+    // barely-there parallax: a handheld-free, tripod-steady feel
+    pos.x += store.mouseSmooth.x * 0.06
+    pos.y += store.mouseSmooth.y * 0.04
+    pos.add(O)
+    target.add(O)
+    camera.position.copy(pos)
+    look.copy(target)
+    camera.up.set(0, 1, 0)
     camera.lookAt(look)
-    // keep a minimum horizontal field of view on portrait phones
-    const aspect = store.aspect
-    const hf = THREE.MathUtils.degToRad(s.hfov)
-    const vf = 2 * Math.atan(Math.tan(hf / 2) / aspect)
-    const productShot = t >= 19
-    const fov = THREE.MathUtils.clamp(THREE.MathUtils.radToDeg(Math.max(vf, THREE.MathUtils.degToRad(s.hfov * 0.62))), 30, productShot && aspect < 0.9 ? 64 : 92)
+    const fov = portrait ? shot.fov * 1.12 : shot.fov
     if (Math.abs(camera.fov - fov) > 0.01) {
       camera.fov = fov
       camera.updateProjectionMatrix()
     }
+    focus.point.copy(target)
+    focus.bokeh = shot.dof
+    focus.range = shot.range || 2.2
   })
   return null
 }

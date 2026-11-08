@@ -27,8 +27,8 @@ def main(model_dir):
     from kokoro_onnx import Kokoro
 
     k = Kokoro(os.path.join(model_dir, "kokoro-v1.0.onnx"), os.path.join(model_dir, "voices-v1.0.bin"))
-    # warm, deep, calm: blend of two male voices
-    style = 0.6 * k.get_voice_style("am_michael") + 0.4 * k.get_voice_style("am_onyx")
+    # natural, conversational male voice — no artificial deepening
+    style = k.get_voice_style("am_michael")
     man = json.load(open(MAN))
     for seg in man["segments"]:
         chunks = []
@@ -36,17 +36,15 @@ def main(model_dir):
             if isinstance(part, dict):
                 chunks.append(np.zeros(int(part["pause"] * SR)))
                 continue
-            a, sr = k.create(part, voice=style, speed=0.9, lang="en-us")
+            a, sr = k.create(part, voice=style, speed=0.96, lang="en-us")
             a = signal.resample_poly(a, SR, sr)
             idx = np.where(np.abs(a) > 0.008)[0]
             a = a[max(0, idx[0] - 300): idx[-1] + 1800]
             chunks.append(a)
         audio = np.concatenate(chunks)
-        # gentle voice chain: rumble filter + soft low-mid warmth + 10 ms fades
+        # gentle voice chain: rumble filter + 10 ms fades (no heavy processing)
         b, a_ = signal.butter(2, 75 / (SR / 2), "high")
         audio = signal.lfilter(b, a_, audio)
-        b, a_ = signal.butter(2, 260 / (SR / 2), "low")
-        audio = audio + 0.15 * signal.lfilter(b, a_, audio)
         f = int(0.01 * SR)
         audio[:f] *= np.linspace(0, 1, f)
         audio[-f:] *= np.linspace(1, 0, f)
@@ -55,7 +53,7 @@ def main(model_dir):
             sf.write(wav, audio.astype(np.float32), SR)
             out = os.path.join(PUB, seg["file"])
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav,
-                            "-af", "acompressor=threshold=-20dB:ratio=2.5:attack=8:release=120,loudnorm=I=-16:TP=-1.5:LRA=7",
+                            "-af", "acompressor=threshold=-22dB:ratio=1.8:attack=12:release=160,loudnorm=I=-16:TP=-1.5:LRA=9",
                             "-ar", str(SR), "-ac", "1", "-c:a", "libmp3lame", "-b:a", "160k", out], check=True)
         seg["duration"] = round(len(audio) / SR, 3)
         seg["text"] = " ".join(p for p in seg["parts"] if isinstance(p, str))

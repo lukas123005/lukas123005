@@ -7,63 +7,44 @@ export const BH = 2.0 * (1169 / 827)
 export const BT = 0.26
 export const BB = 0.035 // board thickness
 
-export const LEAF_TIMES = [31.0, 32.6, 34.2, 35.8]
-export const LEAF_DUR = 1.15
+// four leaves turn during "Inside"
+export const LEAF_TIMES = [34.4, 36.6, 38.8, 41.0]
+export const LEAF_DUR = 1.6
+export const OPEN_AT = [31.7, 33.6] // cover opening window
 
-function mixPose(a, b, w) {
-  const o = {}
-  for (const k of Object.keys(a)) o[k] = lerp(a[k], b[k], w)
-  return o
-}
+const FLAT = -Math.PI / 2
 
-/** Deterministic pose of the hero book at time t (world space, before mouse offsets). */
+/**
+ * Deterministic pose of the book (relative to the studio) at film time t.
+ * Shots are separated by editorial cuts, so each one owns its pose.
+ */
 export function bookPose(t, portrait = false) {
-  // A — reveal: slow 3D rotation in space
-  const A = {
-    x: 0,
-    y: 0.12 * Math.sin(t * 1.1),
-    z: 0,
-    rx: 0.1 * Math.sin(t * 0.6) - 0.04,
-    ry: -0.95 + (t - 22) * 0.17 + 0.05 * Math.sin(t * 0.9),
-    rz: 0.05 * Math.sin(t * 0.45),
-    s: portrait ? 0.92 : 1,
+  // 03 · reveal — standing on the stone plinth, turning a few degrees
+  if (t < 31.0) {
+    const u = smooth(seg(t, 19, 31))
+    return { x: 0, y: BH / 2, z: 0, rx: 0, ry: lerp(0.22, -0.2, u), rz: 0, s: 1, open: 0, visible: t >= 19 }
   }
-  // B — reading pose: open, tilted back toward the viewer
-  const open = smooth(seg(t, 29.6, 30.9)) * (1 - smooth(seg(t, 40.55, 41.35)))
-  const Bp = {
-    x: (BW / 2) * open * (portrait ? 0.82 : 1),
-    y: portrait ? -0.5 : -0.25,
+  // 04 · inside — lying open on the stone, spine centred
+  if (t < 43.0) {
+    const open = smooth(seg(t, OPEN_AT[0], OPEN_AT[1]))
+    return { x: (BW / 2) * open, y: BT / 2 + 0.002, z: 0.1, rx: FLAT, ry: 0, rz: 0, s: 1, open, visible: true }
+  }
+  // 05 · product — closed, lying at an angle on the stone
+  if (t < 51.0) {
+    return { x: 0, y: BT / 2 + 0.002, z: 0, rx: FLAT, ry: 0.32 + 0.03 * smooth(seg(t, 43, 51)), rz: 0, s: 1, open: 0, visible: true }
+  }
+  // 06 · call to action — upright product mockup
+  return {
+    x: portrait ? 0 : -1.3,
+    y: BH / 2,
     z: 0,
-    rx: -0.32,
-    ry: 0.04 * Math.sin(t * 0.5),
+    rx: 0,
+    ry: portrait ? -0.24 : 0.36,
     rz: 0,
-    s: portrait ? 0.82 : 1,
+    s: 1,
+    open: 0,
+    visible: true,
   }
-  // C — the final floating hero shot
-  const C = {
-    x: 0,
-    y: (portrait ? 1.05 : 0.78) + 0.06 * Math.sin(t * 1.2),
-    z: 0,
-    rx: 0.04,
-    ry: lerp(-0.42, -0.1, smooth(seg(t, 41.3, 48))),
-    rz: 0.015 * Math.sin(t * 0.8),
-    s: portrait ? 1.05 : 1,
-  }
-  // D — purchase mockup
-  const D = {
-    x: portrait ? 0 : -1.95,
-    y: (portrait ? 1.55 : 0.05) + 0.05 * Math.sin(t * 1.2),
-    z: 0,
-    rx: 0.02,
-    ry: portrait ? -0.28 : 0.42,
-    rz: 0,
-    s: portrait ? 0.82 : 0.92,
-  }
-  let p = A
-  p = mixPose(p, Bp, smooth(seg(t, 29.0, 30.2)))
-  p = mixPose(p, C, smooth(seg(t, 40.4, 41.5)))
-  p = mixPose(p, D, smooth(seg(t, 48.0, 49.6)))
-  return { ...p, open, dissolve: seg(t, 21.9, 23.7) * 1.25 }
 }
 
 const _q = new THREE.Quaternion()
@@ -79,7 +60,7 @@ export function poseMatrix(p, out = new THREE.Matrix4(), extraYaw = 0, extraPitc
   return out.compose(_v, _q, _s)
 }
 
-/** Shared live transform of the book (written by <Book>, read by FX). */
+/** Shared live transform of the book (written by <Book>, read by camera / lights). */
 export const bookLive = {
   matrix: new THREE.Matrix4(),
   position: new THREE.Vector3(0, 0, -2000),
