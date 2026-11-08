@@ -5,7 +5,7 @@ import { PurchaseButton } from './PurchaseButton'
 export function Fallback() {
   return (
     <main className="fallback">
-      <h2>THE WAY WE CREATE IS CHANGING.</h2>
+      <h2>THE WAY WE WORK IS CHANGING.</h2>
       <div className="book">
         <img src={CONFIG.book.cover} alt={`${CONFIG.book.title} — ${CONFIG.book.subtitle}, ${CONFIG.book.author}`} />
       </div>
@@ -18,7 +18,7 @@ export function Fallback() {
         ))}
       </ol>
       <section>
-        <h2>YOUR NEXT CHAPTER STARTS HERE.</h2>
+        <h2>A SMARTER WAY TO START BUILDING YOUR FUTURE.</h2>
         <div className="cta-row">
           <span className="cta-price">{CONFIG.price}</span>
           <PurchaseButton />

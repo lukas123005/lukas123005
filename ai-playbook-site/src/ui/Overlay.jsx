@@ -8,14 +8,13 @@ import { PurchaseButton } from './PurchaseButton'
  * (data-in / data-out in film seconds). Lines rise out of a mask — no blur, no distortion.
  */
 const LINES = [
-  { pos: 'statement', cls: 'serif-xl', in: 2.4, out: 6.6, text: 'THE WAY WE CREATE IS CHANGING.' },
-  { pos: 'statement', cls: 'serif-xl', in: 8.3, out: 12.45, text: 'INTELLIGENCE IS A TOOL.' },
-  { pos: 'statement', cls: 'serif-xl', in: 13.7, out: 18.6, text: 'KNOWLEDGE IS YOUR ADVANTAGE.' },
+  { pos: 'statement', cls: 'serif-xl', in: 2.4, out: 6.6, text: 'THE WAY WE WORK IS CHANGING.' },
+  { pos: 'statement', cls: 'serif-xl', in: 8.3, out: 12.45, text: 'ARTIFICIAL INTELLIGENCE IS CREATING NEW POSSIBILITIES.' },
+  { pos: 'statement', cls: 'serif-xl', in: 13.7, out: 18.6, text: 'KNOWING WHICH TOOLS TO USE MAKES ALL THE DIFFERENCE.' },
   // 05 · product
   { pos: 'p1', cls: 'serif-lg', in: 44.3, out: 50.6, text: CONFIG.book.title },
-  { pos: 'p2', cls: 'label', in: 44.9, out: 50.6, text: CONFIG.book.author },
+  { pos: 'p2', cls: 'label', in: 44.9, out: 50.6, text: `BY ${CONFIG.book.author}` },
   { pos: 'p3', cls: 'label dim', in: 45.2, out: 50.6, text: CONFIG.book.brand },
-  { pos: 'p4', cls: 'tagline', in: 46.6, out: 50.6, text: 'BUILD YOUR KNOWLEDGE. CREATE YOUR OPPORTUNITY.' },
 ]
 
 // which topics are on the open spread, and when (film seconds)
@@ -49,9 +48,7 @@ export const Overlay = forwardRef(function Overlay(_, ref) {
       <section className="cta" data-cta aria-label="Purchase">
         <p className="cta-kicker" data-cta-part>{CONFIG.book.title}</p>
         <h2 data-cta-part>
-          Your next chapter
-          <br />
-          starts here.
+          A smarter way to start building your future.
         </h2>
         <div className="cta-row" data-cta-part>
           <span className="cta-price">{CONFIG.price}</span>
