@@ -1,0 +1,334 @@
+{
+  "about": "Narration for the experience. Replace any .mp3 with your own recording (same file name) — the film retimes itself to the real audio length at load, and on-screen items tied to a clip (data-seg) follow it automatically. Window anchors are in film seconds of the 69 s animation.",
+  "voice": "Kokoro TTS (local) — am_michael, per-line pacing",
+  "windows": [
+    {
+      "from": 0.0,
+      "to": 6.8,
+      "lead": 1.9,
+      "tail": 1.4,
+      "segments": [
+        "01-changing"
+      ]
+    },
+    {
+      "from": 7.3,
+      "to": 12.6,
+      "lead": 0.9,
+      "tail": 0.7,
+      "segments": [
+        "02-possibilities"
+      ]
+    },
+    {
+      "from": 13.2,
+      "to": 18.7,
+      "lead": 0.6,
+      "tail": 1.0,
+      "segments": [
+        "03-difference"
+      ]
+    },
+    {
+      "from": 21.6,
+      "to": 30.6,
+      "lead": 0.9,
+      "tail": 1.2,
+      "segments": [
+        "04-together"
+      ]
+    },
+    {
+      "from": 31.4,
+      "to": 42.6,
+      "lead": 1.4,
+      "tail": 1.0,
+      "gap": 1.1,
+      "segments": [
+        "05-explore",
+        "06-begin"
+      ]
+    },
+    {
+      "from": 43.6,
+      "to": 50.6,
+      "lead": 1.4,
+      "tail": 1.4,
+      "segments": [
+        "07-signature"
+      ]
+    },
+    {
+      "from": 51.4,
+      "to": 57.0,
+      "lead": 0.9,
+      "tail": 0.6,
+      "gap": 0.32,
+      "segments": [
+        "09a-prompts",
+        "09b-models",
+        "09c-ideas",
+        "09d-templates",
+        "09e-whop"
+      ]
+    },
+    {
+      "from": 57.0,
+      "to": 63.0,
+      "lead": 0.7,
+      "tail": 1.0,
+      "gap": 0.55,
+      "segments": [
+        "10a-beginners",
+        "10b-steps",
+        "10c-examples",
+        "10d-moment"
+      ]
+    },
+    {
+      "from": 63.3,
+      "to": 69.0,
+      "lead": 0.9,
+      "tail": 3.4,
+      "gap": 0.8,
+      "segments": [
+        "08-future",
+        "11-price"
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "id": "01-changing",
+      "file": "voiceover/01-changing.mp3",
+      "speed": 0.9,
+      "parts": [
+        "The way we work,",
+        {
+          "pause": 0.38
+        },
+        "is changing."
+      ],
+      "duration": 2.494,
+      "text": "The way we work, is changing."
+    },
+    {
+      "id": "02-possibilities",
+      "file": "voiceover/02-possibilities.mp3",
+      "speed": 0.95,
+      "parts": [
+        "Artificial intelligence is creating new possibilities,",
+        {
+          "pause": 0.3
+        },
+        "for people who are ready to learn, create, and think differently."
+      ],
+      "duration": 7.593,
+      "text": "Artificial intelligence is creating new possibilities, for people who are ready to learn, create, and think differently."
+    },
+    {
+      "id": "03-difference",
+      "file": "voiceover/03-difference.mp3",
+      "speed": 0.95,
+      "parts": [
+        "But knowing which tools to use,",
+        {
+          "pause": 0.25
+        },
+        "and how to use them effectively,",
+        {
+          "pause": 0.5
+        },
+        "makes all the difference."
+      ],
+      "duration": 5.799,
+      "text": "But knowing which tools to use, and how to use them effectively, makes all the difference."
+    },
+    {
+      "id": "04-together",
+      "file": "voiceover/04-together.mp3",
+      "speed": 0.92,
+      "parts": [
+        "The AI Money Playbook brings everything together,",
+        {
+          "pause": 0.35
+        },
+        "in one practical guide."
+      ],
+      "duration": 5.216,
+      "text": "The AI Money Playbook brings everything together, in one practical guide."
+    },
+    {
+      "id": "05-explore",
+      "file": "voiceover/05-explore.mp3",
+      "speed": 1.0,
+      "parts": [
+        "Explore essential AI tools,",
+        {
+          "pause": 0.2
+        },
+        "master better prompts,",
+        {
+          "pause": 0.22
+        },
+        "discover digital business models,",
+        {
+          "pause": 0.28
+        },
+        "and learn how to create and sell digital products."
+      ],
+      "duration": 8.87,
+      "text": "Explore essential AI tools, master better prompts, discover digital business models, and learn how to create and sell digital products."
+    },
+    {
+      "id": "06-begin",
+      "file": "voiceover/06-begin.mp3",
+      "speed": 0.95,
+      "parts": [
+        "With practical examples and a structured thirty-day action plan,",
+        {
+          "pause": 0.4
+        },
+        "you have a place to begin."
+      ],
+      "duration": 5.977,
+      "text": "With practical examples and a structured thirty-day action plan, you have a place to begin."
+    },
+    {
+      "id": "07-signature",
+      "file": "voiceover/07-signature.mp3",
+      "speed": 0.9,
+      "parts": [
+        "The AI Money Playbook.",
+        {
+          "pause": 0.6
+        },
+        "By Luka Shehu."
+      ],
+      "duration": 3.482,
+      "text": "The AI Money Playbook. By Luka Shehu."
+    },
+    {
+      "id": "09a-prompts",
+      "file": "voiceover/09a-prompts.mp3",
+      "speed": 1.0,
+      "parts": [
+        "Inside, you'll find one hundred ready-to-use prompts."
+      ],
+      "duration": 3.136,
+      "text": "Inside, you'll find one hundred ready-to-use prompts."
+    },
+    {
+      "id": "09b-models",
+      "file": "voiceover/09b-models.mp3",
+      "speed": 1.0,
+      "parts": [
+        "Ten business models."
+      ],
+      "duration": 1.359,
+      "text": "Ten business models."
+    },
+    {
+      "id": "09c-ideas",
+      "file": "voiceover/09c-ideas.mp3",
+      "speed": 1.0,
+      "parts": [
+        "Ten digital product ideas."
+      ],
+      "duration": 1.954,
+      "text": "Ten digital product ideas."
+    },
+    {
+      "id": "09d-templates",
+      "file": "voiceover/09d-templates.mp3",
+      "speed": 1.0,
+      "parts": [
+        "Five product templates."
+      ],
+      "duration": 1.444,
+      "text": "Five product templates."
+    },
+    {
+      "id": "09e-whop",
+      "file": "voiceover/09e-whop.mp3",
+      "speed": 0.97,
+      "parts": [
+        "And a complete launch checklist for Whop."
+      ],
+      "duration": 2.241,
+      "text": "And a complete launch checklist for Whop."
+    },
+    {
+      "id": "10a-beginners",
+      "file": "voiceover/10a-beginners.mp3",
+      "speed": 0.95,
+      "parts": [
+        "Written for complete beginners."
+      ],
+      "duration": 1.764,
+      "text": "Written for complete beginners."
+    },
+    {
+      "id": "10b-steps",
+      "file": "voiceover/10b-steps.mp3",
+      "speed": 0.97,
+      "parts": [
+        "Step by step,",
+        {
+          "pause": 0.2
+        },
+        "from your first AI tool to your first digital product."
+      ],
+      "duration": 4.848,
+      "text": "Step by step, from your first AI tool to your first digital product."
+    },
+    {
+      "id": "10c-examples",
+      "file": "voiceover/10c-examples.mp3",
+      "speed": 0.97,
+      "parts": [
+        "With practical examples you can use today."
+      ],
+      "duration": 2.84,
+      "text": "With practical examples you can use today."
+    },
+    {
+      "id": "10d-moment",
+      "file": "voiceover/10d-moment.mp3",
+      "speed": 0.88,
+      "parts": [
+        "If you've been waiting for the right moment to start,",
+        {
+          "pause": 0.65
+        },
+        "this is it."
+      ],
+      "duration": 4.399,
+      "text": "If you've been waiting for the right moment to start, this is it."
+    },
+    {
+      "id": "08-future",
+      "file": "voiceover/08-future.mp3",
+      "speed": 0.9,
+      "parts": [
+        "A smarter way to start building your future."
+      ],
+      "duration": 2.594,
+      "text": "A smarter way to start building your future."
+    },
+    {
+      "id": "11-price",
+      "file": "voiceover/11-price.mp3",
+      "speed": 0.95,
+      "parts": [
+        "Get your copy today,",
+        {
+          "pause": 0.3
+        },
+        "for just twenty dollars."
+      ],
+      "duration": 3.107,
+      "text": "Get your copy today, for just twenty dollars."
+    }
+  ]
+}
