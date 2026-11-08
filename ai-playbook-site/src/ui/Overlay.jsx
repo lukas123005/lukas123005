@@ -12,7 +12,6 @@ const LINES = [
   { pos: 'statement', cls: 'serif-xl', in: 2.4, out: 6.6, seg: '01-changing', text: 'THE WAY WE WORK IS CHANGING.' },
   { pos: 'statement', cls: 'serif-xl', in: 8.3, out: 12.45, seg: '02-possibilities', text: 'ARTIFICIAL INTELLIGENCE IS CREATING NEW POSSIBILITIES.' },
   { pos: 'statement', cls: 'serif-xl', in: 13.7, out: 18.6, seg: '03-difference', text: 'KNOWING WHICH TOOLS TO USE MAKES ALL THE DIFFERENCE.' },
-  { pos: 'statement', cls: 'serif-xl', in: 22.4, out: 30.4, seg: '04-together', text: 'THE AI MONEY PLAYBOOK BRINGS EVERYTHING TOGETHER, IN ONE PRACTICAL GUIDE.' },
   { pos: 'p1', cls: 'serif-lg', in: 44.3, out: 50.6, seg: '07-signature', text: CONFIG.book.title },
   { pos: 'p2', cls: 'label', in: 44.9, out: 50.6, text: `BY ${CONFIG.book.author}` },
   { pos: 'p3', cls: 'label dim', in: 45.2, out: 50.6, text: CONFIG.book.brand },
