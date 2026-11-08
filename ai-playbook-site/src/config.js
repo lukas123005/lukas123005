@@ -7,7 +7,7 @@
 export const CONFIG = {
   // Paste your Whop checkout link here, e.g. 'https://whop.com/checkout/xxxxxxxx'
   checkoutUrl: import.meta.env.VITE_CHECKOUT_URL || '',
-  price: '€9',
+  price: '$20',
 
   book: {
     title: 'THE AI MONEY PLAYBOOK',

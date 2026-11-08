@@ -1,4 +1,6 @@
 import * as THREE from 'three'
+import { CONFIG } from '../config'
+const CONFIG_PRICE = CONFIG.price
 
 export const SANS = '"Inter Variable", Inter, system-ui, sans-serif'
 export const SERIF = 'Caladea, Georgia, serif'
@@ -339,7 +341,7 @@ export function drawScreen(ctx, W, H, mode, typed, coverImg, reveal = 1) {
   ctx.fillRect(x, 590, 640, 1)
   ctx.fillStyle = '#1c1b19'
   ctx.font = `400 64px ${SERIF}`
-  ctx.fillText('€9', x, 682)
+  ctx.fillText(CONFIG_PRICE, x, 682)
   ctx.strokeStyle = '#1c1b19'
   ctx.lineWidth = 1.5
   roundRect(ctx, x, 724, 300, 66, 33)

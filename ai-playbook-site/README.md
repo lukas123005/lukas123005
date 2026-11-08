@@ -34,7 +34,7 @@ Price, title, subtitle, author, brand and the 9 chapter holograms are also confi
 | 03 The Playbook | The book emerges from darkness; slow orbit from fore-edge to cover, macro on the embossed title, round to the spine | — |
 | 04 Inside | The book opens on the stone; four leaves turn through editorial spreads for the seven themes (real chapter titles and page numbers) | Contents index |
 | 05 The Product | Closed book lying on stone, a narrow light travels across the cover, gentle push-in | Title · Luka Shehu · Creator Lab · BUILD YOUR KNOWLEDGE. CREATE YOUR OPPORTUNITY. |
-| 06 Your Copy | Product shot with a soft stone reflection | YOUR NEXT CHAPTER STARTS HERE. · €9 · GET YOUR COPY |
+| 06 Your Copy | Product shot with a soft stone reflection | YOUR NEXT CHAPTER STARTS HERE. · $20 · GET YOUR COPY |
 
 Look: palette #080808 / #171717 / #292929 / #BFC0C2 / #F3F0E9; Caladea serif (the cover's typeface) for statements, Inter for
 technical labels. Physically based materials (cloth-bump boards, metallic/embossed cover maps derived from the real cover,
