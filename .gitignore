@@ -5,3 +5,6 @@ __pycache__/
 video/story/*.mp4
 video/reel_boom14/*.mp4
 video/reel_boom14/_still_*
+video/reel_barber/*.mp4
+video/reel_barber/_still_*
+video/reel_barber/cover_*.png
