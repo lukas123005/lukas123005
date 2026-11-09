@@ -20,34 +20,46 @@ import sys
 import wave
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _spec = importlib.util.spec_from_file_location("boom14_base", os.path.join(HERE, "..", "reel_boom14", "make_reel.py"))
 base = importlib.util.module_from_spec(_spec)  # shared helpers: text, easing, phone frame
 _spec.loader.exec_module(base)
-clamp, env, eo, eob, eio, f8, fi, fit = base.clamp, base.env, base.eo, base.eob, base.eio, base.f8, base.fi, base.fit
-place, prog, rr, text_img, wrap, phone_frame, PW, PH = base.place, base.prog, base.rr, base.text_img, base.wrap, base.phone_frame, base.PW, base.PH
+clamp, env, eo, eob, eio, fi, fit = base.clamp, base.env, base.eo, base.eob, base.eio, base.fi, base.fit
+place, prog, rr, text_img, wrap, PW, PH = base.place, base.prog, base.rr, base.text_img, base.wrap, base.PW, base.PH
 
 W, H, FPS, DUR = 1080, 1920, 30, 21.0
 N = int(FPS * DUR)
 
-# BOOM 14 Barber palette (from the product page)
-INK = (20, 17, 28)
-INK2 = (30, 26, 41)
-RED = (230, 57, 70)
-SALMON = (255, 107, 94)
-SUN = (241, 194, 125)
-BLUE = (58, 134, 255)
-MINT = (43, 217, 168)
-PAPER = (250, 247, 242)
-LINE = (236, 230, 221)
-GREY = (107, 100, 117)
-WHITE = (255, 255, 255)
-SOFT = (217, 212, 227)
+# Luxury palette: deep black, champagne gold, burgundy accent, dark interface
+INK = (10, 9, 11)          # page black / dark text on gold
+INK2 = (17, 15, 18)
+RED = (128, 26, 40)        # burgundy (barber-pole accent)
+SUN = (231, 204, 152)      # champagne
+BLUE = (201, 163, 92)      # gold (labels, active states)
+MINT = (201, 163, 92)      # gold (checks, done)
+PAPER = (21, 19, 22)       # phone screen background
+SURF = (31, 28, 31)        # fields and cards on the screen
+LINE = (58, 52, 50)
+GREY = (150, 140, 124)
+WHITE = (246, 240, 228)    # warm ivory instead of pure white
+TXT = (240, 233, 220)      # text on dark screens
+SOFT = (205, 196, 180)
 
-base.GRAD_STOPS = [(0, RED), (0.4, SALMON), (0.55, SUN), (1, BLUE)]
+GOLD_D, GOLD, GOLD_L = (128, 92, 42), (201, 163, 92), (252, 236, 200)
+base.GRAD_STOPS = [(0, GOLD_D), (0.22, GOLD), (0.42, GOLD_L), (0.58, GOLD), (0.8, (160, 120, 62)), (1, GOLD_D)]
 grad_img = base.grad_img
+
+PF = os.path.join(HERE, "fonts")
+
+
+def f8(s):  # display serif (Playfair Display, OFL)
+    return ImageFont.truetype(os.path.join(PF, "Playfair-700-normal.ttf"), s)
+
+
+def f8i(s):  # display serif italic
+    return ImageFont.truetype(os.path.join(PF, "Playfair-700-italic.ttf"), s)
 
 PRESS = 7.55  # moment the BOOM button is hit
 
@@ -141,9 +153,11 @@ def pole_img(w, h, off, alpha=255):
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     period = 4 * 26.0
     u = ((xx + yy + off) % period) / period
-    cols = np.array([RED, WHITE, BLUE, WHITE], np.float32)
+    cols = np.array([RED, WHITE, GOLD, WHITE], np.float32)
     idx = (u * 4).astype(int) % 4
     out = cols[idx]
+    if w < 200:  # cylinder shading on the logo pole
+        out = out * (0.45 + 0.55 * np.sin(np.pi * (xx + 0.5) / w) ** 0.7)[..., None]
     im = Image.fromarray(out.astype(np.uint8)).convert("RGBA")
     im.putalpha(alpha)
     return im
@@ -158,7 +172,9 @@ def make_bg():
         k = np.clip(1 - d, 0, 1) ** 2 * a
         return k[..., None] * (np.array(col, np.float32) - base_)
 
-    img = base_ + blob(1000, 220, 950, BLUE, 0.5) + blob(60, 1720, 880, RED, 0.45)
+    img = base_ + blob(760, 260, 1100, (120, 90, 45), 0.55) + blob(120, 1750, 900, RED, 0.35)
+    vig = np.clip(np.sqrt(((xx - W / 2) / (W * 0.75)) ** 2 + ((yy - H / 2) / (H * 0.7)) ** 2), 0, 1)
+    img *= (1 - 0.55 * vig ** 2.2)[..., None]
     rng = np.random.default_rng(7)
     img += rng.normal(0, 3.2, (H, W, 1))  # fine film grain, baked once
     return Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).convert("RGBA")
@@ -192,6 +208,66 @@ def icon_pole(h=70):
     return c
 
 
+def spaced(s):
+    return "  ".join(" ".join(w) for w in s.split())
+
+
+def gold_frame():
+    """Thin editorial frame with corner accents, inside the safe area."""
+    fr = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(fr)
+    m, top, bot = 44, 60, H - 60
+    d.rectangle([m, top, W - m, bot], outline=GOLD + (60,), width=2)
+    L_ = 70
+    for (x, y, sx, sy) in ((m, top, 1, 1), (W - m, top, -1, 1), (m, bot, 1, -1), (W - m, bot, -1, -1)):
+        d.line([(x, y), (x + sx * L_, y)], fill=GOLD + (230,), width=4)
+        d.line([(x, y), (x, y + sy * L_)], fill=GOLD + (230,), width=4)
+    return fr
+
+
+_DUST = None
+
+
+def dust(img, t):
+    """Slow golden bokeh floating through the frame."""
+    global _DUST
+    if _DUST is None:
+        rng = np.random.default_rng(21)
+        spr = {}
+        for r in (6, 12, 22, 34):
+            s_ = Image.new("L", (r * 6, r * 6), 0)
+            ImageDraw.Draw(s_).ellipse([r * 2, r * 2, r * 4, r * 4], fill=255)
+            s_ = s_.filter(ImageFilter.GaussianBlur(r * 0.6))
+            sp = Image.new("RGBA", s_.size, GOLD_L + (0,))
+            sp.putalpha(s_)
+            spr[r] = sp
+        _DUST = (spr, [(rng.uniform(0, W), rng.uniform(0, H), rng.choice([6, 6, 12, 12, 22, 34]), rng.uniform(8, 30),
+                        rng.uniform(0, 6.28), rng.uniform(0.15, 0.5)) for _ in range(34)])
+    spr, parts = _DUST
+    for x, y, r, v, ph, a in parts:
+        yy = (y - v * t) % (H + 200) - 100
+        xx = x + 20 * math.sin(t * 0.6 + ph)
+        tw = a * (0.6 + 0.4 * math.sin(t * 2.0 + ph))
+        sp = spr[r]
+        if tw < 0.99:
+            sp = sp.copy()
+            sp.putalpha(sp.getchannel("A").point(lambda q: int(q * tw)))
+        img.alpha_composite(sp, (int(xx - sp.width / 2), int(yy - sp.height / 2)))
+
+
+def phone_frame():
+    fr = Image.new("RGBA", (PW + 80, PH + 80), (0, 0, 0, 0))
+    sh = Image.new("L", fr.size, 0)
+    ImageDraw.Draw(sh).rounded_rectangle([50, 76, PW + 40, PH + 66], radius=80, fill=210)
+    shadow = Image.new("RGBA", fr.size, (0, 0, 0, 255))
+    shadow.putalpha(sh.filter(ImageFilter.GaussianBlur(34)))
+    fr.alpha_composite(shadow)
+    d = ImageDraw.Draw(fr)
+    rr(d, [40, 40, PW + 40, PH + 40], 78, fill=(8, 7, 8, 255), outline=GOLD_D + (255,), width=5)
+    rr(d, [45, 45, PW + 35, PH + 35], 74, outline=(232, 204, 150, 140), width=2)
+    return fr
+
+
 # ---------------------------------------------------------------- phone screens
 SW, SH = PW - 40, PH - 40
 
@@ -210,7 +286,7 @@ def screen_form(t, L):
     s, d = blank()
     st = pole_img(SW, 10, t * 120)
     s.alpha_composite(st, (0, 0))
-    d.text((40, 60), L["form_t"], font=f8(50), fill=INK)
+    d.text((40, 60), L["form_t"], font=f8(50), fill=TXT)
     tn = int(len(L["biz"]) * prog(t, 4.95, 0.85))
     tc = int(len(L["city"]) * prog(t, 5.9, 0.45))
     tk = int(len(L["cut"]) * prog(t, 6.45, 0.6))
@@ -220,9 +296,9 @@ def screen_form(t, L):
         y = 168 + i * 152
         active = t0 <= t and n < len(full)
         d.text((40, y), lab, font=fi(21, "Bold"), fill=GREY)
-        rr(d, [40, y + 34, SW - 40, y + 110], 20, fill=WHITE, outline=BLUE if active else LINE, width=3)
+        rr(d, [40, y + 34, SW - 40, y + 110], 20, fill=SURF, outline=BLUE if active else LINE, width=3)
         val = full[:n]
-        d.text((64, y + 72), val, font=vf, fill=INK, anchor="lm")
+        d.text((64, y + 72), val, font=vf, fill=TXT, anchor="lm")
         if active:
             caret(d, 64 + d.textlength(val, font=vf) + 4, y + 54, t, 36)
     # tone selector
@@ -233,8 +309,8 @@ def screen_form(t, L):
     for i, tn_ in enumerate(L["tones"]):
         x0 = 40 + i * (bw + 12)
         on = i == sel
-        rr(d, [x0, y + 34, x0 + bw, y + 100], 18, fill=INK if on else PAPER, outline=INK if on else LINE, width=3)
-        d.text((x0 + bw / 2, y + 67), tn_, font=fi(25, "SemiBold"), fill=WHITE if on else INK, anchor="mm")
+        rr(d, [x0, y + 34, x0 + bw, y + 100], 18, fill=GOLD if on else PAPER, outline=GOLD if on else LINE, width=3)
+        d.text((x0 + bw / 2, y + 67), tn_, font=fi(25, "SemiBold"), fill=INK if on else TXT, anchor="mm")
     if 6.95 < t < 7.25:  # tap on tone
         k = prog(t, 6.95, 0.3)
         cx = 40 + 2 * (bw + 12) + bw / 2
@@ -249,7 +325,7 @@ def screen_form(t, L):
     m = Image.new("L", g.size, 0)
     ImageDraw.Draw(m).rounded_rectangle([0, 0, g.width - 1, g.height - 1], radius=34, fill=255)
     s.paste(g, (int(SW / 2 - bwid / 2), int(by + 58 * (1 - sc))), m)
-    d.text((SW / 2, by + 58), L["btn"], font=fit(L["btn"], f8, int(34 * sc), bwid - 50), fill=WHITE, anchor="mm")
+    d.text((SW / 2, by + 58), L["btn"], font=fit(L["btn"], lambda z: fi(z, "Bold"), int(32 * sc), bwid - 50), fill=INK, anchor="mm")
     if 0 < press < 1:
         r = 30 + 280 * eo(press)
         d.ellipse([SW / 2 - r, by + 58 - r, SW / 2 + r, by + 58 + r], outline=(255, 255, 255, int(220 * (1 - press))), width=6)
@@ -269,17 +345,17 @@ def screen_form(t, L):
 def day_card(i, fmt, title, w=520, done=False):
     c = Image.new("RGBA", (w, 150), (0, 0, 0, 0))
     d = ImageDraw.Draw(c)
-    rr(d, [0, 0, w - 1, 149], 28, fill=WHITE, outline=MINT if done else LINE, width=4 if done else 2)
+    rr(d, [0, 0, w - 1, 149], 28, fill=SURF, outline=MINT if done else LINE, width=4 if done else 2)
     rr(d, [0, 0, w - 1, 92], 28, fill=INK)
     d.rectangle([0, 60, w - 1, 92], fill=INK)
     g = grad_img(64, 64).convert("RGBA")
     m = Image.new("L", (64, 64), 0)
     ImageDraw.Draw(m).rounded_rectangle([0, 0, 63, 63], radius=18, fill=255)
     c.paste(g, (16, 14), m)
-    d.text((48, 46), str(i), font=f8(38), fill=WHITE, anchor="mm")
+    d.text((48, 44), str(i), font=f8(38), fill=INK, anchor="mm")
     pill = 112
-    rr(d, [w - pill - 14, 28, w - 14, 64], 18, fill=(62, 56, 78))
-    d.text((w - pill / 2 - 14, 46), fmt, font=fi(17, "Bold"), fill=WHITE, anchor="mm")
+    rr(d, [w - pill - 14, 28, w - 14, 64], 18, fill=(46, 40, 34), outline=GOLD_D, width=1)
+    d.text((w - pill / 2 - 14, 46), fmt, font=fi(17, "Bold"), fill=GOLD, anchor="mm")
     tf = fi(22, "Bold")
     room = w - pill - 120
     if d.textlength(title, font=tf) > room:
@@ -295,9 +371,9 @@ def day_card(i, fmt, title, w=520, done=False):
 def screen_cards(t, t0, L):
     s, d = blank()
     s.alpha_composite(pole_img(SW, 10, t * 120), (0, 0))
-    d.text((40, 60), L["res_t"], font=f8(42), fill=INK)
+    d.text((40, 60), L["res_t"], font=f8(42), fill=TXT)
     x = 40 + d.textlength(L["res_t"], font=f8(42))
-    s.alpha_composite(text_img(L["biz"], f8(42), grad=True, shift=t * 0.1), (int(x), 52))
+    s.alpha_composite(text_img(L["biz"], f8(42), grad=True, shift=t * 0.1), (int(x), 57))
     rr(d, [40, 140, SW - 40, 156], 8, fill=LINE)
     k = eo(prog(t, t0 + 2.4, 1.2))
     rr(d, [40, 140, 40 + (SW - 80) * max(0.03, k * 0.5), 156], 8, fill=MINT)
@@ -322,7 +398,7 @@ def screen_detail(t, t0, L):
     fmt, ti = L["cards"][n - 1]
     card = day_card(n, fmt, ti, w=SW - 80)
     s.alpha_composite(card.crop((0, 0, card.width, 93)), (40, 60))
-    rr(d, [40, 130, SW - 40, SH - 40], 0, fill=WHITE)
+    rr(d, [40, 130, SW - 40, SH - 40], 0, fill=SURF)
     y = 178
     d.text((66, y), L["lab_sh"], font=fi(20, "Bold"), fill=BLUE)
     yy = y + 44
@@ -330,9 +406,9 @@ def screen_detail(t, t0, L):
     for i, sh_ in enumerate(L["shots"]):
         a = eo(prog(t, t0 + 0.18 * i, 0.4))
         rr(d, [66, yy, 100, yy + 34], 9, fill=PAPER, outline=LINE)
-        d.text((83, yy + 17), str(i + 1), font=fi(18, "Bold"), fill=INK, anchor="mm")
+        d.text((83, yy + 17), str(i + 1), font=fi(18, "Bold"), fill=TXT, anchor="mm")
         for j, ln in enumerate(wrap(sh_, sf, SW - 200)):
-            d.text((118, yy + 17 + j * 32), ln, font=sf, fill=INK + (int(255 * a),), anchor="lm")
+            d.text((118, yy + 17 + j * 32), ln, font=sf, fill=TXT + (int(255 * a),), anchor="lm")
         yy += 32 * len(wrap(sh_, sf, SW - 200)) + 24
     y = yy + 14
     d.text((66, y), L["lab_on"], font=fi(20, "Bold"), fill=BLUE)
@@ -354,26 +430,26 @@ def screen_detail(t, t0, L):
     cnt = 0
     for i, ln in enumerate(cap_lines):
         take = max(0, min(len(ln), nn - cnt))
-        d.text((84, y + 52 + i * 34), ln[:take], font=cf, fill=INK)
+        d.text((84, y + 52 + i * 34), ln[:take], font=cf, fill=TXT)
         cnt += len(ln) + 1
     d.text((84, y + 70 + len(cap_lines) * 34), "#fadehouse #barbershop #fade", font=fi(21, "SemiBold"), fill=BLUE)
     by = y + 120 + len(cap_lines) * 34
     press = prog(t, t0 + 2.2, 0.25)
     bwid = 300
-    rr(d, [62, by, 62 + bwid, by + 62], 31, fill=MINT if press >= 1 else INK)
+    rr(d, [62, by, 62 + bwid, by + 62], 31, fill=GOLD if press >= 1 else (48, 43, 40))
     d.text((62 + bwid / 2, by + 31), L["copied"] if press >= 1 else L["copy"], font=fi(23, "Bold"),
            fill=INK if press >= 1 else WHITE, anchor="mm")
     rr(d, [62 + bwid + 14, by, SW - 62, by + 62], 31, fill=PAPER, outline=LINE, width=2)
     d.text(((62 + bwid + 14 + SW - 62) / 2, by + 31), L["variant"], font=fit(L["variant"], lambda z: fi(z, "Bold"), 22, SW - 62 - bwid - 120),
-           fill=INK, anchor="mm")
+           fill=TXT, anchor="mm")
     if 0 < press < 1:
         r = 20 + 120 * eo(press)
-        d.ellipse([62 + bwid / 2 - r, by + 31 - r, 62 + bwid / 2 + r, by + 31 + r], outline=(43, 217, 168, int(220 * (1 - press))), width=5)
+        d.ellipse([62 + bwid / 2 - r, by + 31 - r, 62 + bwid / 2 + r, by + 31 + r], outline=GOLD + (int(220 * (1 - press)),), width=5)
     ta = env(t, t0 + 2.3, t0 + 3.9, 0.2, 0.3)
     if ta:
         tw = 290
         ty = SH - 150 + 40 * (1 - eo(prog(t, t0 + 2.3, 0.3)))
-        rr(d, [SW / 2 - tw / 2, ty, SW / 2 + tw / 2, ty + 70], 35, fill=INK + (int(255 * ta),))
+        rr(d, [SW / 2 - tw / 2, ty, SW / 2 + tw / 2, ty + 70], 35, fill=(48, 43, 40, int(255 * ta)))
         d.text((SW / 2, ty + 35), L["copied"], font=fi(26, "Bold"), fill=WHITE + (int(255 * ta),), anchor="mm")
     return s
 
@@ -527,17 +603,15 @@ def render(t, bg, frame, L, lay):
     # camera shake on BOOM
     shake = env(t, PRESS, PRESS + 0.5, 0.02, 0.45)
 
-    # barber pole edge bars (top + bottom of safe area), always moving
-    pa = 1 - env(t, 18.2, DUR + 1, 0.3, 0.1) * 0
-    top = pole_img(W, 14, t * 160)
-    img.alpha_composite(top, (0, 0))
+    dust(img, t)
+    img.alpha_composite(lay["frame"])
 
     # 1 · HOOK (0 – 2.4)
     a = env(t, 0.0, 2.45, 0.08, 0.22)
     if a:
         p = [eob(prog(t, 0.0 + 0.22 * i, 0.42)) for i in range(4)]
         place(img, lay["kicker"], W / 2, 520, a * eo(prog(t, 0.0, 0.35)))
-        g = text_img(L["hook1"], f8(230), grad=True, shift=t * 0.25)
+        g = text_img(L["hook1"], f8i(240), grad=True, shift=t * 0.25)
         place(img, g, W / 2, 720, a * clamp(p[0]), scale=1.25 - 0.25 * clamp(p[0]))
         place(img, lay["h2"], W / 2, 930 + 40 * (1 - p[1]), a * clamp(p[1]))
         place(img, lay["h3"], W / 2, 1040 + 40 * (1 - p[2]), a * clamp(p[2]))
@@ -549,7 +623,7 @@ def render(t, bg, frame, L, lay):
         place(img, lay["pb1"], W / 2, 560, a2 * eo(prog(t, 2.4, 0.35)))
         p = eob(prog(t, 2.6, 0.45))
         place(img, lay["pb2"], W / 2, 740, a2 * clamp(p), scale=0.85 + 0.15 * clamp(p))
-        g = text_img(L["pb3"], fit(L["pb3"], f8, 150, 900), grad=True, shift=t * 0.2)
+        g = text_img(L["pb3"], fit(L["pb3"], f8i, 150, 900), grad=True, shift=t * 0.2)
         p2 = eob(prog(t, 2.8, 0.45))
         place(img, g, W / 2, 900, a2 * clamp(p2), scale=0.85 + 0.15 * clamp(p2))
         spots = [(230, 1130, -6), (720, 1110, 5), (420, 1260, 3), (800, 1290, -4), (240, 1400, 4), (600, 1440, -3)]
@@ -569,7 +643,7 @@ def render(t, bg, frame, L, lay):
         put_phone(img, frame, scr, W / 2 - 30, 1050 + 90 * (1 - eo(prog(t, 4.5, 0.55))), scale=0.8, rot=3, a=a3)
         fl = env(t, PRESS, PRESS + 0.6, 0.04, 0.5)
         if fl:
-            img.alpha_composite(Image.new("RGBA", (W, H), (255, 255, 255, int(170 * fl))))
+            img.alpha_composite(Image.new("RGBA", (W, H), (255, 226, 170, int(150 * fl))))
 
     # 4 · 14 DAYS CASCADE (7.9 – 11.7)
     a4 = env(t, 7.9, 11.75, 0.15, 0.22)
@@ -595,12 +669,12 @@ def render(t, bg, frame, L, lay):
     if a6:
         for i, key in enumerate(["s5a", "s5b", "s5c"]):
             p = eob(prog(t, 15.45 + i * 0.3, 0.38))
-            lay_ = lay[key] if key != "s5c" else text_img(L["s5c"], f8(180), grad=True, shift=t * 0.2)
+            lay_ = lay[key] if key != "s5c" else text_img(L["s5c"], f8i(190), grad=True, shift=t * 0.2)
             place(img, lay_, W / 2, 560 + i * 200 + 30 * (1 - clamp(p)), a6 * clamp(p), scale=0.8 + 0.2 * clamp(p))
         ov = overlay()
         d = ImageDraw.Draw(ov)
         bx, by, bw = 170, 1250, 740
-        rr(d, [bx, by, bx + bw, by + 26], 13, fill=(255, 255, 255, int(40 * a6)))
+        rr(d, [bx, by, bx + bw, by + 26], 13, fill=(201, 163, 92, int(45 * a6)))
         k = eo(prog(t, 15.9, 1.0))
         if k > 0:
             g = grad_img(int(bw * k) + 1, 26, shift=t * 0.2).convert("RGBA")
@@ -632,7 +706,7 @@ def render(t, bg, frame, L, lay):
             m = Image.new("L", g.size, 0)
             ImageDraw.Draw(m).rounded_rectangle([0, 0, g.width - 1, g.height - 1], radius=g.height // 2, fill=int(255 * ca))
             ov.paste(g, (int(W / 2 - g.width / 2), int(py + 65 - g.height / 2)), m)
-            d.text((W / 2, py + 65), L["cta"], font=fit(L["cta"], f8, 64, pw_ - 80), fill=(255, 255, 255, int(255 * ca)), anchor="mm")
+            d.text((W / 2, py + 65), L["cta"], font=fit(L["cta"], f8, 62, pw_ - 80), fill=INK + (int(255 * ca),), anchor="mm")
             bob = 12 * math.sin((t - 18.75) * 2 * math.pi / 0.9)
             ay = py + 200 + bob
             d.line([(W / 2, ay - 20), (W / 2, ay + 50)], fill=SUN + (int(255 * ca),), width=8)
@@ -653,18 +727,18 @@ def render(t, bg, frame, L, lay):
 
 def chip(s):
     tf = fi(40, "Bold")
-    t_ = text_img(s, tf, fill=INK)
+    t_ = text_img(s, tf, fill=SUN)
     c = Image.new("RGBA", (t_.width + 56, 84), (0, 0, 0, 0))
     d = ImageDraw.Draw(c)
-    rr(d, [0, 0, c.width - 1, 83], 42, fill=WHITE)
+    rr(d, [0, 0, c.width - 1, 83], 42, fill=(26, 23, 24, 235), outline=GOLD, width=2)
     c.alpha_composite(t_, (28, int(42 - t_.height / 2)))
     return c
 
 
 def build_layers(L):
     lay = {}
-    lay["kicker"] = text_img(L["kicker"], f8(44), fill=SUN)
-    lay["h2"] = text_img(L["hook2"], fit(L["hook2"], f8, 100, 920))
+    lay["kicker"] = text_img(spaced(L["kicker"]), fi(34, "SemiBold"), fill=GOLD)
+    lay["h2"] = text_img(L["hook2"], fit(L["hook2"], f8, 100, 920), fill=TXT)
     lay["h3"] = text_img(L["hook3"], fit(L["hook3"], f8, 84, 920), fill=SOFT)
     lay["pole_icon"] = icon_pole(150)
     lay["pole_big"] = icon_pole(190)
@@ -690,10 +764,11 @@ def build_layers(L):
     lay["s5b"] = text_img(L["s5b"], f8(180))
     lay["prog"] = text_img(L["prog"], fi(38, "SemiBold"), fill=SOFT)
     lay["boom"] = text_img(L["boom"], fit(L["boom"], f8, 58, 900), fill=SUN)
-    lay["end1b"] = text_img(L["end1b"], f8(96))
+    lay["end1b"] = text_img(spaced(L["end1b"]), fi(52, "SemiBold"), fill=TXT)
     lay["end2"] = text_img(L["end2"], fit(L["end2"], f8, 56, 900))
     lay["end3"] = text_img(L["end3"], fit(L["end3"], lambda z: fi(z, "Medium"), 38, 880), fill=SOFT)
-    lay["brand"] = text_img(L["brand"], fi(28, "SemiBold"), fill=(160, 152, 175))
+    lay["brand"] = text_img(spaced(L["brand"]), fi(24, "SemiBold"), fill=GREY)
+    lay["frame"] = gold_frame()
     return lay
 
 
