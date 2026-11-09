@@ -80,7 +80,7 @@ T = {
         "l_name": "EMRI I BERBERISË", "l_city": "QYTETI", "l_cut": "PRERJA FIRMË", "l_tone": "TONI",
         "tones": ["Miqësor", "Elegant", "Lozonjar"],
         "btn": "BOOM  Krijo 14 ditët e mia",
-        "s3a": "14 ditë.", "s3b": "Reels, karusele, story.",
+        "s3a": "14 ditë.", "s3a_fmt": "{} ditë.", "prog_fmt": "{} nga 14 postime të bëra", "s3b": "Reels, karusele, story.",
         "res_t": "14 ditët e ",
         "cards": [("REEL", "POV: gjete berberin tënd"), ("REEL", "Transformimi: para → pas"),
                   ("KARUSEL", "Shërbimet dhe çmimet"), ("REEL", "ASMR: fade-i në slow motion"),
@@ -120,7 +120,7 @@ T = {
         "l_name": "BARBERSHOP NAME", "l_city": "CITY", "l_cut": "SIGNATURE CUT", "l_tone": "TONE",
         "tones": ["Friendly", "Elegant", "Playful"],
         "btn": "BOOM  Create my 14 days",
-        "s3a": "14 days.", "s3b": "Reels, carousels, stories.",
+        "s3a": "14 days.", "s3a_fmt": "{} days.", "prog_fmt": "{} of 14 posts done", "s3b": "Reels, carousels, stories.",
         "res_t": "14 days of ",
         "cards": [("REEL", "POV: you found your barber"), ("REEL", "Transformation: before → after"),
                   ("CAROUSEL", "Services and prices"), ("REEL", "ASMR: slow-motion fade"),
@@ -194,12 +194,12 @@ def grain(img, t):
     return Image.blend(img, Image.merge("RGB", (g, g, g)), 0.035)
 
 
-def icon_pole(h=70):
+def icon_pole(h=70, off=0.0):
     """Small barber-pole logo mark."""
     w = int(h * 0.42)
     c = Image.new("RGBA", (w + 8, h + 30), (0, 0, 0, 0))
     d = ImageDraw.Draw(c)
-    st = pole_img(w, h - 8, 0)
+    st = pole_img(w, h - 8, off)
     m = Image.new("L", st.size, 0)
     ImageDraw.Draw(m).rounded_rectangle([0, 0, w - 1, h - 9], radius=w // 2, fill=255)
     c.paste(st, (4, 15), m)
@@ -454,20 +454,6 @@ def screen_detail(t, t0, L):
     return s
 
 
-def put_phone(img, frame, screen, cx, cy, scale=1.0, rot=0.0, a=1.0):
-    ph = frame.copy()
-    m = Image.new("L", screen.size, 0)
-    ImageDraw.Draw(m).rounded_rectangle([0, 0, screen.width - 1, screen.height - 1], radius=58, fill=255)
-    ph.paste(screen, (60, 60), m)
-    # glass highlight
-    hl = Image.new("RGBA", ph.size, (0, 0, 0, 0))
-    ImageDraw.Draw(hl).polygon([(60, 60), (360, 60), (60, 520)], fill=(255, 255, 255, 18))
-    ph.alpha_composite(hl)
-    if abs(rot) > 0.01:
-        ph = ph.rotate(rot, resample=Image.BICUBIC, expand=True)
-    place(img, ph, cx, cy, a, scale=scale)
-
-
 # ---------------------------------------------------------------- music + sound design (original)
 def music(path):
     sr = 44100
@@ -569,8 +555,23 @@ def music(path):
     add(rng.standard_normal(len(tt)) * (tt / 1.4) ** 2.2 * 0.3 + np.sin(2 * np.pi * np.cumsum(200 + 600 * (tt / 1.4) ** 2) / sr) * (tt / 1.4) ** 2 * 0.12,
         PRESS - 1.4, 1.0)
     add(boom(), PRESS, 1.1)
-    for at in (2.35, 4.45, 11.6, 15.4, 18.0):
-        add(whoosh(), at - 0.2, 0.55)
+    def snip():
+        tt = np.arange(int(0.06 * sr)) / sr
+        x = rng.standard_normal(len(tt)) * np.exp(-tt * 120)
+        ring = np.sin(2 * np.pi * 3400 * tt) * np.exp(-tt * 70) + np.sin(2 * np.pi * 5100 * tt) * np.exp(-tt * 90) * 0.6
+        return np.diff(x, prepend=0) * 0.8 + ring * 0.5
+
+    for c in (2.45, 4.55, 11.7, 15.5):
+        add(whoosh(0.5), c - 0.5, 0.45)
+        for j in range(3):
+            add(snip(), c - 0.45 + j * 0.13, 0.28, 0.3 + 0.2 * j)
+    add(whoosh(0.6), 17.7, 0.5)
+    tt = np.arange(int(1.2 * sr)) / sr
+    sizzle = rng.standard_normal(len(tt)) * np.exp(-tt * 3.5)
+    sizzle = (sizzle - np.convolve(sizzle, np.ones(6) / 6, mode="same")) * 0.35
+    add(sizzle, PRESS + 0.02, 0.6)
+    for i in range(13):
+        add(tick(), 8.0 + 0.9 * (1 - (1 - (i + 1) / 13) ** (1 / 3)), 0.07, 0.5)
     # typing ticks
     for t0, ln, d_ in ((4.95, 10, 0.85), (5.9, 6, 0.45), (6.45, 19, 0.6)):
         for i in range(ln):
@@ -593,130 +594,414 @@ def music(path):
         w.writeframes((mx * 32767).astype(np.int16).tobytes())
 
 
-# ---------------------------------------------------------------- the film
+# ---------------------------------------------------------------- motion toolkit
 def overlay():
     return Image.new("RGBA", (W, H), (0, 0, 0, 0))
 
 
-def render(t, bg, frame, L, lay):
-    img = bg.copy()
-    # camera shake on BOOM
-    shake = env(t, PRESS, PRESS + 0.5, 0.02, 0.45)
+def with_alpha(im, a):
+    if a >= 0.999:
+        return im
+    im = im.copy()
+    im.putalpha(im.getchannel("A").point(lambda v: int(v * a)))
+    return im
 
-    dust(img, t)
-    img.alpha_composite(lay["frame"])
 
-    # 1 · HOOK (0 – 2.4)
-    a = env(t, 0.0, 2.45, 0.08, 0.22)
-    if a:
-        p = [eob(prog(t, 0.0 + 0.22 * i, 0.42)) for i in range(4)]
-        place(img, lay["kicker"], W / 2, 520, a * eo(prog(t, 0.0, 0.35)))
-        g = text_img(L["hook1"], f8i(240), grad=True, shift=t * 0.25)
-        place(img, g, W / 2, 720, a * clamp(p[0]), scale=1.25 - 0.25 * clamp(p[0]))
-        place(img, lay["h2"], W / 2, 930 + 40 * (1 - p[1]), a * clamp(p[1]))
-        place(img, lay["h3"], W / 2, 1040 + 40 * (1 - p[2]), a * clamp(p[2]))
-        place(img, lay["pole_icon"], W / 2, 1230, a * clamp(p[3]), scale=0.8 + 0.2 * clamp(p[3]))
+def shine(layer, pos, width=0.18, strength=0.85):
+    """Diagonal light band sweeping across a text/logo layer (pos 0..1 = left..right)."""
+    if pos <= -0.3 or pos >= 1.3:
+        return layer
+    w, h = layer.size
+    xx = np.linspace(0, 1, w)[None, :] + np.linspace(0, 0.35, h)[:, None] * (h / max(w, 1))
+    band = np.clip(1 - np.abs(xx - pos * 1.35) / width, 0, 1) ** 2 * strength
+    a = np.asarray(layer.getchannel("A"), np.float32) / 255.0
+    light = Image.new("RGBA", (w, h), (255, 248, 230, 0))
+    light.putalpha(Image.fromarray((band * a * 255).astype(np.uint8)))
+    out = layer.copy()
+    out.alpha_composite(light)
+    return out
 
-    # 2 · PROBLEM (2.4 – 4.6)
-    a2 = env(t, 2.35, 4.55, 0.2, 0.2)
-    if a2:
-        place(img, lay["pb1"], W / 2, 560, a2 * eo(prog(t, 2.4, 0.35)))
-        p = eob(prog(t, 2.6, 0.45))
-        place(img, lay["pb2"], W / 2, 740, a2 * clamp(p), scale=0.85 + 0.15 * clamp(p))
-        g = text_img(L["pb3"], fit(L["pb3"], f8i, 150, 900), grad=True, shift=t * 0.2)
-        p2 = eob(prog(t, 2.8, 0.45))
-        place(img, g, W / 2, 900, a2 * clamp(p2), scale=0.85 + 0.15 * clamp(p2))
-        spots = [(230, 1130, -6), (720, 1110, 5), (420, 1260, 3), (800, 1290, -4), (240, 1400, 4), (600, 1440, -3)]
-        for i, (cx, cy, rot) in enumerate(spots):
-            k = eob(prog(t, 3.0 + 0.12 * i, 0.4))
-            if k <= 0:
-                continue
-            ch = lay["chips"][i]
-            bob = 8 * math.sin(t * 3 + i)
-            place(img, ch.rotate(rot, resample=Image.BICUBIC, expand=True), cx, cy + bob + (1 - k) * 60, a2 * clamp(k), scale=0.7 + 0.3 * clamp(k))
 
-    # 3 · FORM + BOOM (4.5 – 8.0)
-    a3 = env(t, 4.5, 8.05, 0.25, 0.15)
-    if a3:
-        place(img, lay["s2"] if t < 6.9 else lay["s2b"], W / 2, 250, a3 * (eo(prog(t, 4.55, 0.3)) if t < 6.9 else eo(prog(t, 6.9, 0.25))))
-        scr = screen_form(t, L)
-        put_phone(img, frame, scr, W / 2 - 30, 1050 + 90 * (1 - eo(prog(t, 4.5, 0.55))), scale=0.8, rot=3, a=a3)
-        fl = env(t, PRESS, PRESS + 0.6, 0.04, 0.5)
-        if fl:
-            img.alpha_composite(Image.new("RGBA", (W, H), (255, 226, 170, int(150 * fl))))
+def kinetic(img, layer, s, font, cx, cy, t, t0, stagger=0.045, dur=0.5, rise=70, a=1.0, spin=False):
+    """Letter-by-letter entrance: each glyph rises, overshoots and settles."""
+    if a <= 0.003:
+        return
+    d = ImageDraw.Draw(Image.new("L", (1, 1)))
+    bb = d.textbbox((0, 0), s, font=font)
+    xs = [4 - bb[0] + d.textlength(s[:i], font=font) for i in range(len(s) + 1)]
+    cuts = [0] + [int(round(x)) for x in xs[1:-1]] + [layer.width]
+    x0 = cx - layer.width / 2
+    k = 0
+    for i, ch in enumerate(s):
+        if ch == " ":
+            continue
+        p = prog(t, t0 + k * stagger, dur)
+        k += 1
+        if p <= 0:
+            continue
+        e = eob(p)
+        piece = layer.crop((cuts[i], 0, cuts[i + 1], layer.height))
+        if spin and p < 1:
+            piece = piece.rotate(18 * (1 - e), resample=Image.BICUBIC, expand=False)
+        piece = with_alpha(piece, a * clamp(p * 1.8))
+        img.alpha_composite(piece, (int(x0 + cuts[i]), int(cy - layer.height / 2 + rise * (1 - e))))
 
-    # 4 · 14 DAYS CASCADE (7.9 – 11.7)
-    a4 = env(t, 7.9, 11.75, 0.15, 0.22)
-    if a4:
-        p = eob(prog(t, 7.95, 0.45))
-        place(img, lay["s3a"], W / 2, 250, a4 * clamp(p), scale=0.8 + 0.2 * clamp(p))
-        place(img, lay["s3b"], W / 2, 360, a4 * eo(prog(t, 8.15, 0.4)))
-        scr = screen_cards(t, 8.0, L)
-        put_phone(img, frame, scr, W / 2 - 30, 1110, scale=0.78 * (1.1 - 0.1 * eob(prog(t, 7.9, 0.5))), rot=-3, a=a4)
 
-    # 5 · ONE DAY IN DETAIL + FEATURES (11.6 – 15.5)
-    a5 = env(t, 11.6, 15.5, 0.22, 0.22)
-    if a5:
-        scr = screen_detail(t, 11.8, L)
-        put_phone(img, frame, scr, W / 2 + 10, 1185 + 60 * (1 - eo(prog(t, 11.6, 0.5))), scale=0.72, rot=2, a=a5)
-        place(img, lay["featT"], 80, 210, a5 * eo(prog(t, 11.65, 0.3)), anchor="l")
-        for i, fl_ in enumerate(lay["feat"]):
-            p = eob(prog(t, 11.85 + i * 0.3, 0.4))
-            place(img, fl_, 80 + 60 * (1 - clamp(p)), 300 + i * 76, a5 * clamp(p), anchor="l")
+def find_coeffs(pa, pb):
+    m = []
+    for (x, y), (X, Y) in zip(pa, pb):
+        m.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
+        m.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
+    A = np.array(m, dtype=np.float64)
+    B = np.array(pb, dtype=np.float64).reshape(8)
+    return np.linalg.solve(A, B)
 
-    # 6 · FILM. COPY. POST. + 14/14 (15.4 – 18.1)
-    a6 = env(t, 15.4, 18.15, 0.18, 0.22)
-    if a6:
-        for i, key in enumerate(["s5a", "s5b", "s5c"]):
-            p = eob(prog(t, 15.45 + i * 0.3, 0.38))
-            lay_ = lay[key] if key != "s5c" else text_img(L["s5c"], f8i(190), grad=True, shift=t * 0.2)
-            place(img, lay_, W / 2, 560 + i * 200 + 30 * (1 - clamp(p)), a6 * clamp(p), scale=0.8 + 0.2 * clamp(p))
+
+def perspective(im, yaw):
+    """Fake 3D turn around the vertical axis (yaw -1..1)."""
+    if abs(yaw) < 0.004:
+        return im
+    w, h = im.size
+    sx = abs(yaw) * 0.10 * w
+    dl = max(0.0, -yaw) * 0.10 * h
+    dr = max(0.0, yaw) * 0.10 * h
+    dst = [(sx * (yaw < 0), dl), (w - sx * (yaw > 0), dr), (w - sx * (yaw > 0), h - dr), (sx * (yaw < 0), h - dl)]
+    src = [(0, 0), (w, 0), (w, h), (0, h)]
+    return im.transform((w, h), Image.PERSPECTIVE, find_coeffs(dst, src), Image.BICUBIC)
+
+
+def put_phone(img, frame, screen, cx, cy, scale=1.0, rot=0.0, a=1.0, yaw=0.0):
+    ph = frame.copy()
+    m = Image.new("L", screen.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, screen.width - 1, screen.height - 1], radius=58, fill=255)
+    ph.paste(screen, (60, 60), m)
+    # moving glass reflection
+    hl = Image.new("RGBA", ph.size, (0, 0, 0, 0))
+    off = int(200 * yaw)
+    ImageDraw.Draw(hl).polygon([(60 + off, 60), (380 + off, 60), (60 + off, 560)], fill=(255, 245, 225, 20))
+    ph.alpha_composite(hl)
+    ph = perspective(ph, yaw)
+    if abs(rot) > 0.01:
+        ph = ph.rotate(rot, resample=Image.BICUBIC, expand=True)
+    place(img, ph, cx, cy, a, scale=scale)
+
+
+def scissors(ang, size=150):
+    """Gold scissors drawn as vectors; ang = opening angle in degrees."""
+    c = Image.new("RGBA", (size * 2, size * 2), (0, 0, 0, 0))
+    cx = cy = size
+
+    def blade(sign):
+        layer = Image.new("RGBA", c.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        # blade towards +x, handle ring towards -x
+        d.polygon([(cx - 4, cy - 7 * sign), (cx + size * 0.92, cy - 1 * sign), (cx + size * 0.92, cy + 2 * sign), (cx - 4, cy + 9 * sign)],
+                  fill=GOLD_L + (255,))
+        d.line([(cx - 4, cy + 2 * sign), (cx + size * 0.9, cy + 1 * sign)], fill=GOLD_D + (255,), width=2)
+        rx, ry = cx - size * 0.52, cy + 22 * sign
+        d.line([(cx - 4, cy), (rx + 18, ry)], fill=GOLD + (255,), width=10)
+        d.ellipse([rx - 30, ry - 22, rx + 30, ry + 22], outline=GOLD + (255,), width=9)
+        return layer.rotate(sign * ang / 2, center=(cx, cy), resample=Image.BICUBIC)
+
+    c.alpha_composite(blade(1))
+    c.alpha_composite(blade(-1))
+    ImageDraw.Draw(c).ellipse([cx - 9, cy - 9, cx + 9, cy + 9], fill=GOLD_D + (255,), outline=GOLD_L + (255,), width=3)
+    return c
+
+
+def cut_fx(img, t, tc, y=960):
+    """Scissors fly across and leave a glowing gold cut line (before the split at tc)."""
+    p = prog(t, tc - 0.5, 0.45)
+    if p <= 0 or t > tc + 0.05:
+        return
+    x = -160 + (W + 320) * eio(p)
+    ov = overlay()
+    d = ImageDraw.Draw(ov)
+    d.line([(0, y), (min(W, x), y)], fill=GOLD_L + (235,), width=3)
+    glow = ov.filter(ImageFilter.GaussianBlur(8))
+    img.alpha_composite(glow)
+    img.alpha_composite(ov)
+    sc = scissors(32 * abs(math.sin(t * 26)) + 4)
+    img.alpha_composite(sc, (int(x - sc.width / 2), int(y - sc.height / 2)))
+
+
+def split(layer, k, y=960):
+    """The outgoing scene splits along the cut line and slides apart."""
+    out = overlay()
+    gap = int(320 * k)
+    a = 1 - k
+    top = with_alpha(layer.crop((0, 0, W, y)), a)
+    bot = with_alpha(layer.crop((0, y, W, H)), a)
+    out.alpha_composite(top, (0, -gap))
+    out.alpha_composite(bot, (0, y + gap))
+    return out
+
+
+_SPARKS = None
+
+
+def sparks(img, t, t0, ox, oy):
+    """Gold spark burst + shockwave ring when BOOM is pressed."""
+    global _SPARKS
+    tau = t - t0
+    if tau < 0 or tau > 1.4:
+        return
+    if _SPARKS is None:
+        rng = np.random.default_rng(5)
+        _SPARKS = [(rng.uniform(0, 2 * math.pi), rng.uniform(500, 1500), rng.uniform(2, 6), rng.uniform(0.6, 1.3)) for _ in range(90)]
+    ov = overlay()
+    d = ImageDraw.Draw(ov)
+    for ang, v, wdt, life in _SPARKS:
+        if tau > life:
+            continue
+        drag = (1 - math.exp(-3.2 * tau)) / 3.2
+        x = ox + math.cos(ang) * v * drag
+        yv = oy + math.sin(ang) * v * drag + 380 * tau * tau
+        trail = 0.045
+        drag2 = (1 - math.exp(-3.2 * max(0, tau - trail))) / 3.2
+        x2 = ox + math.cos(ang) * v * drag2
+        y2 = oy + math.sin(ang) * v * drag2 + 380 * max(0, tau - trail) ** 2
+        al = int(255 * (1 - tau / life))
+        col = GOLD_L if wdt < 4 else GOLD
+        d.line([(x2, y2), (x, yv)], fill=col + (al,), width=int(wdt))
+    r = 60 + 900 * eo(tau / 0.8)
+    ra = int(200 * clamp(1 - tau / 0.8))
+    if ra:
+        d.ellipse([ox - r, oy - r, ox + r, oy + r], outline=GOLD_L + (ra,), width=6)
+    img.alpha_composite(ov.filter(ImageFilter.GaussianBlur(5)))
+    img.alpha_composite(ov)
+
+
+def check_icon(p, size=40):
+    """Gold circle that pops, then a check that draws itself."""
+    c = Image.new("RGBA", (size + 10, size + 10), (0, 0, 0, 0))
+    d = ImageDraw.Draw(c)
+    r = size / 2 * eob(clamp(p / 0.5))
+    m = (size + 10) / 2
+    if r > 0.5:
+        d.ellipse([m - r, m - r, m + r, m + r], fill=GOLD)
+    q = clamp((p - 0.35) / 0.65)
+    if q > 0:
+        pts = [(m - 10, m), (m - 2, m + 9), (m + 11, m - 8)]
+        seg1 = clamp(q / 0.4)
+        p1 = (pts[0][0] + (pts[1][0] - pts[0][0]) * seg1, pts[0][1] + (pts[1][1] - pts[0][1]) * seg1)
+        d.line([pts[0], p1], fill=INK, width=5)
+        if q > 0.4:
+            seg2 = clamp((q - 0.4) / 0.6)
+            p2 = (pts[1][0] + (pts[2][0] - pts[1][0]) * seg2, pts[1][1] + (pts[2][1] - pts[1][1]) * seg2)
+            d.line([pts[1], p2], fill=INK, width=5)
+    return c
+
+
+# ---------------------------------------------------------------- scenes
+def sc_hook(img, t, L, lay, frame):
+    a = env(t, 0.0, 2.55, 0.05, 0.15)
+    place(img, lay["kicker"], W / 2, 520, a * eo(prog(t, 0.05, 0.4)))
+    f = f8i(240)
+    g = shine(text_img(L["hook1"], f, grad=True, shift=t * 0.25), (t - 0.75) / 0.8)
+    kinetic(img, g, L["hook1"], f, W / 2, 720, t, 0.05, stagger=0.06, dur=0.5, rise=110, a=a, spin=True)
+    p1, p2 = eob(prog(t, 0.6, 0.45)), eob(prog(t, 0.8, 0.45))
+    place(img, lay["h2"], W / 2, 930 + 50 * (1 - p1), a * clamp(p1))
+    place(img, lay["h3"], W / 2, 1040 + 50 * (1 - p2), a * clamp(p2))
+    p3 = eob(prog(t, 1.0, 0.5))
+    if p3 > 0:
+        place(img, icon_pole(150, t * 90).rotate(8 * (1 - p3), resample=Image.BICUBIC, expand=True), W / 2, 1230, a * clamp(p3),
+              scale=0.6 + 0.4 * clamp(p3))
+
+
+def sc_problem(img, t, L, lay, frame):
+    a = env(t, 2.5, 4.7, 0.15, 0.15)
+    place(img, lay["pb1"], W / 2, 560, a * eo(prog(t, 2.4, 0.35)))
+    f2 = f8(150)
+    kinetic(img, text_img(L["pb2"], f2, fill=TXT), L["pb2"], f2, W / 2, 740, t, 2.5, stagger=0.04, rise=80, a=a)
+    f3 = fit(L["pb3"], f8i, 150, 900)
+    g = shine(text_img(L["pb3"], f3, grad=True, shift=t * 0.2), (t - 3.3) / 0.8)
+    kinetic(img, g, L["pb3"], f3, W / 2, 900, t, 2.75, stagger=0.04, rise=80, a=a, spin=True)
+    spots = [(230, 1130, -6), (720, 1110, 5), (420, 1260, 3), (800, 1290, -4), (240, 1400, 4), (600, 1440, -3)]
+    for i, (cx, cy, rot) in enumerate(spots):
+        k = eob(prog(t, 3.0 + 0.12 * i, 0.4))
+        if k <= 0:
+            continue
+        bob = 10 * math.sin(t * 3 + i)
+        sway = rot + 4 * math.sin(t * 2.2 + i)
+        place(img, lay["chips"][i].rotate(sway, resample=Image.BICUBIC, expand=True), cx + 6 * math.cos(t * 1.7 + i),
+              cy + bob + (1 - k) * 80, a * clamp(k), scale=0.5 + 0.5 * clamp(k))
+
+
+def sc_form(img, t, L, lay, frame):
+    a = env(t, 4.6, 8.05, 0.2, 0.15)
+    if t < 6.9:
+        place(img, lay["s2"], W / 2, 250, a * eo(prog(t, 4.55, 0.3)), scale=0.9 + 0.1 * eo(prog(t, 4.55, 0.4)))
+    else:
+        p = eob(prog(t, 6.9, 0.35))
+        place(img, lay["s2b"], W / 2, 250, a * clamp(p), scale=0.6 + 0.4 * clamp(p))
+    e = eob(prog(t, 4.6, 0.8))
+    yaw = 0.85 * (1 - e) + 0.05 * math.sin(t * 1.3)
+    scr = screen_form(t, L)
+    zoom = 0.8 + 0.04 * eio(prog(t, 6.6, 0.9))  # push in towards the button
+    put_phone(img, frame, scr, W / 2 - 30 + 300 * (1 - e), 1050 + 140 * (1 - e) - 40 * eio(prog(t, 6.6, 0.9)), scale=zoom, rot=3 + 8 * (1 - e), a=a * clamp(e * 2), yaw=yaw)
+
+
+def sc_boom(img, t, L, lay, frame):
+    sparks(img, t, PRESS, 510, 1310)
+    p = prog(t, PRESS, 0.9)
+    if 0 < p < 1:
+        f = f8i(220)
+        g = shine(text_img("BOOM", f, grad=True, shift=t * 0.3), p * 1.3)
+        sc = 0.3 + 0.95 * eob(clamp(p / 0.35)) - 0.1 * clamp((p - 0.35) / 0.3)
+        a = clamp(p / 0.1) * (1 - clamp((p - 0.7) / 0.3))
+        place(img, g, W / 2, 900, a, scale=sc)
+
+
+def sc_cards(img, t, L, lay, frame):
+    a = env(t, 7.9, 11.85, 0.15, 0.15)
+    n = 1 + int(13 * eo(prog(t, 8.0, 0.9)))
+    pop = eob(prog(t, 8.9, 0.35)) if n == 14 else 0
+    s = L["s3a_fmt"].format(n)
+    place(img, text_img(s, f8(110), fill=SUN), W / 2, 250, a * eo(prog(t, 7.95, 0.25)), scale=1 + 0.12 * math.sin(math.pi * clamp(pop)))
+    place(img, lay["s3b"], W / 2, 360, a * eo(prog(t, 8.2, 0.4)))
+    scr = screen_cards(t, 8.0, L)
+    e = eob(prog(t, 7.9, 0.7))
+    put_phone(img, frame, scr, W / 2 - 30, 1110 + 200 * (1 - e), scale=0.78 * (0.85 + 0.15 * e), rot=-3 - 6 * (1 - e), a=a * clamp(e * 2),
+              yaw=-0.6 * (1 - e) - 0.05 * math.sin(t * 1.4))
+
+
+def sc_detail(img, t, L, lay, frame):
+    a = env(t, 11.75, 15.65, 0.15, 0.15)
+    e = eob(prog(t, 11.75, 0.8))
+    scr = screen_detail(t, 11.8, L)
+    put_phone(img, frame, scr, W / 2 + 10 + 320 * (1 - e), 1185 + 80 * (1 - e), scale=0.72, rot=2 + 10 * (1 - e), a=a * clamp(e * 2),
+              yaw=0.8 * (1 - e) + 0.05 * math.sin(t * 1.2))
+    ft = lay["featT"]
+    kinetic(img, ft, L["featT"], f8(58), 80 + ft.width / 2, 210, t, 11.8, stagger=0.025, dur=0.4, rise=40, a=a)
+    for i, fl_ in enumerate(lay["feat"]):
+        t0 = 11.9 + i * 0.3
+        p = eo(prog(t, t0 + 0.12, 0.45))
+        place(img, check_icon(prog(t, t0, 0.55)), 80, 300 + i * 76, a, anchor="l")
+        if p > 0:
+            place(img, fl_, 140 + 50 * (1 - p), 300 + i * 76, a * p, anchor="l")
+
+
+def sc_post(img, t, L, lay, frame):
+    a = env(t, 15.55, 18.15, 0.1, 0.2)
+    for i, key in enumerate(["s5a", "s5b", "s5c"]):
+        t0 = 15.6 + i * 0.32
+        f = f8i(190) if key == "s5c" else f8(180)
+        if key == "s5c":
+            lay_ = shine(text_img(L[key], f, grad=True, shift=t * 0.2), (t - 16.6) / 0.7)
+        else:
+            lay_ = lay[key]
+        kinetic(img, lay_, L[key], f, W / 2, 560 + i * 200, t, t0, stagger=0.035, dur=0.45, rise=90, a=a, spin=key == "s5c")
+    ov = overlay()
+    d = ImageDraw.Draw(ov)
+    bx, by, bw = 170, 1250, 740
+    rr(d, [bx, by, bx + bw, by + 26], 13, fill=(201, 163, 92, int(45 * a)))
+    k = eo(prog(t, 15.9, 1.0))
+    if k > 0:
+        g = grad_img(int(bw * k) + 1, 26, shift=t * 0.4).convert("RGBA")
+        m = Image.new("L", g.size, 0)
+        ImageDraw.Draw(m).rounded_rectangle([0, 0, g.width - 1, 25], radius=13, fill=int(255 * a))
+        ov.paste(g, (bx, by), m)
+        hx = bx + bw * k  # glowing head of the bar
+        d.ellipse([hx - 18, by - 5, hx + 18, by + 31], fill=GOLD_L + (int(200 * a * (1 - clamp((t - 16.9) / 0.4))),))
+    img.alpha_composite(ov.filter(ImageFilter.GaussianBlur(2)))
+    n = int(14 * k)
+    place(img, text_img(L["prog_fmt"].format(n), fi(38, "SemiBold"), fill=SOFT), W / 2, 1330, a * eo(prog(t, 15.9, 0.3)))
+    pb = eob(prog(t, 16.9, 0.45))
+    place(img, lay["boom"], W / 2, 1410, a * clamp(pb), scale=0.7 + 0.3 * clamp(pb))
+    if 16.9 < t < 17.9:
+        sparks_small(img, t, 16.9, W / 2, 1410)
+
+
+def sparks_small(img, t, t0, ox, oy):
+    tau = t - t0
+    ov = overlay()
+    d = ImageDraw.Draw(ov)
+    for i in range(16):
+        ang = i / 16 * 2 * math.pi
+        r1, r2 = 80 + 420 * eo(tau / 0.8), 60 + 360 * eo(tau / 0.8)
+        al = int(230 * clamp(1 - tau / 0.8))
+        d.line([(ox + math.cos(ang) * r2, oy + math.sin(ang) * r2 * 0.45), (ox + math.cos(ang) * r1, oy + math.sin(ang) * r1 * 0.45)],
+               fill=GOLD_L + (al,), width=4)
+    img.alpha_composite(ov)
+
+
+def sc_end(img, t, L, lay, frame):
+    a = env(t, 17.95, DUR + 1, 0.2, 0.3)
+    p = eob(prog(t, 18.05, 0.6))
+    if p > 0:
+        pole = icon_pole(190, t * 120)
+        place(img, pole.rotate(-14 * (1 - p), resample=Image.BICUBIC, expand=True), W / 2, 470 - 160 * (1 - clamp(p)), a * clamp(p),
+              scale=0.5 + 0.5 * clamp(p))
+    f = f8(176)
+    g = shine(text_img(L["end1"], f, grad=True, shift=t * 0.15), ((t - 19.0) % 2.2) / 1.0)
+    kinetic(img, g, L["end1"], f, W / 2, 700, t, 18.15, stagger=0.06, dur=0.55, rise=-120, a=a)
+    kinetic(img, lay["end1b"], spaced(L["end1b"]), fi(52, "SemiBold"), W / 2, 850, t, 18.5, stagger=0.02, dur=0.35, rise=30, a=a)
+    place(img, lay["end2"], W / 2, 960 + 30 * (1 - eo(prog(t, 18.7, 0.4))), a * eo(prog(t, 18.7, 0.4)))
+    place(img, lay["end3"], W / 2, 1030 + 30 * (1 - eo(prog(t, 18.85, 0.4))), a * eo(prog(t, 18.85, 0.4)))
+    ca = a * eo(prog(t, 19.0, 0.4))
+    if ca:
+        pw_, py = 580, 1190
+        pulse = 1 + 0.035 * math.sin((t - 19.0) * 2 * math.pi / 0.8)
+        pill = Image.new("RGBA", (pw_, 130), (0, 0, 0, 0))
+        g2 = grad_img(pw_, 130, shift=t * 0.3).convert("RGBA")
+        m = Image.new("L", (pw_, 130), 0)
+        ImageDraw.Draw(m).rounded_rectangle([0, 0, pw_ - 1, 129], radius=65, fill=255)
+        pill.paste(g2, (0, 0), m)
+        ImageDraw.Draw(pill).text((pw_ / 2, 65), L["cta"], font=fit(L["cta"], f8, 62, pw_ - 80), fill=INK, anchor="mm")
+        pill = shine(pill, ((t - 19.4) % 1.6) / 0.9, width=0.12, strength=0.6)
+        place(img, pill, W / 2, py + 65, ca, scale=pulse * (0.7 + 0.3 * eob(prog(t, 19.0, 0.45))))
         ov = overlay()
         d = ImageDraw.Draw(ov)
-        bx, by, bw = 170, 1250, 740
-        rr(d, [bx, by, bx + bw, by + 26], 13, fill=(201, 163, 92, int(45 * a6)))
-        k = eo(prog(t, 15.9, 1.0))
-        if k > 0:
-            g = grad_img(int(bw * k) + 1, 26, shift=t * 0.2).convert("RGBA")
-            m = Image.new("L", g.size, 0)
-            ImageDraw.Draw(m).rounded_rectangle([0, 0, g.width - 1, 25], radius=13, fill=int(255 * a6))
-            ov.paste(g, (bx, by), m)
+        bob = 14 * math.sin((t - 19.0) * 2 * math.pi / 0.9)
+        ay = py + 200 + bob
+        d.line([(W / 2, ay - 20), (W / 2, ay + 50)], fill=SUN + (int(255 * ca),), width=8)
+        d.line([(W / 2 - 26, ay + 24), (W / 2, ay + 52), (W / 2 + 26, ay + 24)], fill=SUN + (int(255 * ca),), width=8)
         img.alpha_composite(ov)
-        place(img, lay["prog"], W / 2, 1330, a6 * eo(prog(t, 16.6, 0.35)))
-        place(img, lay["boom"], W / 2, 1410, a6 * eob(prog(t, 16.8, 0.4)))
+    place(img, lay["brand"], W / 2, 1500, a * eo(prog(t, 19.3, 0.5)))
 
-    # 7 · END CARD (18.0 – 21)
-    a7 = env(t, 18.0, DUR + 1, 0.3, 0.3)
-    if a7:
-        p = eob(prog(t, 18.0, 0.55))
-        place(img, lay["pole_big"], W / 2, 470, a7 * clamp(p), scale=0.7 + 0.3 * clamp(p))
-        g = text_img(L["end1"], f8(176), grad=True, shift=t * 0.15)
-        place(img, g, W / 2, 700, a7 * clamp(p), scale=0.85 + 0.15 * clamp(p))
-        place(img, lay["end1b"], W / 2, 850, a7 * eo(prog(t, 18.2, 0.4)))
-        place(img, lay["end2"], W / 2, 960, a7 * eo(prog(t, 18.4, 0.4)))
-        place(img, lay["end3"], W / 2, 1030, a7 * eo(prog(t, 18.55, 0.4)))
-        ca = a7 * eo(prog(t, 18.75, 0.4))
-        if ca:
-            ov = overlay()
-            d = ImageDraw.Draw(ov)
-            pw_ = 580
-            py = 1190
-            pulse = 1 + 0.03 * math.sin((t - 18.75) * 2 * math.pi / 0.8)
-            g = grad_img(int(pw_ * pulse), int(130 * pulse), shift=t * 0.2).convert("RGBA")
-            m = Image.new("L", g.size, 0)
-            ImageDraw.Draw(m).rounded_rectangle([0, 0, g.width - 1, g.height - 1], radius=g.height // 2, fill=int(255 * ca))
-            ov.paste(g, (int(W / 2 - g.width / 2), int(py + 65 - g.height / 2)), m)
-            d.text((W / 2, py + 65), L["cta"], font=fit(L["cta"], f8, 62, pw_ - 80), fill=INK + (int(255 * ca),), anchor="mm")
-            bob = 12 * math.sin((t - 18.75) * 2 * math.pi / 0.9)
-            ay = py + 200 + bob
-            d.line([(W / 2, ay - 20), (W / 2, ay + 50)], fill=SUN + (int(255 * ca),), width=8)
-            d.line([(W / 2 - 26, ay + 24), (W / 2, ay + 52), (W / 2 + 26, ay + 24)], fill=SUN + (int(255 * ca),), width=8)
-            img.alpha_composite(ov)
-        place(img, lay["brand"], W / 2, 1500, a7 * eo(prog(t, 19.0, 0.5)))
 
+# (scene, start, end, cut time if it leaves with the scissors cut)
+SCENES = [(sc_hook, 0.0, 2.6, 2.45), (sc_problem, 2.5, 4.75, 4.55), (sc_form, 4.6, 8.05, None), (sc_boom, PRESS, 8.6, None),
+          (sc_cards, 7.9, 11.9, 11.7), (sc_detail, 11.75, 15.7, 15.5), (sc_post, 15.55, 18.2, None), (sc_end, 17.95, DUR + 1, None)]
+CUTS = [c for *_, c in SCENES if c]
+
+
+def render(t, bg, frame, L, lay):
+    img = bg.copy()
+    # slow breathing glow behind everything
+    gl = 0.5 + 0.5 * math.sin(t * 1.3)
+    img.alpha_composite(with_alpha(lay["glow"], 0.35 + 0.35 * gl))
+    dust(img, t)
+    for fn, t0, t1, cut in SCENES:
+        if not (t0 <= t < t1):
+            continue
+        if cut is not None and t >= cut - 0.08:
+            k = eio(prog(t, cut - 0.08, 0.42))
+            if k >= 0.999:
+                continue
+            layer = overlay()
+            fn(layer, min(t, cut - 0.08), L, lay, frame)  # freeze the scene and split it
+            img.alpha_composite(split(layer, k))
+        else:
+            fn(img, t, L, lay, frame)
+    for c in CUTS:
+        cut_fx(img, t, c)
+    # golden flash on BOOM and a light sweep into the end card
+    fl = env(t, PRESS, PRESS + 0.55, 0.03, 0.5)
+    if fl:
+        img.alpha_composite(Image.new("RGBA", (W, H), (255, 226, 170, int(150 * fl))))
+    sw = prog(t, 17.85, 0.5)
+    if 0 < sw < 1:
+        band = overlay()
+        x = -400 + (W + 800) * eio(sw)
+        ImageDraw.Draw(band).polygon([(x - 160, 0), (x + 60, 0), (x + 260, H), (x + 40, H)], fill=(255, 236, 200, 90))
+        img.alpha_composite(band.filter(ImageFilter.GaussianBlur(40)))
+    img.alpha_composite(lay["frame"])
+    shake = env(t, PRESS, PRESS + 0.5, 0.02, 0.45)
     if shake:
-        dx = int(18 * shake * math.sin(t * 90))
-        dy = int(14 * shake * math.cos(t * 77))
+        dx = int(20 * shake * math.sin(t * 90))
+        dy = int(16 * shake * math.cos(t * 77))
         img = Image.fromarray(np.roll(np.roll(np.asarray(img), dx, axis=1), dy, axis=0))
     out = grain(img.convert("RGB"), t)
     g_ = min(1.0, eio((DUR - t) / 0.35))
@@ -753,12 +1038,7 @@ def build_layers(L):
     feat = []
     for s in L["feat"]:
         t_ = text_img(s, fit(s, lambda z: fi(z, "SemiBold"), 40, 840))
-        c = Image.new("RGBA", (t_.width + 70, max(t_.height, 50)), (0, 0, 0, 0))
-        d = ImageDraw.Draw(c)
-        d.ellipse([0, c.height / 2 - 20, 40, c.height / 2 + 20], fill=MINT)
-        d.line([(10, c.height / 2), (18, c.height / 2 + 9), (31, c.height / 2 - 8)], fill=INK, width=5)
-        c.alpha_composite(t_, (60, int(c.height / 2 - t_.height / 2)))
-        feat.append(c)
+        feat.append(t_)
     lay["feat"] = feat
     lay["s5a"] = text_img(L["s5a"], f8(180))
     lay["s5b"] = text_img(L["s5b"], f8(180))
@@ -769,6 +1049,11 @@ def build_layers(L):
     lay["end3"] = text_img(L["end3"], fit(L["end3"], lambda z: fi(z, "Medium"), 38, 880), fill=SOFT)
     lay["brand"] = text_img(spaced(L["brand"]), fi(24, "SemiBold"), fill=GREY)
     lay["frame"] = gold_frame()
+    yy, xx = np.mgrid[0:H // 4, 0:W // 4].astype(np.float32)
+    k = np.clip(1 - np.sqrt((xx - W / 8) ** 2 + ((yy - H / 8) * 0.8) ** 2) / (W / 4.5), 0, 1) ** 2
+    glow = Image.new("RGBA", (W // 4, H // 4), GOLD + (0,))
+    glow.putalpha(Image.fromarray((k * 70).astype(np.uint8)))
+    lay["glow"] = glow.resize((W, H), Image.BICUBIC)
     return lay
 
 
