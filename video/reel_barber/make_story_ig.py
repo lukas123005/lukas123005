@@ -1,6 +1,7 @@
 """
-Instagram Story for BOOM 14 Barber: "3 gabimet" -> zgjidhja -> link.
-1080x1920, 30 fps, 20 s, black and gold like the reel, original music.
+Social media story (Instagram / TikTok / Facebook) for BOOM 14 Barber: "3 gabimet" -> zgjidhja -> link.
+1080x1920, 30 fps, 28.5 s, black and gold, Albanian voiceover (voice/vo_story.mp3) + original music.
+Scene times follow the pauses in the voiceover (VO starts at VO_AT).
 Text stays between y=280 and y=1600 (clear of the story header and the reply bar).
 The space under "Prek linkun" is left free for Instagram's link sticker.
 
@@ -22,9 +23,11 @@ _spec = importlib.util.spec_from_file_location("barber_reel", os.path.join(HERE,
 R = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(R)
 
-W, H, FPS, DUR = 1080, 1920, 30, 20.0
+W, H, FPS, DUR = 1080, 1920, 30, 28.5
 N = int(FPS * DUR)
-CUTS = [2.7, 5.8, 8.9, 12.0]
+VO_AT = 0.3
+CUTS = [5.1, 8.5, 11.85, 17.0]  # "Gabimi i parë / dytë / tretë", "Zgjidhja?"
+SOL, CTA = 17.0, 23.0
 
 MISTAKES = [
     ("Poston vetëm", "kur të kujtohet.", "Profili rri bosh me ditë dhe klientët e rinj nuk të shohin."),
@@ -52,17 +55,27 @@ def x_icon(p, r=58):
 
 # ---------------------------------------------------------------- scenes
 def sc_hook(img, t, lay):
-    a = R.env(t, 0.0, 2.9, 0.05, 0.15)
-    R.place(img, lay["kick"], W / 2, 650, a * R.eo(prog(t, 0.05, 0.4)))
+    a = R.env(t, 0.0, CUTS[0] + 0.2, 0.05, 0.15)
+    # phase 1: "Berber, ndalu një sekondë!" large, as the voice says it
+    a1 = a * R.env(t, 0.2, 2.35, 0.05, 0.25)
+    if a1:
+        fB = R.f8(190)
+        R.kinetic(img, R.text_img("Berber,", fB, fill=R.TXT), "Berber,", fB, W / 2, 780, t, 0.3, stagger=0.05, rise=100, a=a1)
+        s0 = "ndalu një sekondë!"
+        fN = R.fit(s0, R.f8i, 110, 940)
+        g0 = R.shine(R.text_img(s0, fN, grad=True, shift=t * 0.25), (t - 1.6) / 0.7)
+        R.kinetic(img, g0, s0, fN, W / 2, 960, t, 1.05, stagger=0.03, rise=70, a=a1, spin=True)
+    # phase 2: small kicker stays while the question comes in
+    R.place(img, lay["kick"], W / 2, 650, a * R.eo(prog(t, 2.3, 0.4)))
     f1 = R.f8(130)
-    R.kinetic(img, R.text_img("Po i bën", f1, fill=R.TXT), "Po i bën", f1, W / 2, 850, t, 0.15, stagger=0.05, rise=80, a=a)
+    R.kinetic(img, R.text_img("Po i bën", f1, fill=R.TXT), "Po i bën", f1, W / 2, 850, t, 2.35, stagger=0.05, rise=80, a=a)
     f2 = R.f8i(150)
     s = "këto 3 gabime?"
-    g = R.shine(R.text_img(s, R.fit(s, R.f8i, 150, 940), grad=True, shift=t * 0.25), (t - 1.3) / 0.8)
-    R.kinetic(img, g, s, R.fit(s, R.f8i, 150, 940), W / 2, 1020, t, 0.5, stagger=0.04, rise=90, a=a, spin=True)
-    p = R.eob(prog(t, 1.2, 0.45))
+    g = R.shine(R.text_img(s, R.fit(s, R.f8i, 150, 940), grad=True, shift=t * 0.25), (t - 3.7) / 0.8)
+    R.kinetic(img, g, s, R.fit(s, R.f8i, 150, 940), W / 2, 1020, t, 2.85, stagger=0.04, rise=90, a=a, spin=True)
+    p = R.eob(prog(t, 3.9, 0.45))
     R.place(img, lay["hook_sub"], W / 2, 1180 + 40 * (1 - p), a * R.clamp(p))
-    p3 = R.eob(prog(t, 1.4, 0.5))
+    p3 = R.eob(prog(t, 2.5, 0.5))
     if p3 > 0:
         R.place(img, R.icon_pole(140, t * 90), W / 2, 1390, a * R.clamp(p3), scale=0.6 + 0.4 * R.clamp(p3))
 
@@ -78,17 +91,17 @@ def sc_mistake(i, t0, t1):
         a = R.env(t, t0, t1 + 0.2, 0.1, 0.15)
         num = f"0{i + 1}"
         fN = R.f8i(300)
-        g = R.shine(R.text_img(num, fN, grad=True, shift=t * 0.2), (t - t0 - 0.6) / 0.7)
+        g = R.shine(R.text_img(num, fN, grad=True, shift=t * 0.2), (t - t0 - 0.5) / 0.7)
         R.kinetic(img, g, num, fN, W / 2 - 150, 670, t, t0 + 0.05, stagger=0.08, dur=0.5, rise=120, a=a)
         R.place(img, x_icon(prog(t, t0 + 0.35, 0.55)), W / 2 + 190, 670, a)
         R.place(img, lay["gab"], W / 2, 870, a * R.eo(prog(t, t0 + 0.25, 0.35)))
         f1 = R.fit(top, R.f8, 96, 940)
-        R.kinetic(img, R.text_img(top, f1, fill=R.TXT), top, f1, W / 2, 990, t, t0 + 0.35, stagger=0.03, rise=60, a=a)
+        R.kinetic(img, R.text_img(top, f1, fill=R.TXT), top, f1, W / 2, 990, t, t0 + 1.3, stagger=0.03, rise=60, a=a)
         f2 = R.fit(line2, R.f8i, 104, 940)
         g2 = R.text_img(line2, f2, grad=True, shift=t * 0.2)
-        R.kinetic(img, g2, line2, f2, W / 2, 1110, t, t0 + 0.6, stagger=0.03, rise=60, a=a)
+        R.kinetic(img, g2, line2, f2, W / 2, 1110, t, t0 + 1.9, stagger=0.03, rise=60, a=a)
         for j, ln in enumerate(lay["subs"][i]):
-            p = R.eo(prog(t, t0 + 1.05 + 0.12 * j, 0.4))
+            p = R.eo(prog(t, t0 + (3.4 if i == 2 else 2.6) + 0.12 * j, 0.4))
             R.place(img, ln, W / 2, 1270 + j * 62 + 30 * (1 - p), a * p)
         # thin gold progress for the 3 mistakes
         ov = R.overlay()
@@ -102,15 +115,15 @@ def sc_mistake(i, t0, t1):
 
 
 def sc_solution(img, t, lay):
-    t0 = 12.0
-    a = R.env(t, t0, 16.2, 0.1, 0.2)
+    t0 = SOL
+    a = R.env(t, t0, CTA + 0.2, 0.1, 0.2)
     R.place(img, lay["zgj"], W / 2, 330, a * R.eo(prog(t, t0 + 0.05, 0.35)))
     f = R.f8(130)
-    g = R.shine(R.text_img("BOOM 14", f, grad=True, shift=t * 0.2), (t - t0 - 0.9) / 0.8)
-    R.kinetic(img, g, "BOOM 14", f, W / 2, 470, t, t0 + 0.15, stagger=0.05, rise=-90, a=a)
-    R.place(img, lay["barber"], W / 2, 590, a * R.eo(prog(t, t0 + 0.5, 0.4)))
+    g = R.shine(R.text_img("BOOM 14", f, grad=True, shift=t * 0.2), (t - t0 - 1.5) / 0.8)
+    R.kinetic(img, g, "BOOM 14", f, W / 2, 470, t, t0 + 0.6, stagger=0.05, rise=-90, a=a)
+    R.place(img, lay["barber"], W / 2, 590, a * R.eo(prog(t, t0 + 1.2, 0.4)))
     for j, fl in enumerate(lay["checks"]):
-        tj = t0 + 0.8 + j * 0.28
+        tj = t0 + 2.85 + j * 0.45
         R.place(img, R.check_icon(prog(t, tj, 0.5)), 170, 700 + j * 70, a, anchor="l")
         p = R.eo(prog(t, tj + 0.12, 0.4))
         if p > 0:
@@ -122,18 +135,18 @@ def sc_solution(img, t, lay):
 
 
 def sc_cta(img, t, lay):
-    t0 = 16.0
+    t0 = CTA
     a = R.env(t, t0, DUR + 1, 0.15, 0.2)
     f1 = R.f8(120)
     R.kinetic(img, R.text_img("Ti pret flokët.", f1, fill=R.TXT), "Ti pret flokët.", f1, W / 2, 520, t, t0 + 0.05, stagger=0.03, rise=70, a=a)
     s = "Postimet i ke gati."
     f2 = R.fit(s, R.f8i, 116, 960)
-    g = R.shine(R.text_img(s, f2, grad=True, shift=t * 0.2), (t - t0 - 1.1) / 0.8)
-    R.kinetic(img, g, s, f2, W / 2, 670, t, t0 + 0.45, stagger=0.03, rise=70, a=a, spin=True)
-    p = R.eob(prog(t, t0 + 1.0, 0.45))
+    g = R.shine(R.text_img(s, f2, grad=True, shift=t * 0.2), (t - t0 - 1.7) / 0.8)
+    R.kinetic(img, g, s, f2, W / 2, 670, t, t0 + 1.0, stagger=0.03, rise=70, a=a, spin=True)
+    p = R.eob(prog(t, t0 + 1.9, 0.45))
     R.place(img, lay["price"], W / 2, 845, a * R.clamp(p), scale=0.8 + 0.2 * R.clamp(p))
-    R.place(img, lay["price_sub"], W / 2, 955, a * R.eo(prog(t, t0 + 1.2, 0.4)))
-    ca = a * R.eo(prog(t, t0 + 1.5, 0.4))
+    R.place(img, lay["price_sub"], W / 2, 955, a * R.eo(prog(t, t0 + 2.1, 0.4)))
+    ca = a * R.eo(prog(t, t0 + 2.5, 0.4))
     if ca:
         R.place(img, lay["tap"], W / 2, 1090, ca)
         ov = R.overlay()
@@ -144,14 +157,14 @@ def sc_cta(img, t, lay):
         d.line([(W / 2 - 30, ay + 42), (W / 2, ay + 74), (W / 2 + 30, ay + 42)], fill=R.SUN + (int(255 * ca),), width=9)
         img.alpha_composite(ov)
     # (y 1260-1480 left free for the link sticker)
-    R.place(img, lay["brand"], W / 2, 1560, a * R.eo(prog(t, t0 + 1.8, 0.5)))
+    R.place(img, lay["brand"], W / 2, 1560, a * R.eo(prog(t, t0 + 2.8, 0.5)))
 
 
-SCENES = [(sc_hook, 0.0, 2.95, CUTS[0])]
+SCENES = [(sc_hook, 0.0, CUTS[0] + 0.45, CUTS[0])]
 for i in range(3):
     s0 = CUTS[i]
     SCENES.append((sc_mistake(i, s0, CUTS[i + 1]), s0, CUTS[i + 1] + 0.45, CUTS[i + 1]))
-SCENES += [(sc_solution, 12.0, 16.3, None), (sc_cta, 16.0, DUR + 1, None)]
+SCENES += [(sc_solution, SOL, CTA + 0.3, None), (sc_cta, CTA, DUR + 1, None)]
 
 
 def render(t, bg, lay):
@@ -172,7 +185,7 @@ def render(t, bg, lay):
             fn(img, t, lay)
     for c in CUTS:
         R.cut_fx(img, t, c)
-    fl = R.env(t, 12.0, 12.5, 0.03, 0.45)
+    fl = R.env(t, SOL, SOL + 0.5, 0.03, 0.45)
     if fl:
         img.alpha_composite(Image.new("RGBA", (W, H), (255, 226, 170, int(110 * fl))))
     img.alpha_composite(lay["frame_o"])
@@ -187,7 +200,7 @@ def layers():
     L = R.T["sq"]
     lay = {"L": L, "frame": R.phone_frame(), "frame_o": R.gold_frame()}
     lay["kick"] = R.text_img(R.spaced("BERBER, NDALU NJË SEKONDË"), R.fi(30, "SemiBold"), fill=R.GOLD)
-    lay["hook_sub"] = R.text_img("në Instagramin e berberisë", R.fi(44, "Medium"), fill=R.SOFT)
+    lay["hook_sub"] = R.text_img("në social media të berberisë", R.fi(44, "Medium"), fill=R.SOFT)
     lay["gab"] = R.text_img(R.spaced("GABIMI"), R.fi(32, "SemiBold"), fill=R.GOLD)
     lay["subs"] = [[R.text_img(ln, R.fi(40, "Medium"), fill=R.SOFT) for ln in R.wrap(m[2], R.fi(40, "Medium"), 880)] for m in MISTAKES]
     lay["zgj"] = R.text_img(R.spaced("ZGJIDHJA"), R.fi(32, "SemiBold"), fill=R.GOLD)
@@ -264,7 +277,7 @@ def music(path):
     major = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]]
     k, tb = 0, 0.0
     while tb < DUR - 0.5:
-        sol = tb >= 12.0
+        sol = tb >= SOL
         ch = (major if sol else minor)[int(tb / (beat * 4)) % 4]
         inbar = k % 4
         if tb > 0.4:
@@ -285,18 +298,35 @@ def music(path):
         add(whoosh(), c - 0.5, 0.45)
         for j in range(3):
             add(snip(), c - 0.45 + j * 0.13, 0.28, 0.3 + 0.2 * j)
-        add(boom(), c + 0.05, 0.45 if c < 12 else 0.8)
+        add(boom(), c + 0.05, 0.45 if c < SOL else 0.8)
     for i, m in enumerate([72, 76, 79, 84]):
-        add(keys(hz(m), 0.8), 12.15 + i * 0.09, 0.1)
-        add(keys(hz(m), 0.8), 17.1 + i * 0.09, 0.08)
+        add(keys(hz(m), 0.8), SOL + 0.15 + i * 0.09, 0.1)
+        add(keys(hz(m), 0.8), CTA + 1.1 + i * 0.09, 0.08)
     mx = np.tanh(out * 1.35) / np.tanh(1.35)
     mx *= np.minimum(1, (DUR - tt_all) / 1.4)[:, None]
-    mx /= np.abs(mx).max() / 0.89
+    mx /= np.abs(mx).max()
+    # voiceover on top, music ducked under it
+    vo = voice(sr)
+    i0 = int(VO_AT * sr)
+    v = np.zeros(n)
+    v[i0:i0 + len(vo)] = vo[: n - i0]
+    env_v = np.convolve(np.abs(v), np.ones(int(0.25 * sr)) / (0.25 * sr), mode="same")
+    duck = 1 - 0.62 * np.clip(env_v / (env_v.max() * 0.25 + 1e-9), 0, 1)
+    mx = mx * 0.42 * duck[:, None] + v[:, None] * 0.95
+    mx /= np.abs(mx).max() / 0.92
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
         w.setframerate(sr)
         w.writeframes((mx * 32767).astype(np.int16).tobytes())
+
+
+def voice(sr):
+    """Albanian voiceover (Higgsfield / ElevenLabs), decoded to mono float at sr."""
+    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", os.path.join(HERE, "voice", "vo_story.mp3"), "-ac", "1", "-ar", str(sr),
+                          "-f", "f32le", "-"], capture_output=True, check=True).stdout
+    v = np.frombuffer(raw, np.float32).astype(np.float64)
+    return v / (np.abs(v).max() + 1e-9)
 
 
 def main():
