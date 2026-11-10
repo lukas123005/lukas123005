@@ -325,7 +325,12 @@ def voice(sr):
     """Albanian voiceover (Higgsfield / ElevenLabs), decoded to mono float at sr."""
     raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", os.path.join(HERE, "voice", "vo_story.mp3"), "-ac", "1", "-ar", str(sr),
                           "-f", "f32le", "-"], capture_output=True, check=True).stdout
-    v = np.frombuffer(raw, np.float32).astype(np.float64)
+    v = np.frombuffer(raw, np.float32).astype(np.float64).copy()
+    # drop the spoken "me kapshënin" (13.47-14.22 s in the clip): the screen still shows "me caption-in"
+    a0, a1, f = int(13.47 * sr), int(14.22 * sr), int(0.02 * sr)
+    v[a0 - f:a0] *= np.linspace(1, 0, f)
+    v[a0:a1] = 0
+    v[a1:a1 + f] *= np.linspace(0, 1, f)
     return v / (np.abs(v).max() + 1e-9)
 
 
