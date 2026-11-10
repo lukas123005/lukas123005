@@ -1,0 +1,635 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Quit in 30 Days</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@page{size:6in 9in;margin:0}
+:root{--navy:#10233A;--navy2:#183453;--mint:#2FCB8E;--mint-d:#1A9E6C;--mint-l:#E3F6EC;--sky:#F5FAF7;--coral:#FF7A59;--coral-l:#FFE9E2;
+--ink:#1B2A38;--muted:#5E6E7C;--line:#DCE7E1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:6in;height:9in;position:relative;overflow:hidden;page-break-after:always;padding:.55in .55in .6in;background:#fff}
+.page:last-child{page-break-after:auto}
+.serif{font-family:Fraunces,Georgia,serif}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;letter-spacing:-.01em}
+h2{font-size:24pt;line-height:1.1;color:var(--navy)}
+h3{font-size:13pt;color:var(--navy);margin:14pt 0 6pt}
+p{font-size:10.2pt;line-height:1.5;margin-bottom:7pt}
+.eyebrow{font-size:7.5pt;font-weight:700;letter-spacing:.16em;color:var(--mint-d);text-transform:uppercase;margin-bottom:6pt}
+.folio{position:absolute;bottom:.28in;left:.55in;right:.55in;display:flex;justify-content:space-between;font-size:7pt;color:#9AA8B3;letter-spacing:.06em}
+.lead{font-size:11.5pt;line-height:1.5;color:var(--muted)}
+ul.clean,ol.clean{list-style:none}
+.note{font-size:8pt;color:var(--muted);font-style:italic;line-height:1.45}
+/* cover */
+.cover{background:var(--navy);color:#fff;padding:.6in}
+.cover .sun{position:absolute;width:5.6in;height:5.6in;border-radius:50%;right:-2.2in;top:-1.6in;background:radial-gradient(circle,rgba(47,203,142,.55),rgba(47,203,142,0) 65%)}
+.cover .sun2{position:absolute;width:4in;height:4in;border-radius:50%;left:-1.6in;bottom:-1.2in;background:radial-gradient(circle,rgba(255,122,89,.35),rgba(255,122,89,0) 65%)}
+.cover .tag{display:inline-block;font-size:7.5pt;font-weight:700;letter-spacing:.18em;border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:4pt 9pt}
+.cover h1{font-size:54pt;line-height:.95;margin:22pt 0 12pt}
+.cover h1 em{font-style:italic;color:var(--mint)}
+.cover .sub{font-size:13pt;line-height:1.4;color:#CFE0DA;max-width:4.2in}
+.cover .dots{position:absolute;left:.6in;right:.6in;bottom:1.55in;display:grid;grid-template-columns:repeat(10,1fr);gap:7pt}
+.cover .dots i{display:block;aspect-ratio:1;border-radius:50%;border:1.5px solid rgba(255,255,255,.35)}
+.cover .dots i.on{background:var(--mint);border-color:var(--mint)}
+.cover .by{position:absolute;left:.6in;bottom:.6in;font-size:9pt;color:#A9BFB7;letter-spacing:.06em}
+.cover .chip{position:absolute;right:.6in;bottom:.55in;background:var(--coral);color:#fff;font-weight:700;font-size:8.5pt;border-radius:99px;padding:6pt 11pt}
+/* reasons */
+.reasons li{display:flex;gap:10pt;margin-bottom:9pt;align-items:flex-start}
+.reasons .n{flex:0 0 22pt;height:22pt;border-radius:50%;background:var(--mint-l);color:var(--mint-d);font:700 10pt Inter;display:grid;place-items:center}
+.reasons b{display:block;font-size:10.5pt;color:var(--navy);margin-bottom:1pt}
+.reasons span{font-size:9.2pt;color:var(--muted);line-height:1.42}
+/* boxes */
+.card{border:1px solid var(--line);border-radius:10pt;padding:11pt 13pt;margin:9pt 0;background:#fff}
+.card.mint{background:var(--mint-l);border-color:#BFE8D3}
+.card.coral{background:var(--coral-l);border-color:#FFD1C4}
+.card.navy{background:var(--navy);color:#fff;border:0}
+.quote{border-left:3pt solid var(--mint);padding:4pt 0 4pt 11pt;font:600 13pt/1.35 Fraunces,Georgia,serif;color:var(--navy);margin:12pt 0}
+.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:7pt;margin-top:10pt}
+.icons div{background:var(--sky);border-radius:9pt;padding:9pt 7pt;text-align:center;font-size:8pt;color:var(--muted);line-height:1.35}
+.icons svg{width:20pt;height:20pt;display:block;margin:0 auto 5pt;color:var(--mint-d)}
+.icons b{display:block;color:var(--navy);font-size:9pt}
+/* timeline */
+.tl{position:relative;margin-top:12pt;padding-left:22pt}
+.tl:before{content:"";position:absolute;left:6pt;top:4pt;bottom:6pt;width:2pt;background:linear-gradient(var(--mint),var(--navy))}
+.tl div{position:relative;margin-bottom:10.5pt}
+.tl div:before{content:"";position:absolute;left:-20pt;top:2pt;width:10pt;height:10pt;border-radius:50%;background:#fff;border:2.5pt solid var(--mint)}
+.tl b{display:block;font:600 11pt Fraunces,Georgia,serif;color:var(--navy)}
+.tl span{font-size:9.2pt;color:var(--muted);line-height:1.4}
+/* lists */
+ol.steps{counter-reset:s;list-style:none}
+ol.steps li{counter-increment:s;position:relative;padding-left:22pt;margin-bottom:6pt;font-size:10pt;line-height:1.45}
+ol.steps li:before{content:counter(s);position:absolute;left:0;top:0;width:15pt;height:15pt;border-radius:50%;background:var(--navy);color:#fff;font:700 8pt Inter;display:grid;place-items:center}
+.check li{position:relative;padding-left:20pt;margin-bottom:7pt;font-size:9.6pt;line-height:1.45}
+.check li:before{content:"";position:absolute;left:0;top:1pt;width:11pt;height:11pt;border:1.5pt solid var(--mint-d);border-radius:3pt}
+table{width:100%;border-collapse:collapse;font-size:9pt;margin-top:8pt}
+th{text-align:left;background:var(--navy);color:#fff;padding:6pt 8pt;font-weight:600}
+td{padding:7pt 8pt;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}
+td:first-child{font-weight:600;color:var(--navy);width:44%}
+.fill{border-bottom:1px dashed #B8C6BF;height:19pt}
+.calc{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6pt;align-items:end;margin-top:8pt;font-size:8pt;color:var(--muted);text-align:center}
+.calc .box{height:26pt;border:1.5px solid var(--line);border-radius:6pt;background:#fff}
+.calc .op{font:700 14pt Inter;color:var(--navy);padding-bottom:5pt}
+/* SOS */
+.sos{border:2px dashed var(--coral);border-radius:14pt;padding:14pt 16pt;background:#fff}
+.sos h3{margin-top:0;color:var(--coral)}
+.scissors{font-size:8pt;color:var(--coral);margin-top:6pt;text-align:center;letter-spacing:.08em}
+/* day pages */
+.day{padding-top:.5in}
+.day .num{position:absolute;right:.38in;top:.3in;font:600 78pt/1 Fraunces,Georgia,serif;color:var(--mint-l);letter-spacing:-.04em}
+.day .label{font-size:7.5pt;font-weight:700;letter-spacing:.18em;color:var(--mint-d)}
+.day h2{font-size:24pt;margin:4pt 0 3pt;position:relative;max-width:3.55in}
+.day .tagline{font-style:italic;color:var(--muted);font-size:10.5pt;margin-bottom:12pt;position:relative}
+.bar{display:flex;gap:2.2pt;margin:0 0 14pt}
+.bar i{flex:1;height:5pt;border-radius:3pt;background:#E4ECE8}
+.bar i.on{background:var(--mint)}
+.bar i.now{background:var(--coral)}
+.task{display:flex;gap:10pt;align-items:flex-start;border:1px solid var(--line);border-radius:10pt;padding:9pt 11pt;margin-bottom:7pt}
+.task .ic{flex:0 0 24pt;height:24pt;border-radius:7pt;display:grid;place-items:center}
+.task .ic svg{width:14pt;height:14pt}
+.task b{display:block;font-size:8pt;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2pt}
+.task span{font-size:10pt;line-height:1.42}
+.task .tick{margin-left:auto;flex:0 0 13pt;height:13pt;border:1.5pt solid #B8C6BF;border-radius:3.5pt;margin-top:2pt}
+.t-paper .ic{background:#EAF0FF;color:#4766E0}.t-paper b{color:#4766E0}
+.t-do .ic{background:var(--mint-l);color:var(--mint-d)}.t-do b{color:var(--mint-d)}
+.t-save .ic{background:#FFF4D9;color:#C98A00}.t-save b{color:#C98A00}
+.dyk{background:var(--navy);color:#fff;border-radius:11pt;padding:11pt 13pt;margin-top:10pt;position:relative}
+.dyk b{display:block;font-size:7.5pt;letter-spacing:.16em;color:var(--mint);margin-bottom:3pt}
+.dyk span{font-size:9.6pt;line-height:1.45;color:#E4EEF0}
+.meter{display:flex;align-items:center;gap:7pt;margin-top:12pt;font-size:8pt;color:var(--muted)}
+.meter i{width:15pt;height:15pt;border-radius:50%;border:1.5pt solid #B8C6BF;display:grid;place-items:center;font:600 7pt Inter;color:#9AA8B3;font-style:normal}
+.lines{margin-top:9pt}
+.lines div{border-bottom:1px solid var(--line);height:17pt}
+.ms{display:inline-block;background:var(--coral);color:#fff;font-size:7pt;font-weight:700;letter-spacing:.08em;padding:3.5pt 8pt;border-radius:99px;margin:-4pt 0 10pt}
+/* tracker */
+.grid30{display:grid;grid-template-columns:repeat(5,1fr);gap:7pt;margin-top:12pt}
+.grid30 div{border:1.5px solid var(--line);border-radius:9pt;height:.62in;position:relative;padding:5pt 6pt;font:600 10pt Fraunces,Georgia,serif;color:var(--navy)}
+.grid30 div.m{border-color:var(--coral);background:var(--coral-l)}
+.grid30 div small{position:absolute;bottom:4pt;left:6pt;right:6pt;font:500 6.5pt Inter;color:var(--muted)}
+/* certificate */
+.cert{background:var(--sky);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.cert .frame{position:absolute;inset:.35in;border:2px solid var(--mint);border-radius:16pt}
+.cert .frame:after{content:"";position:absolute;inset:6pt;border:1px solid #BFE8D3;border-radius:12pt}
+.cert h2{font-size:30pt;margin:8pt 0}
+.cert .medal{width:1.1in;height:1.1in;border-radius:50%;background:var(--mint);color:#fff;display:grid;place-items:center;font:600 30pt Fraunces,Georgia,serif;box-shadow:0 0 0 6pt var(--mint-l)}
+.sig{display:flex;gap:30pt;margin-top:24pt}
+.sig div{width:1.6in;border-top:1px solid var(--ink);padding-top:4pt;font-size:8pt;color:var(--muted)}
+</style></head><body><section class="page cover">
+<div class="sun"></div><div class="sun2"></div>
+<span class="tag">A DAY-BY-DAY PLAN · 30 DAYS</span>
+<h1>Quit in<br><em>30 Days.</em></h1>
+<p class="sub">A day-by-day plan for people who have tried before. One page a day. One small win at a time.</p>
+<div class="dots"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="by">BY DIAMANT</div>
+<div class="chip">For people who've tried before</div>
+</section><section class="page">
+<div class="eyebrow">Why this book</div>
+<h2>7 reasons this time can be different</h2>
+<ul class="clean reasons" style="margin-top:14pt"><li><span class="n">1</span><div><b>Built for people who have tried before</b><span>No lectures. A plan that expects hard days and shows you what to do on each one.</span></div></li><li><span class="n">2</span><div><b>One page a day, about 10 minutes</b><span>Every day has one paper task, one real-life task and one Save Box step. Nothing more.</span></div></li><li><span class="n">3</span><div><b>You watch your money grow</b><span>The Save Box turns every skipped pack into cash in a jar you can see, with treats on Day 3, 7, 14, 21 and a big reward on Day 30.</span></div></li><li><span class="n">4</span><div><b>A plan for every craving</b><span>A six-step craving routine and a tear-out SOS card, because a craving lasts only a few minutes.</span></div></li><li><span class="n">5</span><div><b>Real facts, not scare tactics</b><span>30 “Did you know?” facts from the World Health Organization, the CDC and the US Surgeon General.</span></div></li><li><span class="n">6</span><div><b>You see the proof in your body</b><span>A sport or activity you pick on day one, a warm-up on Day 13 and a Sport Test on Day 30, so you feel how your breathing changes.</span></div></li><li><span class="n">7</span><div><b>Slip-proof, not perfect</b><span>A ready “If I slip” plan so one bad moment does not become a bad week.</span></div></li></ul>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>2</span></div></section><section class="page">
+<div class="eyebrow">Welcome</div>
+<h2>You can do this.</h2>
+<p class="lead" style="margin-top:10pt">You have probably tried before, and you are still here. That says a lot about you.</p>
+<p>This book gives you one page for each of your 30 smoke-free days. Every day gives you a paper task, a real-life task and a surprising fact. Do one page a day and let the days add up.</p>
+<p style="font-style:italic;color:var(--muted)">Remember, change comes from within…</p>
+<div class="quote">Every day you do not smoke is a day you give back to yourself.</div>
+<h3>How each day works</h3>
+<div class="icons">
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><b>Paper</b>a short writing task</div>
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg><b>Do</b>one real-life action</div>
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg><b>Save Box</b>money into your jar</div>
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg><b>Did you know?</b>a fact to keep you going</div>
+</div>
+<p class="note" style="margin-top:14pt">Each day page also has a craving meter (rate today from 1 to 5) and space for notes. Watching the number fall is part of the reward.</p>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>3</span></div></section><section class="page">
+<div class="eyebrow">Your body, after the last cigarette</div>
+<h2>What starts to change</h2>
+<p class="lead" style="margin-top:6pt">The facts in this book, on one page.</p>
+<div class="tl"><div><b>Within minutes</b><span>Your heart rate starts to drop.</span></div><div><b>Within hours</b><span>Carbon monoxide levels in your blood begin to fall.</span></div><div><b>First few days</b><span>Taste and smell often start to improve. Cravings peak around days 2–3, then ease.</span></div><div><b>2 to 12 weeks</b><span>Circulation tends to improve.</span></div><div><b>1 to 9 months</b><span>Coughing and shortness of breath tend to decrease.</span></div><div><b>1 year</b><span>Risk of coronary heart disease is about half that of a smoker.</span></div><div><b>5 to 15 years</b><span>Risk of stroke falls to that of a non-smoker.</span></div><div><b>10 years</b><span>Lung cancer death rate is about half that of a smoker.</span></div><div><b>15 years</b><span>Risk of coronary heart disease is the same as for someone who never smoked.</span></div></div>
+<p class="note">Source: World Health Organization. Timings are typical and vary from person to person.</p>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>4</span></div></section><section class="page">
+<div class="eyebrow">Your toolkit</div>
+<h2>Three tools you will use every day</h2>
+<div class="card mint"><b>1. Save Box.</b> Each day, put the money a pack would have cost into a jar you can see.</div>
+<div class="card"><b>2. Store Question.</b> Heading out to buy cigarettes? Ask: <i>why go to the store to buy cigarettes, when I can buy something else instead?</i> Then buy a drink, a snack or gum.</div>
+<div class="card"><b>3. Full Breath.</b> Three slow breaths morning and evening. Notice how your breathing changes.</div>
+<h3>When a craving hits <span style="font:400 9pt Inter;color:var(--muted)">(it lasts only a few minutes)</span></h3>
+<ol class="steps">
+<li>Name it: “This is a craving. It will pass.”</li>
+<li>Take three Full Breaths.</li>
+<li>Drink water in slow sips.</li>
+<li>Move: stand up, step outside, change rooms.</li>
+<li>Keep your hands and mouth busy: gum, a snack, a pen.</li>
+<li>Read your reasons card and picture your sport.</li>
+</ol>
+<p class="note" style="margin-top:8pt">General information, not medical advice. If you have a health condition, are pregnant, take medication or want nicotine replacement or prescription help, talk to a doctor or pharmacist first.</p>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>5</span></div></section><section class="page">
+<div class="eyebrow">Tear out and keep</div>
+<h2>Your Craving SOS card</h2>
+<p class="lead" style="margin:6pt 0 12pt">Cut it out, fold it, keep it in your wallet or take a photo for your phone lock screen.</p>
+<div class="sos">
+<h3>CRAVING? It passes in minutes.</h3>
+<ol class="steps">
+<li>Name it: “This will pass.”</li>
+<li>3 Full Breaths.</li>
+<li>Slow sips of water.</li>
+<li>Move: step outside or change rooms.</li>
+<li>Gum, a snack or a pen in your hands.</li>
+<li>Read my reasons. Picture my sport.</li>
+</ol>
+<div style="margin-top:10pt;font-size:9pt;color:var(--muted)">My top reason: <span style="display:inline-block;width:2.4in;border-bottom:1px dashed #B8C6BF"></span></div>
+<div style="margin-top:9pt;font-size:9pt;color:var(--muted)">Call / text: <span style="display:inline-block;width:2.65in;border-bottom:1px dashed #B8C6BF"></span></div>
+</div>
+<div class="scissors">✂ — — — cut along the dashed line — — —</div>
+<div class="card coral" style="margin-top:16pt"><b>The Store Question</b><br><span style="font-size:9.6pt">Why go to the store to buy cigarettes, when I can buy something else instead?</span></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>6</span></div></section><section class="page">
+<div class="eyebrow">Before Day 1</div>
+<h2>Get ready</h2>
+<ul class="clean check" style="margin-top:14pt"><li><b>Write your top 3 reasons</b> on a card and on your phone. Be specific, like “I want to play football without losing my breath.”</li><li><b>Name your sport or activity.</b> Put it at the top of the card. You will test it on Day 30.</li><li><b>Pick a quit date</b> within the next 7 to 14 days, and tell one person.</li><li><b>Build your Save Box.</b> Use a clear jar. Daily save = price of a pack × packs per day. Write it on the jar and choose what the money is for.</li><li><b>Note your top 3 triggers</b> (coffee, stress, drinks, driving) and decide what you will do instead.</li><li><b>On the night before:</b> throw away all cigarettes, lighters and ashtrays, and stock gum, water and snacks.</li></ul>
+<div class="card mint" style="margin-top:12pt"><b>My quit date:</b> <span style="display:inline-block;width:1.6in;border-bottom:1px dashed #8FBFA6"></span>
+&nbsp; <b>I told:</b> <span style="display:inline-block;width:1.1in;border-bottom:1px dashed #8FBFA6"></span></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>7</span></div></section><section class="page">
+<div class="eyebrow">Before Day 1</div>
+<h2>Choose your method</h2>
+<p style="margin-top:10pt">The best method is the one you will follow. Pairing a method with support usually works better than going alone.</p>
+<table><tr><th>Method</th><th>Good if</th></tr><tr><td>Cold turkey</td><td>You want a clean break and have a plan for cravings</td></tr><tr><td>Cutting down, then stopping</td><td>Stopping suddenly feels overwhelming (set an end date)</td></tr><tr><td>Nicotine replacement (patch, gum, lozenge)</td><td>Cravings are strong. Follow the package, ask a pharmacist</td></tr><tr><td>Prescription help or a quitline</td><td>You have tried before and want extra support</td></tr></table>
+<div class="card coral" style="margin-top:14pt"><b>Talk to a doctor or pharmacist first</b> if you are pregnant, have a heart or lung condition, take regular medication, are under 18, or have a history of depression or anxiety.</div>
+<p style="margin-top:8pt">My method: <span style="display:inline-block;width:3.3in;border-bottom:1px dashed #B8C6BF"></span></p>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>8</span></div></section><section class="page">
+<div class="eyebrow">Fill in before Day 1</div>
+<h2>My reasons card</h2>
+<div class="card" style="margin-top:12pt"><b>My sport or activity:</b><div class="fill"></div>
+<b style="display:block;margin-top:8pt">My top 3 reasons:</b>
+<div style="font-size:9pt;color:var(--muted)">1.</div><div class="fill"></div><div style="font-size:9pt;color:var(--muted)">2.</div><div class="fill"></div><div style="font-size:9pt;color:var(--muted)">3.</div><div class="fill"></div></div>
+<h3>My Save Box</h3>
+<div class="calc"><div><div class="box"></div>price of a pack</div><div class="op">×</div><div><div class="box"></div>packs per day</div><div class="op">=</div><div><div class="box" style="border-color:var(--mint)"></div>my daily save</div></div>
+<div class="card mint" style="margin-top:12pt;font-size:9.4pt">
+<b>Example only:</b> if a pack costs 5 and you smoke 1 pack a day, that is 5 a day, 35 after one week and 150 after 30 days. Use your own prices and currency.</div>
+<p style="margin-top:6pt">The money is for: <span style="display:inline-block;width:3.1in;border-bottom:1px dashed #B8C6BF"></span></p>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>9</span></div></section><section class="page day">
+<div class="num">01</div>
+<div class="label">DAY 1 OF 30</div>
+<h2>Quit Day</h2>
+<p class="tagline">Take it one hour at a time.</p>
+
+<div class="bar"><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write a letter to future you, 5 lines about why you are doing this. Seal it and open it on Day 30.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take a 10-minute walk after your first meal. Do three Full Breaths morning, midday and evening.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Put in your first daily save.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Your heart rate starts to drop within minutes of your last cigarette, and carbon monoxide levels begin to fall within hours.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>10</span></div></section><section class="page day">
+<div class="num">02</div>
+<div class="label">DAY 2 OF 30</div>
+<h2>Stay Busy</h2>
+<p class="tagline">Empty time is when cravings are loudest.</p>
+
+<div class="bar"><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line: the date, the money you added and one word about your breathing.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Go for a long walk, or tidy one room.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money and look at the jar.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Cravings are usually strongest around days 2 to 3, and each one passes in a few minutes.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>11</span></div></section><section class="page day">
+<div class="num">03</div>
+<div class="label">DAY 3 OF 30</div>
+<h2>Hold the Line</h2>
+<p class="tagline">The hardest stretch. It eases from here.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write what your biggest craving taught you about your triggers.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Dance to three songs you love, or cook a meal you enjoy.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money, then take your first small treat.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Around now, many people notice their breathing feels easier.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>12</span></div></section><section class="page day">
+<div class="num">04</div>
+<div class="label">DAY 4 OF 30</div>
+<h2>Know Your Triggers</h2>
+<p class="tagline">Every trigger you plan for loses some power.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>List your top 3 triggers and what you will do instead of smoking.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Change your coffee routine today: a different cup or place, and brush your teeth right after.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Taste and smell often start to improve within the first few days.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>13</span></div></section><section class="page day">
+<div class="num">05</div>
+<div class="label">DAY 5 OF 30</div>
+<h2>Move Your Body</h2>
+<p class="tagline">Movement burns off restless energy.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Go for a gentle jog or a 20-minute walk. Notice how your breathing feels.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>About two in three adults who smoke say they want to quit, and around half try every year. You are far from alone.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>14</span></div></section><section class="page day">
+<div class="num">06</div>
+<div class="label">DAY 6 OF 30</div>
+<h2>Reach Out</h2>
+<p class="tagline">You do not have to do this alone.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write 3 things that already feel better than before.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Call or message a friend and tell them how it is going.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Counselling and medication can more than double a person&#x27;s chance of quitting, according to the World Health Organization. Asking for help is a smart move.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>15</span></div></section><section class="page day">
+<div class="num">07</div>
+<div class="label">DAY 7 OF 30</div>
+<h2>One Week Smoke-Free</h2>
+<p class="tagline">A real milestone. Celebrate it.</p>
+<div class="ms">MILESTONE · TREAT FROM THE SAVE BOX</div>
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Count the Save Box and write the number down.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take your Day 7 reward and a photo of the jar.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money before you count.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Withdrawal symptoms usually fade over the next two to four weeks.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>16</span></div></section><section class="page day">
+<div class="num">08</div>
+<div class="label">DAY 8 OF 30</div>
+<h2>Take the Stairs</h2>
+<p class="tagline">Small effort, real payoff.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take the stairs instead of the lift all day.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>In 2022, about half of US adults who smoked tried to quit, but fewer than 1 in 10 succeeded that year. Every smoke-free day you stack puts you ahead.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>17</span></div></section><section class="page day">
+<div class="num">09</div>
+<div class="label">DAY 9 OF 30</div>
+<h2>Make Something</h2>
+<p class="tagline">Busy hands, calm mind.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Draw a jar and colour in a little more for each day so far.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Draw, play music or start a small project.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Cigarette smoke contains more than 7,000 chemicals, and at least 69 of them can cause cancer. Every day you skip it, you skip all of them.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>18</span></div></section><section class="page day">
+<div class="num">10</div>
+<div class="label">DAY 10 OF 30</div>
+<h2>Taste Your Food</h2>
+<p class="tagline">Enjoy what you can taste again.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line and one food you are enjoying more.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Cook a meal you love and eat it slowly.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Smokers lose at least 10 years of life expectancy on average, but quitting before age 40 cuts that extra risk of dying by about 90 percent. It is never too late to start gaining years back.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>19</span></div></section><section class="page day">
+<div class="num">11</div>
+<div class="label">DAY 11 OF 30</div>
+<h2>Fresh Start</h2>
+<p class="tagline">Get rid of old smoke.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Wash the clothes, bag or car cover that still smell of smoke, and open the windows.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Smoking harms nearly every organ in the body, so quitting gives nearly every organ a chance to recover.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>20</span></div></section><section class="page day">
+<div class="num">12</div>
+<div class="label">DAY 12 OF 30</div>
+<h2>Practise “No Thanks”</h2>
+<p class="tagline">A ready answer makes it easy.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write 2 short replies for when someone offers you a cigarette.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Say “No thanks, I quit” out loud three times.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>There is no safe level of exposure to second-hand smoke. By quitting, you protect the people around you too.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>21</span></div></section><section class="page day">
+<div class="num">13</div>
+<div class="label">DAY 13 OF 30</div>
+<h2>Sport Warm-Up</h2>
+<p class="tagline">Meet your sport again, gently.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Play or practise your sport for 15 easy minutes. Notice your breathing.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Between one and nine months after quitting, coughing and shortness of breath tend to decrease. Today&#x27;s easy session is the start of that.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>22</span></div></section><section class="page day">
+<div class="num">14</div>
+<div class="label">DAY 14 OF 30</div>
+<h2>Two Weeks Smoke-Free</h2>
+<p class="tagline">Two weeks of proof.</p>
+<div class="ms">MILESTONE · TREAT FOR YOUR SPORT OR HOBBY</div>
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write three answers: what was the hardest moment, what worked best, and what will you change?</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Count the Save Box and take your Day 14 reward for your sport or hobby.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money before you count.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Circulation tends to improve somewhere between two and twelve weeks after quitting.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>23</span></div></section><section class="page day">
+<div class="num">15</div>
+<div class="label">DAY 15 OF 30</div>
+<h2>Halfway There</h2>
+<p class="tagline">Fifteen days done.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Reread your reasons page and add one new reason.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take a 20-minute walk, ideally with someone.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Quitting helps at any age. People who quit between 45 and 54 cut their chance of dying too early by about two-thirds, and those who quit before 40 by about 90 percent.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>24</span></div></section><section class="page day">
+<div class="num">16</div>
+<div class="label">DAY 16 OF 30</div>
+<h2>Beat Boredom</h2>
+<p class="tagline">Boredom is a sneaky trigger.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>List 10 things you can do in under 10 minutes.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Pick one from your list and do it right now.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>The World Health Organization calls quitting one of the best things a person can do for their health. Tobacco kills more than 7 million people worldwide every year.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>25</span></div></section><section class="page day">
+<div class="num">17</div>
+<div class="label">DAY 17 OF 30</div>
+<h2>Plan for Stress</h2>
+<p class="tagline">The break helps, not the cigarette.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write 3 ways to take a smoke-free break when you are stressed.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take a 5-minute break outside with three Full Breaths.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Nicotine makes your body release adrenaline, which is why a cigarette can feel like a quick lift. Now your body is learning to stay alert without it.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>26</span></div></section><section class="page day">
+<div class="num">18</div>
+<div class="label">DAY 18 OF 30</div>
+<h2>Help Someone</h2>
+<p class="tagline">Helping others strengthens your own decision.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write down one thing you would tell a friend who wants to quit.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Share a tip with someone, or encourage a person who wants to quit.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Since 2002, there have been more former smokers than current smokers in the United States. People like you are the reason.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>27</span></div></section><section class="page day">
+<div class="num">19</div>
+<div class="label">DAY 19 OF 30</div>
+<h2>Plan a Risky Night</h2>
+<p class="tagline">A night out is easier with a plan.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your plan: what you will drink, what you will do with your hands, and when you will leave.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Tell a friend about your plan before you go.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>About 3 in 5 US adults who ever smoked have quit. Quitting is far more common than most people think.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>28</span></div></section><section class="page day">
+<div class="num">20</div>
+<div class="label">DAY 20 OF 30</div>
+<h2>Get Your Heart Going</h2>
+<p class="tagline">Make your body work a little harder.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Go for a 25-minute jog, fast walk or sport session.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Quitting lowers the risk of chest infections like bronchitis and pneumonia, and slows the loss of lung function in people with COPD.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>29</span></div></section><section class="page day">
+<div class="num">21</div>
+<div class="label">DAY 21 OF 30</div>
+<h2>Three Weeks Smoke-Free</h2>
+<p class="tagline">Twenty-one days. Look how far you have come.</p>
+<div class="ms">MILESTONE · THREE WEEKS</div>
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Count the Save Box and write down what you could buy with it.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Treat yourself to something small from the box.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money before you count.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Cravings and irritability usually keep fading over two to four weeks.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>30</span></div></section><section class="page day">
+<div class="num">22</div>
+<div class="label">DAY 22 OF 30</div>
+<h2>The Store Question</h2>
+<p class="tagline">Practise the trick that stops the shop trip.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write the Store Question in your own words: why go to the store for cigarettes when you can buy something else?</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Walk into a shop, ask the question and buy a drink, snack or gum instead.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>The World Health Organization estimates that 4.5 trillion cigarette butts are not disposed of properly each year, adding up to hundreds of millions of kilograms of toxic waste.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>31</span></div></section><section class="page day">
+<div class="num">23</div>
+<div class="label">DAY 23 OF 30</div>
+<h2>Try Something New</h2>
+<p class="tagline">Fill the space cigarettes left.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write down one new activity you would like to try this month.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take the first small step: a class, a video, a walk somewhere new.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Quitting can add as much as a decade to your life expectancy, according to the US Surgeon General&#x27;s report on smoking cessation.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>32</span></div></section><section class="page day">
+<div class="num">24</div>
+<div class="label">DAY 24 OF 30</div>
+<h2>Slip-Proof Your Plan</h2>
+<p class="tagline">Prepare for a bad day, so it does not become a bad week.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your “If I slip” plan: put it out, three Full Breaths, tell someone, back on the plan.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Tidy your space and check that nothing smoke-related is left.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Fewer than 4 in 10 adults who try to quit use counselling or medication. If you slip, adding support is one of the best ways to improve your next try.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>33</span></div></section><section class="page day">
+<div class="num">25</div>
+<div class="label">DAY 25 OF 30</div>
+<h2>Push Your Sport</h2>
+<p class="tagline">See what your body can do now.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write your daily line and how your breathing felt.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Play your sport or activity for 30 minutes at a comfortable pace.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Lung function can improve by up to about 10 percent in the months after quitting, as coughing and wheezing ease.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>34</span></div></section><section class="page day">
+<div class="num">26</div>
+<div class="label">DAY 26 OF 30</div>
+<h2>What Is Better Now</h2>
+<p class="tagline">Write down the proof.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>List 3 things that are easier or nicer than before you quit.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Do something kind for a friend or family member.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Heart rate and blood pressure start returning toward normal soon after your last cigarette, so some of the proof on your list is already happening inside you.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>35</span></div></section><section class="page day">
+<div class="num">27</div>
+<div class="label">DAY 27 OF 30</div>
+<h2>Money Check</h2>
+<p class="tagline">Your jar is real proof.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Work it out: pack price × packs per day × days smoke-free. Compare it with your jar.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Decide how you will spend the big reward on Day 30.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>The World Health Organization says tobacco pulls household money away from basics like food and shelter. Your jar is money going back where it belongs.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>36</span></div></section><section class="page day">
+<div class="num">28</div>
+<div class="label">DAY 28 OF 30</div>
+<h2>Four Weeks Smoke-Free</h2>
+<p class="tagline">Four weeks. That is a real change.</p>
+<div class="ms">MILESTONE · FOUR WEEKS</div>
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write 3 lines about what is different now compared with Day 1.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Take a small treat from the Save Box and tell your support person how far you have come.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>A year after quitting, the risk of coronary heart disease is about half that of a smoker, according to the World Health Organization.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>37</span></div></section><section class="page day">
+<div class="num">29</div>
+<div class="label">DAY 29 OF 30</div>
+<h2>Plan Your Celebration</h2>
+<p class="tagline">Tomorrow is a big day. Get ready for it.</p>
+
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Write how you will celebrate Day 30 and what you will do with the big reward.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Invite a friend to join you for tomorrow&#x27;s Sport Test.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Ten years after quitting, the lung cancer death rate is about half that of a smoker, according to the World Health Organization.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>38</span></div></section><section class="page day">
+<div class="num">30</div>
+<div class="label">DAY 30 OF 30</div>
+<h2>You Did It</h2>
+<p class="tagline">Thirty days smoke-free.</p>
+<div class="ms">MILESTONE · SPORT TEST AND THE BIG REWARD</div>
+<div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i></div>
+<div class="task t-paper"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div><div><b>Paper</b><span>Open your letter from Day 1 and write a short reply. Then write how your Sport Test felt.</span></div><div class="tick"></div></div>
+<div class="task t-do"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v4M10 15l1-5 4 2 3-1M11 10l-3 1-1 3"/></svg></div><div><b>Do</b><span>Run your Sport Test: play your sport or activity for 20 to 30 minutes at an easy pace and notice your breathing.</span></div><div class="tick"></div></div>
+<div class="task t-save"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10l1 3H6z"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M12 12v6M10 14h3a1 1 0 0 1 0 2h-2a1 1 0 0 0 0 2h3"/></svg></div><div><b>Save Box</b><span>Add today&#x27;s money, count the jar and take your big reward.</span></div><div class="tick"></div></div>
+<div class="dyk"><b>DID YOU KNOW?</b><span>Fifteen years after quitting, the risk of coronary heart disease is the same as for someone who never smoked, and the risk of stroke is down to a non-smoker&#x27;s within 5 to 15 years. Keep going, one day at a time.</span></div>
+<div class="meter">Craving level today <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i> <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
+<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>39</span></div></section><section class="page">
+<div class="eyebrow">Your progress</div>
+<h2>30-day tracker</h2>
+<p style="margin-top:6pt">Tick a box every evening. Colour the milestone boxes when you take your reward.</p>
+<div class="grid30"><div class="m">1<small>Body starts to recover</small></div><div class="">2<small></small></div><div class="m">3<small>Hardest stretch, then it eases</small></div><div class="">4<small></small></div><div class="">5<small></small></div><div class="">6<small></small></div><div class="m">7<small>Treat from the Save Box</small></div><div class="">8<small></small></div><div class="">9<small></small></div><div class="">10<small></small></div><div class="">11<small></small></div><div class="">12<small></small></div><div class="">13<small></small></div><div class="m">14<small>Treat for your sport or hobby</small></div><div class="">15<small></small></div><div class="">16<small></small></div><div class="">17<small></small></div><div class="">18<small></small></div><div class="">19<small></small></div><div class="">20<small></small></div><div class="m">21<small>Three weeks</small></div><div class="">22<small></small></div><div class="">23<small></small></div><div class="">24<small></small></div><div class="">25<small></small></div><div class="">26<small></small></div><div class="">27<small></small></div><div class="m">28<small>Four weeks</small></div><div class="">29<small></small></div><div class="m">30<small>Sport Test and the big reward</small></div></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>40</span></div></section><section class="page">
+<div class="eyebrow">If it happens</div>
+<h2>If you slip</h2>
+<p class="lead" style="margin-top:8pt">One cigarette is a moment, not a verdict. Prepare for a bad day, so it does not become a bad week.</p>
+<ol class="steps" style="margin-top:8pt">
+<li>Put it out.</li><li>Take three Full Breaths.</li><li>Tell someone.</li><li>Go back on the plan, today, at the page you were on.</li>
+</ol>
+<div class="card mint" style="margin-top:12pt">Fewer than 4 in 10 adults who try to quit use counselling or medication. If you slip, adding support is one of the best ways to improve your next try.</div>
+<h3>My “If I slip” plan</h3>
+<div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>41</span></div></section><section class="page cert">
+<div class="frame"></div>
+<div class="medal">30</div>
+<div class="eyebrow" style="margin-top:16pt">Certificate</div>
+<h2>Thirty days smoke-free</h2>
+<p class="lead" style="max-width:3.8in">This certifies that</p>
+<div style="width:3.4in;border-bottom:1.5px solid var(--ink);height:26pt;margin:6pt 0 10pt"></div>
+<p style="max-width:3.9in">completed 30 days of Quit in 30 Days, one page at a time.</p>
+<div class="sig"><div>Date</div><div>Witness</div></div>
+<p class="note" style="margin-top:18pt">Keep going, one day at a time.</p>
+</section><section class="page">
+<div class="eyebrow">Help and sources</div>
+<h2>Where to get support</h2>
+<ul class="clean check" style="margin-top:12pt">
+<li><b>A doctor or pharmacist</b> can advise on nicotine replacement and prescription help.</li>
+<li><b>A free quitline.</b> Many countries have one. Search “quitline” with your country’s name.</li>
+<li><b>A support person.</b> A friend or family member you message on hard days.</li>
+</ul>
+<h3>Facts in this book come from</h3>
+<p>World Health Organization (WHO): tobacco fact sheets and health benefits of quitting.<br>
+US Centers for Disease Control and Prevention (CDC): data on quitting.<br>
+US Surgeon General’s report on smoking cessation.</p>
+<div class="card coral" style="margin-top:10pt;font-size:9pt">General information, not medical advice. If you have a health condition, are pregnant, take medication or want nicotine replacement or prescription help, talk to a doctor or pharmacist first.</div>
+<p class="note" style="margin-top:14pt">Quit in 30 Days: A Day-by-Day Plan for People Who’ve Tried Before · by Diamant</p>
+<div class="folio"><span>QUIT IN 30 DAYS</span><span>43</span></div></section></body></html>

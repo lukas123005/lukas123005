@@ -16,3 +16,9 @@ video/studio_voice/*.mp4
 video/studio_voice/*.wav
 amili/*.png
 amili/poster.jpg
+quit30/original.pdf
+quit30/prev/
+quit30/video/*.mp4
+quit30/video/_still_*
+quit30/video/pages/
+quit30/video/vo/*.wav

@@ -1,0 +1,66 @@
+{
+ "voice": "af_heart",
+ "sr": 24000,
+ "lines": [
+  {
+   "i": 0,
+   "text": "Tried to quit smoking before?",
+   "file": "vo/00.wav",
+   "dur": 1.504
+  },
+  {
+   "i": 1,
+   "text": "You're not starting over. You're starting smarter.",
+   "file": "vo/01.wav",
+   "dur": 2.356
+  },
+  {
+   "i": 2,
+   "text": "Quit in Thirty Days gives you one page a day.",
+   "file": "vo/02.wav",
+   "dur": 2.65
+  },
+  {
+   "i": 3,
+   "text": "One small writing task. One real-life task.",
+   "file": "vo/03.wav",
+   "dur": 2.85
+  },
+  {
+   "i": 4,
+   "text": "And a Save Box, so you can watch your money grow.",
+   "file": "vo/04.wav",
+   "dur": 2.615
+  },
+  {
+   "i": 5,
+   "text": "When a craving hits, you have a plan. It passes in minutes.",
+   "file": "vo/05.wav",
+   "dur": 3.25
+  },
+  {
+   "i": 6,
+   "text": "Thirty real facts from the World Health Organization keep you going.",
+   "file": "vo/06.wav",
+   "dur": 3.643
+  },
+  {
+   "i": 7,
+   "text": "And on day thirty, you test your breathing with the sport you love.",
+   "file": "vo/07.wav",
+   "dur": 3.335
+  },
+  {
+   "i": 8,
+   "text": "Thirty days. Thirty pages. One fresh start.",
+   "file": "vo/08.wav",
+   "dur": 2.795
+  },
+  {
+   "i": 9,
+   "text": "Get your copy today. Link in bio.",
+   "file": "vo/09.wav",
+   "dur": 2.317
+  }
+ ]
+}
