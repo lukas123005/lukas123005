@@ -69,8 +69,41 @@ def foto():
     return img.convert("RGB")
 
 
+def combo():
+    """Photo on top, AMILI + Beauty Studio on a pink band at the bottom, all inside the circle."""
+    src = Image.open(os.path.join(HERE, "poster.jpg")).convert("RGB")
+    sx, sy = src.width / 967, src.height / 1041
+    x0, x1, y0 = 255 * sx, 865 * sx, 262 * sy
+    w = x1 - x0
+    crop = src.crop((int(x0), int(y0), int(x1), int(y0 + w))).resize((S, S), Image.LANCZOS)
+    crop = crop.filter(ImageFilter.UnsharpMask(radius=2, percent=70, threshold=2))
+    img = pink_bg()
+    img.paste(crop, (0, -95))
+    # pink band with a soft fade into the photo
+    band = pink_bg()
+    fade = np.zeros((S, S), np.float32)
+    yy = np.arange(S, dtype=np.float32)[:, None]
+    fade[:] = np.clip((yy - 560) / 210, 0, 1) ** 1.4
+    band.putalpha(Image.fromarray((fade * 255).astype(np.uint8)))
+    img.alpha_composite(band)
+    d = ImageDraw.Draw(img)
+    spaced_text(d, (S / 2, 860), "AMILI", F("Cormorant-600.ttf", 200), WINE, 22)
+    d.text((S / 2, 968), "Beauty Studio", font=F("GreatVibes.ttf", 104), fill=WINE, anchor="ms")
+    out = pink_bg()
+    m = Image.new("L", (S, S), 0)
+    ImageDraw.Draw(m).ellipse([0, 0, S - 1, S - 1], fill=255)
+    out.paste(img, (0, 0), m)
+    d = ImageDraw.Draw(out)
+    d.ellipse([10, 10, S - 10, S - 10], outline=(244, 214, 205, 255), width=14)
+    d.ellipse([22, 22, S - 22, S - 22], outline=ROSE_GOLD + (255,), width=3)
+    return out.convert("RGB")
+
+
 if __name__ == "__main__":
     a, b = logo(), foto()
+    c = combo()
+    c.save(os.path.join(HERE, "amili_profile_foto_logo.png"))
+    a = c  # preview the combined version next to the photo one
     a.save(os.path.join(HERE, "amili_profile_logo.png"))
     b.save(os.path.join(HERE, "amili_profile_foto.png"))
     # preview: how Instagram shows them (circle, large and small)
