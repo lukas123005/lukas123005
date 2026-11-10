@@ -4,7 +4,7 @@ Zëvendëso ato në kllapa para se të dërgosh:
 - `[Emri]` = emri i berberit (nëse e di), përndryshe "Përshëndetje"
 - `[Berberia]` = emri i berberisë
 - `[Qyteti]` = qyteti
-- Linku: https://whop.com/creator-lab-275e (zëvendësoje me linkun direkt të produktit kur ta kesh)
+- Linku: https://whop.com/checkout/plan_M5PoZldlGSYQ1 (direkt te pagesa)
 - Çmimi: 19 $ (një pagesë)
 
 Rregull i artë: çdo mesazh duhet të ketë të paktën një gjë specifike për atë berberi (emri, qyteti, një video e tyre). Mesazhet e njëjta për të gjithë bien në spam ose injorohen.
@@ -33,7 +33,7 @@ Rregull i artë: çdo mesazh duhet të ketë të paktën një gjë specifike pë
 > - caption + hashtag gati për kopjim
 > - 3 tone: miqësor, elegant, lozonjar
 >
-> Ja si duket (video 20 sekonda): https://whop.com/creator-lab-275e
+> Ja si duket (video 20 sekonda): https://whop.com/checkout/plan_M5PoZldlGSYQ1
 >
 > Çmimi është 19 $, një herë, pa abonim.
 >
@@ -55,7 +55,7 @@ Subjekti: `Re: [subjekti i parë]`
 >
 > Shkurt: 14 ditë postime për Instagramin e [Berberia], gati në 10 sekonda. Ju vetëm filmoni dhe postoni.
 >
-> Shikojeni këtu: https://whop.com/creator-lab-275e
+> Shikojeni këtu: https://whop.com/checkout/plan_M5PoZldlGSYQ1
 >
 > Luka
 
@@ -67,7 +67,7 @@ Subjekti: `I fundit nga unë 💈`
 >
 > Ky është mesazhi im i fundit, nuk dua t'ju shqetësoj.
 >
-> Nëse ndonjëherë doni të postoni rregullisht pa u menduar çdo ditë, BOOM 14 Barber është këtu: https://whop.com/creator-lab-275e
+> Nëse ndonjëherë doni të postoni rregullisht pa u menduar çdo ditë, BOOM 14 Barber është këtu: https://whop.com/checkout/plan_M5PoZldlGSYQ1
 >
 > Suksese me [Berberia]!
 > Luka
@@ -77,7 +77,7 @@ Subjekti: `I fundit nga unë 💈`
 > Faleminderit [Emri]! 🙌
 >
 > Ja si funksionon:
-> 1. Bleni këtu: https://whop.com/creator-lab-275e
+> 1. Bleni këtu: https://whop.com/checkout/plan_M5PoZldlGSYQ1
 > 2. Merrni skedarin menjëherë në email
 > 3. E hapni në telefon, shkruani emrin e berberisë dhe qytetin, shtypni BOOM
 > 4. Çdo ditë hapni kartën e ditës, filmoni 3 pamjet, kopjoni caption-in dhe postoni
@@ -107,7 +107,7 @@ Para se të shkruash: ndiq faqen, pëlqe 2–3 postime dhe komento një (shih m�
 
 ### Kur thonë "po"
 
-> Ja ku është 👉 https://whop.com/creator-lab-275e
+> Ja ku është 👉 https://whop.com/checkout/plan_M5PoZldlGSYQ1
 > Çmimi është 19 $, një herë. Nëse keni pyetje, jam këtu.
 
 ### Follow-up (pas 2–3 ditësh, nëse e panë por s'u përgjigjën)
@@ -143,7 +143,7 @@ TikTok lejon DM vetëm me llogari që ndiqni njëri-tjetrin ose që i kanë hapu
 
 ### DM 3
 
-> Ja 👉 https://whop.com/creator-lab-275e · 19 $, një herë, pa abonim.
+> Ja 👉 https://whop.com/checkout/plan_M5PoZldlGSYQ1 · 19 $, një herë, pa abonim.
 
 ---
 
