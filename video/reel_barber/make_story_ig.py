@@ -1,6 +1,6 @@
 """
 Social media story (Instagram / TikTok / Facebook) for BOOM 14 Barber: "3 gabimet" -> zgjidhja -> link.
-1080x1920, 30 fps, 28.5 s, black and gold, Albanian voiceover (voice/vo_story.mp3) + original music.
+1080x1920, 30 fps, 23 s, black and gold, Albanian voiceover (voice/vo_story.mp3) + original music.
 Scene times follow the pauses in the voiceover (VO starts at VO_AT).
 Text stays between y=280 and y=1600 (clear of the story header and the reply bar).
 The space under "Prek linkun" is left free for Instagram's link sticker.
@@ -23,16 +23,17 @@ _spec = importlib.util.spec_from_file_location("barber_reel", os.path.join(HERE,
 R = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(R)
 
-W, H, FPS, DUR = 1080, 1920, 30, 28.5
+W, H, FPS, DUR = 1080, 1920, 30, 23.1
 N = int(FPS * DUR)
 VO_AT = 0.3
-CUTS = [5.1, 8.5, 11.85, 17.0]  # "Gabimi i parë / dytë / tretë", "Zgjidhja?"
-SOL, CTA = 17.0, 23.0
+CUTS = [4.9, 8.3, 11.6]  # "Gabimi i parë", "Gabimi i dytë", "Zgjidhja?"
+SOL, CTA = 11.6, 17.6
+# parts of the voice clip that are left out: the word "tre" and the whole third mistake
+VO_CUTS = [(2.89, 3.11), (11.50, 16.70)]
 
 MISTAKES = [
     ("Poston vetëm", "kur të kujtohet.", "Profili rri bosh me ditë dhe klientët e rinj nuk të shohin."),
     ("Poston vetëm", "foton e prerjes.", "Pa POV, pa para/pas, pa ASMR. Njerëzit kalojnë tutje."),
-    ("Humbet kohë", "me caption-in.", "Mendon, fshin, shkruan prapë… dhe në fund nuk poston."),
 ]
 
 
@@ -70,7 +71,7 @@ def sc_hook(img, t, lay):
     f1 = R.f8(130)
     R.kinetic(img, R.text_img("Po i bën", f1, fill=R.TXT), "Po i bën", f1, W / 2, 850, t, 2.35, stagger=0.05, rise=80, a=a)
     f2 = R.f8i(150)
-    s = "këto 3 gabime?"
+    s = "këto gabime?"
     g = R.shine(R.text_img(s, R.fit(s, R.f8i, 150, 940), grad=True, shift=t * 0.25), (t - 3.7) / 0.8)
     R.kinetic(img, g, s, R.fit(s, R.f8i, 150, 940), W / 2, 1020, t, 2.85, stagger=0.04, rise=90, a=a, spin=True)
     p = R.eob(prog(t, 3.9, 0.45))
@@ -106,8 +107,9 @@ def sc_mistake(i, t0, t1):
         # thin gold progress for the 3 mistakes
         ov = R.overlay()
         d = ImageDraw.Draw(ov)
-        for k in range(3):
-            x0 = W / 2 - 165 + k * 115
+        nm = len(MISTAKES)
+        for k in range(nm):
+            x0 = W / 2 - (nm * 115 - 15) / 2 + k * 115
             on = k <= i
             d.rounded_rectangle([x0, 1500, x0 + 100, 1508], radius=4, fill=(R.GOLD if on else (70, 62, 50)) + (int(255 * a),))
         img.alpha_composite(ov)
@@ -161,7 +163,7 @@ def sc_cta(img, t, lay):
 
 
 SCENES = [(sc_hook, 0.0, CUTS[0] + 0.45, CUTS[0])]
-for i in range(3):
+for i in range(len(MISTAKES)):
     s0 = CUTS[i]
     SCENES.append((sc_mistake(i, s0, CUTS[i + 1]), s0, CUTS[i + 1] + 0.45, CUTS[i + 1]))
 SCENES += [(sc_solution, SOL, CTA + 0.3, None), (sc_cta, CTA, DUR + 1, None)]
@@ -325,12 +327,19 @@ def voice(sr):
     """Albanian voiceover (Higgsfield / ElevenLabs), decoded to mono float at sr."""
     raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", os.path.join(HERE, "voice", "vo_story.mp3"), "-ac", "1", "-ar", str(sr),
                           "-f", "f32le", "-"], capture_output=True, check=True).stdout
-    v = np.frombuffer(raw, np.float32).astype(np.float64).copy()
-    # drop the spoken "me kapshënin" (13.47-14.22 s in the clip): the screen still shows "me caption-in"
-    a0, a1, f = int(13.47 * sr), int(14.22 * sr), int(0.02 * sr)
-    v[a0 - f:a0] *= np.linspace(1, 0, f)
-    v[a0:a1] = 0
-    v[a1:a1 + f] *= np.linspace(0, 1, f)
+    v = np.frombuffer(raw, np.float32).astype(np.float64)
+    f = int(0.015 * sr)
+    parts, pos = [], 0
+    for c0, c1 in VO_CUTS:  # splice out the removed parts with short fades
+        seg = v[pos:int(c0 * sr)].copy()
+        seg[-f:] *= np.linspace(1, 0, f)
+        if parts:
+            seg[:f] *= np.linspace(0, 1, f)
+        parts.append(seg)
+        pos = int(c1 * sr)
+    tail = v[pos:].copy()
+    tail[:f] *= np.linspace(0, 1, f)
+    v = np.concatenate(parts + [tail])
     return v / (np.abs(v).max() + 1e-9)
 
 
