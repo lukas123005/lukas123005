@@ -130,3 +130,38 @@ DAYS = [
 assert len(DAYS) == 30
 MILESTONES = {1: "Body starts to recover", 3: "Hardest stretch, then it eases", 7: "Treat from the Save Box",
               14: "Treat for your sport or hobby", 21: "Three weeks", 28: "Four weeks", 30: "Sport Test and the big reward"}
+
+# One original motivating thought per day (not facts, not quotes from anyone).
+BOOST = [
+    "The hardest step is the first one. You just took it.",
+    "Every craving you ride out is a craving you won.",
+    "Get through today, and the road starts to get easier.",
+    "You are not giving something up. You are getting something back.",
+    "Your lungs are on your side. Give them room to breathe.",
+    "Strong people ask for help. That is how they stay strong.",
+    "One week ago this felt impossible. Look at you now.",
+    "Small steps, taken every day, become a new life.",
+    "Busy hands leave no room for old habits.",
+    "Food tastes better when you are winning.",
+    "Fresh air. Fresh clothes. Fresh start.",
+    "“No thanks” is a complete sentence.",
+    "Your body remembers how to move. Let it.",
+    "Two weeks is not luck. It is proof.",
+    "Halfway is where many people stop believing. Not you.",
+    "A bored minute passes, just like a craving does.",
+    "Stress is real. So is your strength.",
+    "When you lift someone else, you rise too.",
+    "Plan the night, so the night does not plan you.",
+    "Every heartbeat today is working for you.",
+    "Three weeks. This is who you are now.",
+    "Ask the question. Choose the better answer.",
+    "Make room for something new. You have earned it.",
+    "A slip is a moment, not a verdict.",
+    "Breathe in. Notice the difference. That is you.",
+    "Write down the proof. You will want to remember this.",
+    "Every coin in the jar is a choice you made for yourself.",
+    "Four weeks of choosing yourself.",
+    "Tomorrow you celebrate. Tonight, be proud.",
+    "You did not just quit. You started.",
+]
+assert len(BOOST) == 30

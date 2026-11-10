@@ -146,6 +146,23 @@ def cigarette(p):
     return c
 
 
+def breath(img, t, cx, cy, a):
+    """Calm breathing rings: fresh air, a new start."""
+    if a <= 0:
+        return
+    ov = R.overlay()
+    d = ImageDraw.Draw(ov)
+    for j in range(4):
+        ph = ((t * .45 + j / 4) % 1.0)
+        r = 120 + 200 * ph
+        al = int(200 * a * (1 - ph))
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=MINT + (al,), width=6)
+    core = 112 + 10 * math.sin(t * 2.6)
+    d.ellipse([cx - core, cy - core, cx + core, cy + core], fill=MINT + (int(230 * a),))
+    img.alpha_composite(ov)
+    place(img, T("breathe", fri(44), fill=NAVY), cx, cy, a)
+
+
 def jar(fill, t):
     c = Image.new("RGBA", (420, 520), (0, 0, 0, 0))
     d = ImageDraw.Draw(c)
@@ -177,8 +194,7 @@ def scenes(img, t, lay):
     if a:
         kin(img, "Tried to quit", fr(130), W / 2, 700, t, S(0), a=a)
         kin(img, "before?", fri(170), W / 2, 870, t, S(0) + .45, grad=True, a=a, spin=True)
-        cp = prog(t, S(0) + .9, .5)
-        place(img, cigarette(cp), W / 2, 1180, a * clamp(prog(t, S(0) + .3, .3)))
+        breath(img, t, W / 2, 1220, a * clamp(prog(t, S(0) + .3, .4)))
     # 1 not starting over
     a = env(t, S(1) - .05, S(2) + .1, .2, .25)
     if a:

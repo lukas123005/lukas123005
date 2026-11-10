@@ -5,7 +5,7 @@
 import html
 import os
 
-from days import DAYS, MILESTONES
+from days import BOOST, DAYS, MILESTONES
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 E = html.escape
@@ -68,7 +68,7 @@ ol.steps{counter-reset:s;list-style:none}
 ol.steps li{counter-increment:s;position:relative;padding-left:22pt;margin-bottom:6pt;font-size:10pt;line-height:1.45}
 ol.steps li:before{content:counter(s);position:absolute;left:0;top:0;width:15pt;height:15pt;border-radius:50%;background:var(--navy);color:#fff;font:700 8pt Inter;display:grid;place-items:center}
 .check li{position:relative;padding-left:20pt;margin-bottom:7pt;font-size:9.6pt;line-height:1.45}
-.check li:before{content:"";position:absolute;left:0;top:1pt;width:11pt;height:11pt;border:1.5pt solid var(--mint-d);border-radius:3pt}
+.check li:before{content:"";position:absolute;left:2pt;top:4pt;width:8pt;height:8pt;border-radius:50%;background:var(--mint)}
 table{width:100%;border-collapse:collapse;font-size:9pt;margin-top:8pt}
 th{text-align:left;background:var(--navy);color:#fff;padding:6pt 8pt;font-weight:600}
 td{padding:7pt 8pt;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}
@@ -78,7 +78,7 @@ td:first-child{font-weight:600;color:var(--navy);width:44%}
 .calc .box{height:26pt;border:1.5px solid var(--line);border-radius:6pt;background:#fff}
 .calc .op{font:700 14pt Inter;color:var(--navy);padding-bottom:5pt}
 /* SOS */
-.sos{border:2px dashed var(--coral);border-radius:14pt;padding:14pt 16pt;background:#fff}
+.sos{border:2px solid var(--coral);border-radius:14pt;padding:14pt 16pt;background:#fff}
 .sos h3{margin-top:0;color:var(--coral)}
 .scissors{font-size:8pt;color:var(--coral);margin-top:6pt;text-align:center;letter-spacing:.08em}
 /* day pages */
@@ -96,17 +96,16 @@ td:first-child{font-weight:600;color:var(--navy);width:44%}
 .task .ic svg{width:14pt;height:14pt}
 .task b{display:block;font-size:8pt;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2pt}
 .task span{font-size:10pt;line-height:1.42}
-.task .tick{margin-left:auto;flex:0 0 13pt;height:13pt;border:1.5pt solid #B8C6BF;border-radius:3.5pt;margin-top:2pt}
+
 .t-paper .ic{background:#EAF0FF;color:#4766E0}.t-paper b{color:#4766E0}
 .t-do .ic{background:var(--mint-l);color:var(--mint-d)}.t-do b{color:var(--mint-d)}
 .t-save .ic{background:#FFF4D9;color:#C98A00}.t-save b{color:#C98A00}
 .dyk{background:var(--navy);color:#fff;border-radius:11pt;padding:11pt 13pt;margin-top:10pt;position:relative}
 .dyk b{display:block;font-size:7.5pt;letter-spacing:.16em;color:var(--mint);margin-bottom:3pt}
 .dyk span{font-size:9.6pt;line-height:1.45;color:#E4EEF0}
-.meter{display:flex;align-items:center;gap:7pt;margin-top:12pt;font-size:8pt;color:var(--muted)}
-.meter i{width:15pt;height:15pt;border-radius:50%;border:1.5pt solid #B8C6BF;display:grid;place-items:center;font:600 7pt Inter;color:#9AA8B3;font-style:normal}
-.lines{margin-top:9pt}
-.lines div{border-bottom:1px solid var(--line);height:17pt}
+.boost{margin-top:16pt;text-align:center;padding:14pt 10pt 0;border-top:1px solid var(--line)}
+.boost i{display:block;font:600 italic 15pt/1.35 Fraunces,Georgia,serif;color:var(--navy)}
+.boost small{display:block;margin-top:6pt;font-size:7pt;letter-spacing:.16em;color:var(--mint-d);font-weight:700}
 .ms{display:inline-block;background:var(--coral);color:#fff;font-size:7pt;font-weight:700;letter-spacing:.08em;padding:3.5pt 8pt;border-radius:99px;margin:-4pt 0 10pt}
 /* tracker */
 .grid30{display:grid;grid-template-columns:repeat(5,1fr);gap:7pt;margin-top:12pt}
@@ -153,7 +152,7 @@ def reasons_page(n):
         ("Built for people who have tried before", "No lectures. A plan that expects hard days and shows you what to do on each one."),
         ("One page a day, about 10 minutes", "Every day has one paper task, one real-life task and one Save Box step. Nothing more."),
         ("You watch your money grow", "The Save Box turns every skipped pack into cash in a jar you can see, with treats on Day 3, 7, 14, 21 and a big reward on Day 30."),
-        ("A plan for every craving", "A six-step craving routine and a tear-out SOS card, because a craving lasts only a few minutes."),
+        ("A plan for every craving", "A six-step craving routine and an SOS card you can screenshot, because a craving lasts only a few minutes."),
         ("Real facts, not scare tactics", "30 “Did you know?” facts from the World Health Organization, the CDC and the US Surgeon General."),
         ("You see the proof in your body", "A sport or activity you pick on day one, a warm-up on Day 13 and a Sport Test on Day 30, so you feel how your breathing changes."),
         ("Slip-proof, not perfect", "A ready “If I slip” plan so one bad moment does not become a bad week."),
@@ -181,7 +180,7 @@ def welcome(n):
 <div>{ICON['save']}<b>Save Box</b>money into your jar</div>
 <div>{ICON['fact']}<b>Did you know?</b>a fact to keep you going</div>
 </div>
-<p class="note" style="margin-top:14pt">Each day page also has a craving meter (rate today from 1 to 5) and space for notes. Watching the number fall is part of the reward.</p>
+<p class="note" style="margin-top:14pt">Each day ends with a short thought to carry with you. Read it in the morning, and again when a craving hits.</p>
 {folio(n)}</section>"""
 
 
@@ -229,9 +228,9 @@ def tools(n):
 
 def sos(n):
     return f"""<section class="page">
-<div class="eyebrow">Tear out and keep</div>
+<div class="eyebrow">Keep it close</div>
 <h2>Your Craving SOS card</h2>
-<p class="lead" style="margin:6pt 0 12pt">Cut it out, fold it, keep it in your wallet or take a photo for your phone lock screen.</p>
+<p class="lead" style="margin:6pt 0 12pt">Take a screenshot of this page and keep it on your phone. When a craving hits, read it slowly, one line at a time.</p>
 <div class="sos">
 <h3>CRAVING? It passes in minutes.</h3>
 <ol class="steps">
@@ -242,10 +241,8 @@ def sos(n):
 <li>Gum, a snack or a pen in your hands.</li>
 <li>Read my reasons. Picture my sport.</li>
 </ol>
-<div style="margin-top:10pt;font-size:9pt;color:var(--muted)">My top reason: <span style="display:inline-block;width:2.4in;border-bottom:1px dashed #B8C6BF"></span></div>
-<div style="margin-top:9pt;font-size:9pt;color:var(--muted)">Call / text: <span style="display:inline-block;width:2.65in;border-bottom:1px dashed #B8C6BF"></span></div>
+<p style="margin-top:10pt;font-size:9.4pt;color:var(--muted)">Then remember why you started, and who you can message right now.</p>
 </div>
-<div class="scissors">✂ — — — cut along the dashed line — — —</div>
 <div class="card coral" style="margin-top:16pt"><b>The Store Question</b><br><span style="font-size:9.6pt">Why go to the store to buy cigarettes, when I can buy something else instead?</span></div>
 {folio(n)}</section>"""
 
@@ -263,9 +260,8 @@ def ready(n):
     return f"""<section class="page">
 <div class="eyebrow">Before Day 1</div>
 <h2>Get ready</h2>
-<ul class="clean check" style="margin-top:14pt">{lis}</ul>
-<div class="card mint" style="margin-top:12pt"><b>My quit date:</b> <span style="display:inline-block;width:1.6in;border-bottom:1px dashed #8FBFA6"></span>
-&nbsp; <b>I told:</b> <span style="display:inline-block;width:1.1in;border-bottom:1px dashed #8FBFA6"></span></div>
+<ol class="steps" style="margin-top:14pt">{lis}</ol>
+<div class="quote">A quit date you have told someone about is a promise, not a wish.</div>
 {folio(n)}</section>"""
 
 
@@ -281,23 +277,20 @@ def method(n):
 <p style="margin-top:10pt">The best method is the one you will follow. Pairing a method with support usually works better than going alone.</p>
 <table><tr><th>Method</th><th>Good if</th></tr>{tr}</table>
 <div class="card coral" style="margin-top:14pt"><b>Talk to a doctor or pharmacist first</b> if you are pregnant, have a heart or lung condition, take regular medication, are under 18, or have a history of depression or anxiety.</div>
-<p style="margin-top:8pt">My method: <span style="display:inline-block;width:3.3in;border-bottom:1px dashed #B8C6BF"></span></p>
 {folio(n)}</section>"""
 
 
 def reasons_card(n):
-    lines = "".join('<div class="fill"></div>' for _ in range(3))
     return f"""<section class="page">
-<div class="eyebrow">Fill in before Day 1</div>
-<h2>My reasons card</h2>
-<div class="card" style="margin-top:12pt"><b>My sport or activity:</b><div class="fill"></div>
-<b style="display:block;margin-top:8pt">My top 3 reasons:</b>
-<div style="font-size:9pt;color:var(--muted)">1.</div>{lines[:len(lines)//3]}<div style="font-size:9pt;color:var(--muted)">2.</div>{lines[:len(lines)//3]}<div style="font-size:9pt;color:var(--muted)">3.</div>{lines[:len(lines)//3]}</div>
-<h3>My Save Box</h3>
-<div class="calc"><div><div class="box"></div>price of a pack</div><div class="op">×</div><div><div class="box"></div>packs per day</div><div class="op">=</div><div><div class="box" style="border-color:var(--mint)"></div>my daily save</div></div>
-<div class="card mint" style="margin-top:12pt;font-size:9.4pt">
-<b>Example only:</b> if a pack costs 5 and you smoke 1 pack a day, that is 5 a day, 35 after one week and 150 after 30 days. Use your own prices and currency.</div>
-<p style="margin-top:6pt">The money is for: <span style="display:inline-block;width:3.1in;border-bottom:1px dashed #B8C6BF"></span></p>
+<div class="eyebrow">Make it personal</div>
+<h2>Your reasons are your engine</h2>
+<p class="lead" style="margin-top:8pt">General reasons fade. Specific ones keep you going on the hard days.</p>
+<div class="card"><b style="color:var(--coral)">Too general</b><br><span style="font-size:9.6pt">“Smoking is bad for me.”</span></div>
+<div class="card mint"><b style="color:var(--mint-d)">Specific, and it works</b><br><span style="font-size:9.6pt">“I want to play football without losing my breath.”<br>“I want my clothes to smell like me again.”<br>“I want to save for something I actually want.”</span></div>
+<h3>Your Save Box, in one line</h3>
+<div class="card navy"><span style="font:600 13pt Fraunces,Georgia,serif">price of a pack × packs per day = your daily save</span></div>
+<p style="font-size:9.4pt;color:var(--muted)">Example only: if a pack costs 5 and you smoke 1 pack a day, that is 5 a day, 35 after one week and 150 after 30 days. Your own numbers may be bigger.</p>
+<div class="quote">Watching the jar fill is proof you can see.</div>
 {folio(n)}</section>"""
 
 
@@ -306,11 +299,10 @@ def day_page(i, d, n):
     num = i + 1
     bar = "".join(f'<i class="{"now" if k == num else ("on" if k < num else "")}"></i>' for k in range(1, 31))
     ms = f'<div class="ms">MILESTONE · {E(MILESTONES[num].upper())}</div>' if num in (7, 14, 21, 28, 30) else ""
-    meter = "".join(f"<i>{k}</i>" for k in range(1, 6))
 
     def task(kind, label, text):
         return (f'<div class="task t-{kind}"><div class="ic">{ICON[kind]}</div>'
-                f'<div><b>{label}</b><span>{E(text[0].upper() + text[1:])}</span></div><div class="tick"></div></div>')
+                f'<div><b>{label}</b><span>{E(text[0].upper() + text[1:])}</span></div></div>')
 
     return f"""<section class="page day">
 <div class="num">{num:02d}</div>
@@ -323,18 +315,20 @@ def day_page(i, d, n):
 {task('do', 'Do', do)}
 {task('save', 'Save Box', save)}
 <div class="dyk"><b>DID YOU KNOW?</b><span>{E(fact)}</span></div>
-<div class="meter">Craving level today {meter} <span style="margin-left:auto">Smoke-free today</span><i style="border-radius:3pt">✓</i></div>
-<div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+<div class="boost"><i>“{E(BOOST[i])}”</i><small>TODAY'S THOUGHT</small></div>
 {folio(n)}</section>"""
 
 
 def tracker(n):
-    cells = "".join(f'<div class="{"m" if k in MILESTONES else ""}">{k}<small>{E(MILESTONES.get(k, ""))}</small></div>' for k in range(1, 31))
+    rows = [(1, "Quit Day", "Your body starts to recover within minutes."), (3, "The hardest stretch", "It eases from here."),
+            (7, "One week", "A treat from the Save Box."), (14, "Two weeks", "A treat for your sport or hobby."),
+            (21, "Three weeks", "Look how far you have come."), (28, "Four weeks", "That is a real change."),
+            (30, "You did it", "The Sport Test and your big reward.")]
+    tl = "".join(f"<div><b>Day {d} · {E(a)}</b><span>{E(b)}</span></div>" for d, a, b in rows)
     return f"""<section class="page">
-<div class="eyebrow">Your progress</div>
-<h2>30-day tracker</h2>
-<p style="margin-top:6pt">Tick a box every evening. Colour the milestone boxes when you take your reward.</p>
-<div class="grid30">{cells}</div>
+<div class="eyebrow">The road you walked</div>
+<h2>Your 30-day milestones</h2>
+<div class="tl" style="margin-top:16pt">{tl}</div>
 {folio(n)}</section>"""
 
 
@@ -347,8 +341,7 @@ def slip(n):
 <li>Put it out.</li><li>Take three Full Breaths.</li><li>Tell someone.</li><li>Go back on the plan, today, at the page you were on.</li>
 </ol>
 <div class="card mint" style="margin-top:12pt">Fewer than 4 in 10 adults who try to quit use counselling or medication. If you slip, adding support is one of the best ways to improve your next try.</div>
-<h3>My “If I slip” plan</h3>
-<div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div>
+<div class="quote" style="margin-top:16pt">Quitting is not about never falling. It is about always getting back up.</div>
 {folio(n)}</section>"""
 
 
@@ -356,13 +349,11 @@ def certificate(n):
     return f"""<section class="page cert">
 <div class="frame"></div>
 <div class="medal">30</div>
-<div class="eyebrow" style="margin-top:16pt">Certificate</div>
-<h2>Thirty days smoke-free</h2>
-<p class="lead" style="max-width:3.8in">This certifies that</p>
-<div style="width:3.4in;border-bottom:1.5px solid var(--ink);height:26pt;margin:6pt 0 10pt"></div>
-<p style="max-width:3.9in">completed 30 days of Quit in 30 Days, one page at a time.</p>
-<div class="sig"><div>Date</div><div>Witness</div></div>
-<p class="note" style="margin-top:18pt">Keep going, one day at a time.</p>
+<div class="eyebrow" style="margin-top:16pt">Day 30 and beyond</div>
+<h2>Thirty days smoke-free.</h2>
+<p class="lead" style="max-width:3.9in">Thirty days ago this felt impossible. Now it is something you have done, one page at a time.</p>
+<div class="quote" style="text-align:left;max-width:3.9in">You did not just quit. You started.</div>
+<p class="note" style="margin-top:10pt">Keep going, one day at a time.</p>
 </section>"""
 
 
