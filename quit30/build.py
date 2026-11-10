@@ -142,7 +142,7 @@ def cover():
 <h1>Quit in<br><em>30 Days.</em></h1>
 <p class="sub">A day-by-day plan for people who have tried before. One page a day. One small win at a time.</p>
 <div class="dots">{dots}</div>
-<div class="by">BY DIAMANT</div>
+<div class="by">BY LIFECHANGR</div>
 <div class="chip">For people who've tried before</div>
 </section>"""
 
@@ -371,7 +371,7 @@ def sources(n):
 US Centers for Disease Control and Prevention (CDC): data on quitting.<br>
 US Surgeon General’s report on smoking cessation.</p>
 <div class="card coral" style="margin-top:10pt;font-size:9pt">General information, not medical advice. If you have a health condition, are pregnant, take medication or want nicotine replacement or prescription help, talk to a doctor or pharmacist first.</div>
-<p class="note" style="margin-top:14pt">Quit in 30 Days: A Day-by-Day Plan for People Who’ve Tried Before · by Diamant</p>
+<p class="note" style="margin-top:14pt">Quit in 30 Days: A Day-by-Day Plan for People Who’ve Tried Before · by lifechangr</p>
 {folio(n)}</section>"""
 
 
