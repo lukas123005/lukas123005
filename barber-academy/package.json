@@ -1,0 +1,16 @@
+{
+  "name": "barber-academy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Platformë mësimore për barberë me abonim mujor",
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "dev": "node --watch --disable-warning=ExperimentalWarning server/index.js"
+  },
+  "dependencies": {
+    "express": "4.22.3",
+    "multer": "2.5.0"
+  }
+}
