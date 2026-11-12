@@ -121,7 +121,7 @@ app.get('/api/topics/:slug', (req, res) => {
   const t = parseTopic(db.prepare('SELECT * FROM topics WHERE slug = ?').get(req.params.slug));
   if (!t) return res.status(404).json({ error: 'Tema nuk u gjet.' });
   if (!hasAccess(req.user)) {
-    return res.status(402).json({ error: 'Kërkohet abonim aktiv.', preview: { section: t.section, title: t.title, summary: t.summary, diagram: t.diagram, intro: t.intro } });
+    return res.status(402).json({ error: 'Kërkohet abonim aktiv.', preview: { section: t.section, slug: t.slug, title: t.title, summary: t.summary, diagram: t.diagram, intro: t.intro } });
   }
   const media = db.prepare('SELECT * FROM media WHERE topic_id = ? ORDER BY created_at DESC, id DESC').all(t.id).map(mediaOut);
   res.json({ topic: t, media });

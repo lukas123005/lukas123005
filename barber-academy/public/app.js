@@ -46,37 +46,18 @@ const topicsOf = (key) => state.pub.topics.filter((t) => t.section === key);
 const TAGS = { shembull: 'Shembull', procesi: 'Procesi', para: 'Para', pas: 'Pas', gabim: 'Gabim', zgjidhje: 'Zgjidhje', mjeti: 'Mjeti' };
 const DIAGRAMS = { low: 'Low fade', mid: 'Mid fade', high: 'High fade', burst: 'Burst fade', taper: 'Taper fade', drop: 'Drop fade', skin: 'Skin fade' };
 
-// ───────────────────── Diagrami i fade-it (SVG) ─────────────────────
-let svgId = 0;
-function fadeSvg(type, { label = true, size = '' } = {}) {
-  const id = `f${++svgId}`;
-  const lines = { low: 98, mid: 80, high: 62, skin: 80 };
-  const y = lines[type];
-  let overlay = '';
-  if (y) overlay = `<rect x="0" y="${y + 12}" width="220" height="200" fill="var(--skin)" filter="url(#${id}b)"/>`;
-  if (type === 'skin') overlay += `<rect x="0" y="${y + 30}" width="220" height="200" fill="var(--skin)"/>`;
-  if (type === 'burst') overlay = `<ellipse cx="114" cy="112" rx="38" ry="36" fill="var(--skin)" filter="url(#${id}b)"/>`;
-  if (type === 'taper') overlay = `<ellipse cx="95" cy="122" rx="12" ry="14" fill="var(--skin)" filter="url(#${id}b)"/><ellipse cx="150" cy="168" rx="34" ry="14" fill="var(--skin)" filter="url(#${id}b)"/>`;
-  if (type === 'drop') overlay = `<path d="M0 104 L112 98 Q148 100 162 140 L220 146 L220 220 L0 220Z" fill="var(--skin)" filter="url(#${id}b)"/>`;
-  const guide = y ? `<line x1="40" x2="190" y1="${y}" y2="${y}" class="fd-line"/>` : '';
-  return raw(`<svg class="fade-svg ${size}" viewBox="20 10 180 204" role="img" aria-label="${esc(DIAGRAMS[type] || 'Diagram')}">
-    <defs>
-      <filter id="${id}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${type === 'skin' ? 6 : 9}"/></filter>
-      <clipPath id="${id}c"><ellipse cx="108" cy="94" rx="62" ry="70"/><rect x="88" y="130" width="64" height="58"/></clipPath>
-    </defs>
-    <rect x="88" y="130" width="64" height="58" rx="4" fill="var(--skin)"/>
-    <ellipse cx="108" cy="94" rx="62" ry="70" fill="var(--skin)"/>
-    <path d="M49 92 L36 116 Q40 121 50 120Z" fill="var(--skin)"/>
-    <g clip-path="url(#${id}c)">
-      <path d="M40 74 Q62 46 98 66 L101 112 L112 140 L146 176 L200 178 L200 0 L40 0Z" fill="var(--hair)"/>
-      ${overlay}
-    </g>
-    <ellipse cx="108" cy="94" rx="62" ry="70" fill="none" stroke="var(--outline)" stroke-width="1.5"/>
-    <ellipse cx="114" cy="106" rx="9" ry="15" fill="var(--skin)" stroke="var(--skin-dark)" stroke-width="1.5"/>
-    <path d="M114 97 q5 8 0 17" fill="none" stroke="var(--skin-dark)" stroke-width="1.5"/>
-    ${guide}
-    ${label ? `<text x="110" y="208" text-anchor="middle" class="fd-label">${esc(DIAGRAMS[type] || '')}</text>` : ''}
-  </svg>`);
+// ───────────────────── Vizatimet (shiko drawings.js) ─────────────────────
+const fadeSvg = (type, { size = '' } = {}) => raw(`<div class="dw-wrap ${size}">${window.Drawings.head(type)}</div>`);
+const thumbSvg = (t) => { const svg = window.Drawings.thumb(t); return svg ? raw(`<div class="dw-wrap">${svg}</div>`) : ''; };
+function figCards(t) {
+  const figs = window.Drawings.figures(t);
+  if (!figs.length) return '';
+  return html`<h2 id="vizatimet">Procesi në vizatime</h2>
+    <div class="fig-grid">${figs.map((f, i) => html`<figure class="fig-card">
+      <div class="fig-top"><span>${String(i + 1).padStart(2, '0')}</span><span>${f.label}</span></div>
+      ${raw(f.svg)}
+      <figcaption><h3>${f.title}</h3><p>${f.text}</p></figcaption>
+    </figure>`)}</div>`;
 }
 
 // ───────────────────────── Paraqitja e përgjithshme ─────────────────────────
@@ -155,7 +136,7 @@ function pricingCard() {
 function topicCard(t) {
   const locked = !hasAccess();
   return html`<a class="topic-card" href="#/tema/${t.slug}">
-    ${t.diagram ? html`<div class="topic-diagram">${fadeSvg(t.diagram, { label: false })}</div>` : ''}
+    ${thumbSvg(t) ? html`<div class="topic-diagram">${thumbSvg(t)}</div>` : ''}
     <div class="topic-body">
       <h3>${t.title} ${locked ? raw('<span class="lock" title="Kërkon abonim" aria-label="Kërkon abonim">🔒</span>') : ''}</h3>
       <p>${t.summary}</p>
@@ -214,7 +195,7 @@ function viewHome() {
         <div><dt>Live</dt><dd>në Zoom</dd></div>
       </dl>
     </div>
-    <div class="hero-art">${fadeSvg('mid', { label: false, size: 'xl' })}<div class="pole" aria-hidden="true"></div></div>
+    <div class="hero-art">${fadeSvg("mid", { size: "xl" })}</div>
   </div></section>
 
   <section class="section" id="program"><div class="wrap">
@@ -232,7 +213,7 @@ function viewHome() {
     <div class="kicker">Proceset e qethjes</div>
     <h2>Fade-t, një nga një</h2>
     <div class="fade-strip">
-      ${fades.map((t) => html`<a class="fade-chip" href="#/tema/${t.slug}">${t.diagram ? fadeSvg(t.diagram, { label: false }) : ''}<span>${t.title}</span></a>`)}
+      ${fades.map((t) => html`<a class="fade-chip" href="#/tema/${t.slug}">${thumbSvg(t)}<span>${t.title}</span></a>`)}
     </div>
   </div></section>
 
@@ -300,12 +281,13 @@ async function viewTopic(slug) {
       <div class="topic-head">
         <div><div class="kicker">${sec?.kicker}</div><h1>${t.title}</h1><p class="lead">${t.summary}</p>
         ${isAdmin() ? html`<div class="actions"><a class="btn sm ghost" href="#/admin/temat?edit=${t.id}">Edito tekstin</a><a class="btn sm ghost" href="#/admin/ngarko?topic=${t.id}">+ Ngarko foto/video</a></div>` : ''}</div>
-        ${t.diagram ? html`<div class="topic-head-art">${fadeSvg(t.diagram)}</div>` : ''}
+        ${thumbSvg(t) ? html`<div class="topic-head-art">${thumbSvg(t)}</div>` : ''}
       </div>
     </div></section>
     <section class="section tight"><div class="wrap topic-layout">
       <article class="topic-main">
         ${t.intro ? html`<p class="intro">${t.intro}</p>` : ''}
+        ${figCards(t)}
         ${t.steps.length ? html`<h2 id="procesi">Procesi hap pas hapi</h2><ol class="process">${t.steps.map((x) => html`<li>${x}</li>`)}</ol>` : ''}
         ${t.mistakes.length ? html`<h2 id="gabimet">Gabimet që bëhen & zgjidhja</h2>
           <div class="mistakes">${t.mistakes.map((m) => html`<div class="mistake"><div class="m-bad"><span>Gabimi</span>${m.problem}</div><div class="m-good"><span>Zgjidhja</span>${m.solution}</div></div>`)}</div>` : ''}
@@ -333,7 +315,7 @@ function paywall(p) {
   return html`<section class="page-head"><div class="wrap">
     ${sec ? html`<a class="crumb" href="#/seksioni/${p.section}">← ${sec.title}</a>` : ''}
     <div class="topic-head"><div><div class="kicker">${sec?.kicker || ''}</div><h1>${p?.title || 'Mësim'}</h1><p class="lead">${p?.summary || ''}</p></div>
-    ${p?.diagram ? html`<div class="topic-head-art">${fadeSvg(p.diagram)}</div>` : ''}</div>
+    ${p && thumbSvg({ diagram: p.diagram, slug: p.slug }) ? html`<div class="topic-head-art">${thumbSvg({ diagram: p.diagram, slug: p.slug })}</div>` : ''}</div>
   </div></section>
   <section class="section tight"><div class="wrap paywall">
     ${p?.intro ? html`<p class="intro">${p.intro}</p>` : ''}
