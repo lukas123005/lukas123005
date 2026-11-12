@@ -22,3 +22,6 @@ quit30/video/*.mp4
 quit30/video/_still_*
 quit30/video/pages/
 quit30/video/vo/*.wav
+video/midfade/*.mp4
+video/midfade/_still_*
+video/midfade/client.jpg
