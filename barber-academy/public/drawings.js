@@ -56,6 +56,13 @@
     },
   };
 
+  // Mjekra (që figurat me flokë të gjata të jenë qartë meshkuj)
+  const BEARD_FRONT = 'M91 146 C92 174 108 200 140 207 C172 200 188 174 189 146 C184 166 170 184 154 189 C150 185 130 185 126 189 C110 184 96 166 91 146 Z';
+  const MUSTACHE = 'M124 178 C130 172 150 172 156 178 C150 181 130 181 124 178 Z';
+  const BEARD_SIDE = 'M194 166 C192 190 182 206 168 214 C156 220 140 222 128 218 C120 214 116 206 116 198 C118 192 122 190 126 192 C142 200 162 196 176 184 C184 176 188 168 190 158 Z';
+  const beardFront = () => filled(BEARD_FRONT, '#dcdcdc', 1.2) + filled(MUSTACHE, '#cfcfcf', 1.1);
+  const beardSide = () => filled(BEARD_SIDE, '#dcdcdc', 1.2) + line('M108 180 C113 178 119 180 122 185', 1.2);
+
   // ───────────── Elemente ndihmëse ─────────────
   const num = (x, y, n) => `<circle cx="${x}" cy="${y}" r="7.5" fill="${INK}"/><text x="${x}" y="${y + 3}" text-anchor="middle" class="dw-num">${n}</text>`;
   const label = (x, y, t, anchor = 'middle', cls = 'dw-label') => `<text x="${x}" y="${y}" text-anchor="${anchor}" class="${cls}">${t}</text>`;
@@ -98,10 +105,10 @@
 
     if (view === 'side') {
       if (hair === 'long') {
-        s += line(v.face) + line(v.neck) + line(v.brow);
+        s += line(v.face) + line(v.neck) + line(v.brow) + beardSide();
         s += filled(v.long, LONG) + v.strands.map((d) => thin(d, '#9a9a9a')).join('');
       } else if (hair === 'curly') {
-        s += line(v.face) + line(v.neck) + line(v.brow) + curls();
+        s += line(v.face) + line(v.neck) + line(v.brow) + beardSide() + curls();
       } else {
         s += filled(v.hair, hairFill, 0) + inHair(fadeLayer + under);
         s += line(v.skull) + line(v.face) + line(v.neck) + line(v.brow) + filled(v.ear, '#fff', 1.5) + line(v.earIn, 1.2);
@@ -120,7 +127,7 @@
       }
     } else if (view === 'front') {
       if (hair === 'long') {
-        s += line(v.neck) + filled(v.long, LONG) + under + filled(v.face, '#fff') + filled(v.fringe, LONG, 1.4) + thin('M141 46 L141 62', '#9a9a9a') + line(v.details, 1.3);
+        s += line(v.neck) + filled(v.long, LONG) + under + filled(v.face, '#fff') + filled(v.fringe, LONG, 1.4) + thin('M141 46 L141 62', '#9a9a9a') + beardFront() + line(v.details, 1.3);
         s += `<circle cx="134" cy="160" r="1.5" fill="${INK}"/><circle cx="146" cy="160" r="1.5" fill="${INK}"/>`;
       } else {
         s += filled(v.face, '#fff') + filled(v.hair, hairFill, 0) + inHair(fadeLayer + under) + line(v.face);
@@ -290,10 +297,10 @@
       { label: 'Përpara', title: 'Kontrollo simetrinë', text: 'Sill të dyja anët përpara dhe krahasoji me gishta në të njëjtën lartësi.', svg: draw({ view: 'front', hair: 'long', extra: dash(hline(232, 56, 224), 1.2) + arrow(122, 232, 78, 232) + arrow(158, 232, 202, 232) + num(140, 232, 1) }) },
     ],
     'balluke-perde': () => [
-      { label: 'Nga sipër', title: 'Trekëndëshi i ballukeve', text: 'Seksion i vogël trekëndësh: baza nga tempulli në tempull, maja jo më thellë se kurora e përparme.', svg: draw({ view: 'top', under: p('M98 92 L140 132 L182 92 C160 78 120 78 98 92 Z', `fill="${SHADE}"`), extra: dash('M98 92 L140 132 L182 92', 1.3) + num(140, 104, 1) + label(140, 150, 'BALLUKET'), vb: '0 18 280 244' }) },
-      { label: 'Përpara', title: 'Ndarja në mes', text: 'Ndaje trekëndëshin në mes me vijë të drejtë. Çdo anë hapet si perde drejt mollëzave.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M141 44 L141 80', 1.3) + arrow(128, 118, 106, 140) + arrow(154, 118, 176, 140) + num(141, 34, 1) }) },
-      { label: 'Përpara', title: 'Forma V e butë', text: 'Qendra te vetullat, anët në diagonale drejt mollëzave. Prit më gjatë: kur thahen ngrihen.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M96 140 L141 128 L186 140', 1.5) + scissors(200, 140) + num(141, 116, 1) }) },
-      { label: 'Përpara', title: 'Lidhja me shtresat', text: 'Fundi i ballukeve vazhdon në shtresat rreth fytyrës, pa vijë të prerë mes tyre.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M98 140 C88 170 80 204 74 246', 1.3) + dash('M184 140 C194 170 202 204 208 246', 1.3) }) },
+      { label: 'Nga sipër', title: 'Seksioni përpara', text: 'Trekëndësh përpara: baza nga tempulli në tempull, maja te kurora e përparme. Ky seksion bëhet “curtains”.', svg: draw({ view: 'top', under: p('M98 92 L140 132 L182 92 C160 78 120 78 98 92 Z', `fill="${SHADE}"`), extra: dash('M98 92 L140 132 L182 92', 1.3) + num(140, 104, 1) + label(140, 150, 'PËRPARA'), vb: '0 18 280 244' }) },
+      { label: 'Përpara', title: 'Ndarja në mes', text: 'Ndaje në mes sipas vorbullës natyrale. Çdo anë bie anash si perde, drejt mollëzave.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M141 44 L141 80', 1.3) + arrow(128, 118, 106, 140) + arrow(154, 118, 176, 140) + num(141, 34, 1) }) },
+      { label: 'Përpara', title: 'Forma V e butë', text: 'Qendra te vetullat ose hunda, anët në diagonale drejt mollëzave. Prit më gjatë: kur thahen ngrihen.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M96 140 L141 128 L186 140', 1.5) + scissors(200, 140) + num(141, 116, 1) }) },
+      { label: 'Përpara', title: 'Lidhja me anët', text: 'Flokët përpara vazhdojnë butë te anët e kokës, pa vijë të prerë mes tyre.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M98 140 C88 170 80 204 74 246', 1.3) + dash('M184 140 C194 170 202 204 208 246', 1.3) }) },
     ],
     'forma-v-dhe-u': () => [
       { label: 'Prapa', title: 'Forma U', text: 'Gjatësia më e madhe në qendër, anët pak më të shkurtra në vijë të lakuar. E butë dhe klasike.', svg: draw({ view: 'back', hair: 'long', extra: backEnd(U) + dash('M140 40 L140 250', 1) + scissors(220, 232, 200) + label(140, 30, 'U') }) },
@@ -306,6 +313,26 @@
       { label: 'Anash', title: 'Maja drejt lart, 180°', text: 'Ngri flokët e majës drejt lart te udhëzuesi dhe prit të sheshtë. Sipër dalin shtresa të shkurtra.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: toPoint(150, 30, 16, 192, -20) + dash(hline(-20, 150, 232), 1.4) + scissors(244, -20) + num(192, -32, 1) + label(146, -26, '180°', 'end') }) },
       { label: 'Anash', title: 'Lidhja me pjesën poshtë', text: 'Lësho anët dhe pjesën e pasme dhe lidhi me majën me ngritje 90°, që të mos dalin dy prerje të ndara.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: radial(40, -50, 14, 46) + dash(arcAt(42, -52, 114), 1.3) + label(282, 120, '90°') + num(...pt(40, 114), 2) }) },
       { label: 'Anash', title: 'Silueta me shtresa', text: 'Rezultati: volum dhe teksturë në kurorë, gjatësi poshtë dhe balluke që lidhen me anët.', svg: draw({ view: 'side', hair: 'long', extra: thin(ragged(118, 204, 262), INK, 1.1) + thin(ragged(168, 206, 266), INK, 1.1) + thin(ragged(214, 210, 270), INK, 1.1) + line('M124 102 C116 116 112 128 114 140', 1.4) + label(240, 104, 'SHTRESA', 'middle', 'dw-small') }) },
+    ],
+  });
+
+  const MULLET = 'M230 130 C250 138 258 160 258 186 C258 208 262 230 266 250 L222 250 C220 230 214 210 206 194 C214 176 222 152 230 130 Z';
+  const mullet = () => filled(MULLET, LONG, 1.4) + thin('M238 150 C246 180 248 214 252 246 M228 160 C232 190 234 220 236 248', '#9a9a9a');
+  const BACK_MULLET = 'M104 150 C100 190 98 222 96 250 L184 250 C182 222 180 190 176 150 Z';
+  const bunSide = () => thin('M124 100 C160 74 200 62 226 60 M150 98 C180 80 206 70 228 66 M168 118 C196 96 216 80 232 72 M196 128 C214 106 226 88 238 76', INK, 0.8) + `<circle cx="242" cy="58" r="18" fill="${LONG}" stroke="${INK}" stroke-width="1.6"/>` + thin('M232 50 q10 -6 20 4 M230 62 q12 -4 22 4', '#9a9a9a');
+  const bunBack = () => thin('M92 110 C106 84 122 66 132 58 M188 110 C174 84 158 66 148 58 M112 96 C122 78 130 68 136 60 M168 96 C158 78 150 68 144 60', INK, 0.8) + `<circle cx="140" cy="46" r="17" fill="${LONG}" stroke="${INK}" stroke-width="1.6"/>`;
+
+  Object.assign(LONG_FIGS, {
+    'mullet-modern': () => [
+      { label: 'Anash', title: 'Tre zonat', text: '1 — maja me shtresa, 2 — anët të zbehura rreth veshit, 3 — pjesa e pasme e gjatë mbi qafë.', svg: draw({ view: 'side', fade: 'burst', extra: mullet() + num(190, 72, 1) + num(176, 136, 2) + num(244, 220, 3) }) },
+      { label: 'Anash', title: 'Anët: burst rreth veshit', text: 'Zbehja bëhet në formë harku rreth veshit dhe ndalet pas tij. Qafa nuk zbehet — aty mbetet gjatësia.', svg: draw({ view: 'side', fade: 'burst', extra: mullet() + dash('M178 112 C200 92 236 98 240 132', 1.3) + label(212, 92, 'BURST', 'middle', 'dw-small') }) },
+      { label: 'Anash', title: 'Maja me shtresa 90°', text: 'Ngri flokët e majës 90° nga koka dhe prit paralel me formën e saj, të lidhura me anët.', svg: draw({ view: 'side', fade: 'burst', vb: TALL, extra: mullet() + radial(150, 40, 12, 46) + dash(arcAt(150, 40, 114), 1.3) + label(190, 0, '90°') }) },
+      { label: 'Prapa', title: 'Gjatësia pas', text: 'Pjesa e pasme pritet në qafë me 0° dhe pesha hiqet me point cutting. Anët pas veshit mbeten të zbehura.', svg: draw({ view: 'back', fade: 'burst', extra: filled(BACK_MULLET, LONG, 1.4) + thin('M120 156 L118 248 M140 156 L140 248 M160 156 L162 248', '#9a9a9a') + dash(hline(244, 84, 196), 1.5) + scissors(208, 244) }) },
+    ],
+    'undercut-man-bun': () => [
+      { label: 'Nga sipër', title: 'Maja mbetet e gjatë', text: 'Ndaj majën në formë patkoi dhe lidhe lart. Gjithçka jashtë patkoit bëhet undercut.', svg: draw({ view: 'top', under: p(horseshoe, `fill="${SHADE}"`), extra: line(horseshoe, 1.4) + label(140, 150, 'MAJA E GJATË') + label(140, 254, 'UNDERCUT ANASH DHE PAS', 'middle', 'dw-small'), vb: '0 18 280 244' }) },
+      { label: 'Anash', title: 'Vija e ndarjes', text: 'Anët dhe pas me makinë, deri 1–2 cm nën vijën parietale. Kalimi te maja është i ndarë (disconnected).', svg: draw({ view: 'side', fade: 'high', extra: bunSide() + label(18, 92, 'VIJA E NDARJES', 'start', 'dw-small') + arrow(70, 98, 116, 104) + num(160, 104, 1) }) },
+      { label: 'Prapa', title: 'Nga pas, me man bun', text: 'Vija e ndarjes duhet të jetë e drejtë dhe në të njëjtën lartësi në të dyja anët.', svg: draw({ view: 'back', fade: 'high', extra: bunBack() + arrow(66, 110, 92, 110) + arrow(214, 110, 188, 110) }) },
     ],
   });
 

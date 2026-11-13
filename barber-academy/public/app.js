@@ -122,7 +122,7 @@ function pricingCard() {
     <div class="price">${s.price_label}</div>
     <ul class="checks">
       <li>Të gjitha proceset e fade-ve: low, mid, high, burst, taper, drop, skin</li>
-      <li>Flokët e gjata: shtresat, kaçurrelat, pastrimi i majave</li>
+      <li>Flokët e gjata për meshkuj: flow, mullet, wolf cut, man bun, curtains</li>
       <li>Njohja e mjeteve të punës dhe mirëmbajtja</li>
       <li>Gabimet që bëhen dhe zgjidhjet e tyre</li>
       <li>Foto dhe video të reja çdo muaj</li>
@@ -181,7 +181,7 @@ function viewHome() {
   return html`
   <section class="hero"><div class="wrap hero-in">
     <div>
-      <div class="kicker">Akademi online për barberë · ${s.owner_name}</div>
+      <div class="kicker">Akademi online · Qethje për meshkuj · ${s.owner_name}</div>
       <h1>${s.brand_name}</h1>
       <p class="lead">${s.tagline}</p>
       <div class="actions">

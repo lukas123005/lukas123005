@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import { config } from './config.js';
-import { TOPICS, DEFAULT_SETTINGS } from './content.js';
+import { TOPICS, DEFAULT_SETTINGS, RETIRED, OLD_DEFAULTS } from './content.js';
 
 export const db = new DatabaseSync(path.join(config.dataDir, 'academy.db'));
 
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS webhook_events (id TEXT PRIMARY KEY, received_at TEXT
 
 // Përmbajtja fillestare. Mësimet e shtuara në versione të reja (v: 2…) futen një herë
 // edhe në databazat ekzistuese, pa prekur ato që ke ndryshuar ose fshirë.
-const CONTENT_VERSION = 2;
+const CONTENT_VERSION = 3;
 {
   const fresh = db.prepare('SELECT COUNT(*) AS n FROM topics').get().n === 0;
   const done = Number(db.prepare("SELECT value FROM settings WHERE key = 'content_version'").get()?.value || (fresh ? 0 : 1));
@@ -104,6 +104,21 @@ const CONTENT_VERSION = 2;
       JSON.stringify(t.steps || []), JSON.stringify(t.tools || []), JSON.stringify(t.tips || []),
       JSON.stringify(t.mistakes || []), i);
   });
+  // v3: platforma vetëm për meshkuj — rishkruan mësimet e flokëve të gjata, heq ato për femra (nëse s'kanë media)
+  if (!fresh && done < 3) {
+    const upd = db.prepare(`UPDATE topics SET title=?, summary=?, intro=?, steps=?, tools=?, tips=?, mistakes=?, sort_order=?, updated_at=datetime('now') WHERE slug=?`);
+    TOPICS.forEach((t, i) => {
+      if (t.section === 'floke-te-gjata' && (t.v || 1) < 3) upd.run(t.title, t.summary, t.intro, JSON.stringify(t.steps), JSON.stringify(t.tools), JSON.stringify(t.tips), JSON.stringify(t.mistakes), i, t.slug);
+      else db.prepare('UPDATE topics SET sort_order = ? WHERE slug = ?').run(i, t.slug);
+    });
+    for (const slug of RETIRED) {
+      const row = db.prepare('SELECT id FROM topics WHERE slug = ?').get(slug);
+      if (row && !db.prepare('SELECT 1 FROM media WHERE topic_id = ?').get(row.id)) db.prepare('DELETE FROM topics WHERE id = ?').run(row.id);
+    }
+    for (const [k, old] of Object.entries(OLD_DEFAULTS)) {
+      db.prepare('UPDATE settings SET value = ? WHERE key = ? AND value = ?').run(DEFAULT_SETTINGS[k], k, old);
+    }
+  }
   db.prepare("INSERT INTO settings (key, value) VALUES ('content_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(String(CONTENT_VERSION));
 }
 {
