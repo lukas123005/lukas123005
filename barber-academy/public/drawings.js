@@ -22,8 +22,8 @@
       brow: 'M120 142 C126 138 134 138 140 140',
       hair: 'M122 102 L152 98 C162 98 164 106 164 114 C164 122 172 124 180 128 C188 134 190 144 190 156 L201 156 C202 136 222 126 227 142 C228 160 222 178 230 196 C240 186 254 160 256 130 C260 92 236 58 196 54 C154 50 124 70 122 102 Z',
       hairline: ['M122 102 L152 98 C162 98 164 106 164 114 C164 122 172 124 180 128 C188 134 190 144 190 156 L201 156', 'M227 142 C228 160 222 178 230 196'],
-      long: 'M118 104 C120 66 156 46 198 50 C244 56 266 100 262 150 C260 190 266 222 272 254 L212 254 C210 228 206 206 206 186 C200 178 196 166 194 154 C190 138 182 124 168 116 C158 110 150 104 140 100 Z',
-      strands: ['M196 58 C236 80 250 160 252 250', 'M178 62 C220 92 232 170 236 250', 'M160 76 C196 110 212 180 222 250', 'M150 92 C180 120 196 180 210 236'],
+      long: 'M118 104 C120 66 156 46 198 50 C244 56 266 100 262 150 C260 176 256 196 250 212 L214 212 C212 200 208 190 206 182 C200 178 196 166 194 154 C190 138 182 124 168 116 C158 110 150 104 140 100 Z',
+      strands: ['M196 58 C236 80 250 150 246 208', 'M178 62 C220 92 232 160 232 208', 'M160 76 C196 110 210 170 218 208', 'M150 92 C180 120 194 170 208 196'],
       lines: { low: 148, mid: 126, high: 104, skin: 126 },
     },
     back: {
@@ -33,8 +33,8 @@
       ears: ['M86 132 C76 126 72 138 76 154 C78 164 82 170 90 172 C92 158 90 144 86 132 Z', 'M194 132 C204 126 208 138 204 154 C202 164 198 170 190 172 C188 158 190 144 194 132 Z'],
       hair: 'M90 134 C94 156 100 174 108 186 L172 186 C180 174 186 156 190 134 C196 118 198 108 196 100 C192 62 168 40 140 40 C112 40 88 62 84 100 C82 114 84 126 90 134 Z',
       hairline: ['M90 134 C94 156 100 174 108 186 L172 186 C180 174 186 156 190 134'],
-      long: 'M84 100 C88 62 112 40 140 40 C168 40 192 62 196 100 C200 140 204 200 210 252 L70 252 C76 200 80 140 84 100 Z',
-      strands: ['M112 50 C100 110 96 180 92 250', 'M126 44 C118 110 116 180 116 250', 'M140 42 L140 250', 'M154 44 C162 110 164 180 164 250', 'M168 50 C180 110 184 180 188 250'],
+      long: 'M84 100 C88 62 112 40 140 40 C168 40 192 62 196 100 C198 140 200 180 200 206 L80 206 C80 180 82 140 84 100 Z',
+      strands: ['M112 50 C100 110 96 160 92 204', 'M126 44 C118 110 116 160 116 204', 'M140 42 L140 204', 'M154 44 C162 110 164 160 164 204', 'M168 50 C180 110 184 160 188 204'],
       lines: { low: 160, mid: 136, high: 110, skin: 136 },
     },
     front: {
@@ -44,7 +44,7 @@
       neck: 'M112 198 C112 212 112 224 110 234 M168 198 C168 212 168 224 170 234 M110 234 C96 244 76 250 56 254 M170 234 C184 244 204 250 224 254',
       hair: 'M88 122 C82 72 106 42 140 42 C174 42 198 72 192 122 C190 112 188 104 186 98 L186 84 C182 74 176 72 166 72 C150 70 130 70 114 72 C104 72 98 74 94 84 L94 98 C92 104 90 112 88 122 Z',
       hairline: ['M88 122 C90 112 92 104 94 98 L94 84 C98 74 104 72 114 72 C130 70 150 70 166 72 C176 72 182 74 186 84 L186 98 C188 104 190 112 192 122'],
-      long: 'M86 120 C80 70 106 40 140 40 C174 40 200 70 194 120 C198 160 204 210 210 252 L70 252 C76 210 82 160 86 120 Z',
+      long: 'M86 120 C80 70 106 40 140 40 C174 40 200 70 194 120 C198 150 202 176 206 200 L74 200 C78 176 82 150 86 120 Z',
       fringe: 'M88 122 C82 72 106 42 140 42 C174 42 198 72 192 122 C188 100 176 84 158 78 C150 76 144 72 141 62 C138 72 132 76 122 78 C104 84 92 100 88 122 Z',
       lines: { low: 116, mid: 104, high: 90, skin: 104 },
     },
@@ -105,7 +105,7 @@
 
     if (view === 'side') {
       if (hair === 'long') {
-        s += line(v.face) + line(v.neck) + line(v.brow) + beardSide();
+        s += line(v.face) + line(v.neck) + line('M232 210 C234 224 236 238 240 252') + line(v.brow) + beardSide();
         s += filled(v.long, LONG) + v.strands.map((d) => thin(d, '#9a9a9a')).join('');
       } else if (hair === 'curly') {
         s += line(v.face) + line(v.neck) + line(v.brow) + beardSide() + curls();
@@ -117,7 +117,7 @@
     } else if (view === 'back') {
       s += line(v.shoulders);
       if (hair === 'long') {
-        s += line(v.neck) + filled(v.long, LONG) + inHair('') + v.strands.map((d) => thin(d, '#9a9a9a')).join('');
+        s += line(v.neck) + v.ears.map((d) => filled(d, '#fff', 1.5)).join('') + filled(v.long, LONG) + inHair('') + v.strands.map((d) => thin(d, '#9a9a9a')).join('');
         defs += `<clipPath id="${id}l"><path d="${v.long}"/></clipPath>`;
         s += `<g clip-path="url(#${id}l)">${under}</g>` + line(v.long);
       } else {
@@ -176,7 +176,7 @@
   function curls() {
     const pts = [];
     for (const [r, a0, a1, n] of [[80, 172, -60, 22], [62, 160, -50, 16], [44, 140, -20, 9]]) range(a0, a1, n).forEach((a) => pts.push(pt(a, r)));
-    for (let yy = 180; yy <= 236; yy += 16) pts.push([254, yy], [236, yy + 6]);
+    for (let yy = 180; yy <= 200; yy += 16) pts.push([254, yy], [236, yy + 6]);
     const rad = 13;
     return `<g>${pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${rad}" fill="none" stroke="${INK}" stroke-width="3.2"/>`).join('')}
       ${pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${rad}" fill="${LONG}"/>`).join('')}
@@ -248,7 +248,7 @@
   const LONG_FIGS = {
     shtresat: () => [
       { label: 'Nga sipër', title: 'Ndaji në seksione', text: 'Vija e mesit nga balli te kurora dhe vija nga veshi në vesh: 4 seksione. Fiksoji me kapëse.', svg: quadrants() },
-      { label: 'Prapa', title: 'Vija udhëzuese në fund', text: 'Prit gjatësinë totale në qendër pas, me 0° ngritje. Gjithë prerja ndjek këtë vijë.', svg: draw({ view: 'back', hair: 'long', extra: dash(hline(240, 60, 220), 1.5) + scissors(232, 240) + label(140, 232, '0°') + num(140, 252, 1) }) },
+      { label: 'Prapa', title: 'Vija udhëzuese në fund', text: 'Prit gjatësinë totale në qendër pas, me 0° ngritje. Gjithë prerja ndjek këtë vijë.', svg: draw({ view: 'back', hair: 'long', extra: dash(hline(202, 64, 216), 1.5) + scissors(228, 202) + label(140, 196, '0°') + num(140, 218, 1) }) },
       { label: 'Anash', title: 'Udhëzuesi te kurora', text: 'Merr një seksion të hollë te kurora dhe ngrije në 90° nga koka. Ky përcakton gjatësinë e shtresave.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: radial(60, 40, 7, 70) + dash(arcAt(64, 36, 138), 1.4) + num(...pt(50), 1) + label(...pt(50, 156), '90°') + scissors(...pt(32, 144), -60) }) },
       { label: 'Anash', title: 'Ngritja 90° — shtresa uniforme', text: 'Çdo seksion ngrihet pingul me kokën dhe pritet paralel me formën e saj. Gjatësia është e njëjtë kudo.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: radial(150, -40, 34, 52) + dash(arcAt(150, -40, 120), 1.2) + label(190, -8, 'GJATËSI E NJËJTË') }) },
       { label: 'Anash', title: 'Ngritja 180° — shtresa të gjata', text: 'Tërhiq flokët drejt e lart në majë të kokës dhe prit atje. Poshtë mbetet gjatësi, sipër krijohen shtresa të gjata.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: toPoint(150, -40, 26, 190, -26) + dash(hline(-26, 150, 230), 1.4) + scissors(242, -26) + label(150, -32, '180°', 'end') + num(190, -38, 1) }) },
@@ -256,25 +256,25 @@
       { label: 'Nga sipër', title: 'Kontrolli i kryqëzuar', text: 'Kontrollo me seksione horizontale, kundër drejtimit të prerjes. Çdo pabarazi duket menjëherë.', svg: draw({ view: 'top', under: [104, 128, 152, 176, 200].map((yy) => line(hline(yy), 1)).join('') + `<rect x="0" y="104" width="280" height="24" fill="${SHADE}"/>`, extra: arrow(70, 252, 210, 252) + arrow(210, 252, 70, 252) + label(140, 248, 'NGA VESHI NË VESH') + num(140, 90, 1), vb: '0 18 280 244' }) },
     ],
     'prerja-e-njetrajtshme': () => [
-      { label: 'Prapa', title: 'Koka drejt, vija e mesit', text: 'Klienti drejt, këmbët pa i kryqëzuar. Ndaj flokët në mes nga kurora deri në qafë.', svg: draw({ view: 'back', hair: 'long', extra: dash('M140 40 L140 252', 1.5) + num(140, 30, 1) }) },
-      { label: 'Prapa', title: 'Seksioni i parë horizontal', text: 'Lësho vetëm një seksion të hollë poshtë dhe prite me 0° — drejt poshtë, pa e ngritur. Kjo është vija udhëzuese.', svg: draw({ view: 'back', hair: 'long', under: `<rect x="0" y="206" width="280" height="60" fill="#d4d4d4"/>`, extra: line(hline(206, 76, 204), 1.2) + dash(hline(244, 60, 220), 1.5) + scissors(232, 244) + label(60, 240, '0°', 'end') + num(140, 226, 1) }) },
-      { label: 'Prapa', title: 'Seksionet nga poshtë-lart', text: 'Lësho seksionet e reja një nga një, nga poshtë lart, dhe prit çdo seksion sipas udhëzuesit.', svg: draw({ view: 'back', hair: 'long', extra: [206, 176, 146, 116].map((yy, i) => line(hline(yy, 80, 200), 1) + num(66, yy, i + 1)).join('') + dash(hline(244, 60, 220), 1.5) }) },
-      { label: 'Përpara', title: 'Kontrollo simetrinë', text: 'Sille flokun e të dy anëve përpara dhe krahaso gjatësinë me gishta. Vija duhet të jetë e njëjtë.', svg: draw({ view: 'front', hair: 'long', extra: dash(hline(250, 50, 230), 1.5) + arrow(60, 200, 60, 246) + arrow(220, 200, 220, 246) + num(60, 190, 1) + num(220, 190, 2) }) },
+      { label: 'Prapa', title: 'Koka drejt, vija e mesit', text: 'Klienti drejt, këmbët pa i kryqëzuar. Ndaj flokët në mes nga kurora deri në qafë.', svg: draw({ view: 'back', hair: 'long', extra: dash('M140 40 L140 204', 1.5) + num(140, 30, 1) }) },
+      { label: 'Prapa', title: 'Seksioni i parë horizontal', text: 'Lësho vetëm një seksion të hollë poshtë dhe prite me 0° — drejt poshtë, pa e ngritur. Kjo është vija udhëzuese.', svg: draw({ view: 'back', hair: 'long', under: `<rect x="0" y="178" width="280" height="60" fill="#d4d4d4"/>`, extra: line(hline(178, 82, 198), 1.2) + dash(hline(202, 66, 214), 1.5) + scissors(226, 202) + label(62, 198, '0°', 'end') + num(140, 190, 1) }) },
+      { label: 'Prapa', title: 'Seksionet nga poshtë-lart', text: 'Lësho seksionet e reja një nga një, nga poshtë lart, dhe prit çdo seksion sipas udhëzuesit.', svg: draw({ view: 'back', hair: 'long', extra: [180, 156, 132, 108].map((yy, i) => line(hline(yy, 82, 198), 1) + num(66, yy, i + 1)).join('') + dash(hline(202, 66, 214), 1.5) }) },
+      { label: 'Përpara', title: 'Kontrollo simetrinë', text: 'Sille flokun e të dy anëve përpara dhe krahaso gjatësinë me gishta. Vija duhet të jetë e njëjtë.', svg: draw({ view: 'front', hair: 'long', extra: dash(hline(202, 60, 220), 1.5) + arrow(64, 160, 64, 198) + arrow(216, 160, 216, 198) + num(64, 150, 1) + num(216, 150, 2) }) },
     ],
     'pastrimi-i-majave': () => [
-      { label: 'Prapa', title: 'Seksione të vogla', text: 'Me flokët të thatë dhe të krehur, ndaj seksione të vogla vertikale.', svg: draw({ view: 'back', hair: 'long', extra: [100, 120, 160, 180].map((x) => line(`M${x} 70 L${x} 250`, 1)).join('') + `<rect x="120" y="70" width="40" height="180" fill="${SHADE}" opacity=".85"/>` + line('M120 70 L120 250 M160 70 L160 250', 1.2) + num(140, 60, 1) }) },
+      { label: 'Prapa', title: 'Seksione të vogla', text: 'Me flokët të thatë dhe të krehur, ndaj seksione të vogla vertikale.', svg: draw({ view: 'back', hair: 'long', extra: [100, 120, 160, 180].map((x) => line(`M${x} 70 L${x} 204`, 1)).join('') + `<rect x="120" y="70" width="40" height="134" fill="${SHADE}" opacity=".85"/>` + line('M120 70 L120 204 M160 70 L160 204', 1.2) + num(140, 60, 1) }) },
       { label: 'Afër', title: 'Përdridh dhe prit majat', text: 'Përdridh lehtë seksionin: majat e çara dalin jashtë. Prit vetëm ato, me majë gërshëre.', svg: STRAND('twist') },
-      { label: 'Prapa', title: 'Vetëm 0.5–1 cm', text: 'Në fund rregullo vijën duke hequr vetëm 0.5–1 cm. Trego me gishta para se të fillosh.', svg: draw({ view: 'back', hair: 'long', extra: dash(hline(238, 60, 222), 1.5) + scissors(234, 238) + arrow(50, 226, 50, 252) + arrow(50, 252, 50, 226) + label(44, 222, '0.5–1 cm', 'end', 'dw-small'), vb: '-30 0 310 260' }) },
+      { label: 'Prapa', title: 'Vetëm 0.5–1 cm', text: 'Në fund rregullo vijën duke hequr vetëm 0.5–1 cm. Trego me gishta para se të fillosh.', svg: draw({ view: 'back', hair: 'long', extra: dash(hline(196, 70, 210), 1.5) + scissors(222, 196) + arrow(60, 190, 60, 210) + arrow(60, 210, 60, 190) + label(54, 203, '0.5–1 cm', 'end', 'dw-small'), vb: '-30 0 310 260' }) },
     ],
     'floket-kacurrela': () => [
-      { label: 'Anash', title: 'Shiko formën në të thatë', text: 'Para se të presësh, shiko kaçurrelat në formën e tyre natyrale të thatë dhe siluetën e përgjithshme.', svg: draw({ view: 'side', hair: 'curly', extra: dash('M98 70 C120 10 250 0 286 90 C300 150 286 220 276 258', 1.3) + label(256, 18, 'SILUETA') }) },
+      { label: 'Anash', title: 'Shiko formën në të thatë', text: 'Para se të presësh, shiko kaçurrelat në formën e tyre natyrale të thatë dhe siluetën e përgjithshme.', svg: draw({ view: 'side', hair: 'curly', extra: dash('M98 70 C120 10 250 0 286 90 C300 150 290 196 274 226', 1.3) + label(256, 18, 'SILUETA') }) },
       { label: 'Anash', title: 'Kaçurrelë pas kaçurrele', text: 'Prit çdo kaçurrelë veç e veç, duke ndjekur siluetën. Mos e tërhiq kaçurrelën.', svg: draw({ view: 'side', hair: 'curly', extra: `<circle cx="${pt(40, 80)[0]}" cy="${pt(40, 80)[1]}" r="13" fill="#bdbdbd" stroke="${INK}" stroke-width="1.6"/>` + scissors(pt(40, 104)[0], pt(40, 104)[1], -40) + num(...pt(40, 80), 1) }) },
       { label: 'Afër', title: 'Tkurrja (shrinkage)', text: 'E thatë, kaçurrela mund të dalë deri në gjysmën e gjatësisë së lagur. Prandaj prit në të thatë.', svg: STRAND('coil') },
     ],
     'floke-te-gjata-per-meshkuj': () => [
-      { label: 'Anash', title: 'Vija udhëzuese te supet', text: 'Prit gjatësinë në fund (zakonisht te supet ose qafa) me 0° ngritje.', svg: draw({ view: 'side', hair: 'long', extra: dash(hline(246, 196, 280), 1.5) + scissors(186, 246, 180) + num(240, 236, 1) }) },
+      { label: 'Anash', title: 'Vija udhëzuese te qafa', text: 'Prit gjatësinë në fund, te qafa, me 0° ngritje.', svg: draw({ view: 'side', hair: 'long', extra: dash(hline(210, 204, 280), 1.5) + scissors(196, 210, 180) + num(232, 198, 1) }) },
       { label: 'Anash', title: 'Shtresa të gjata 45°', text: 'Hiq peshën në fund me shtresa të gjata dhe ngritje të ulët — pa krijuar formën “trekëndësh”.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: angled(20, -60, 14, 80, -45) + dash('M226 196 L292 134', 1.4) + label(276, 196, '45°') }) },
-      { label: 'Prapa', title: 'Hiq peshën nga brenda', text: 'Ngri shtresën e sipërme dhe rrallo vetëm seksionin e brendshëm. Nga jashtë flokët mbeten të plotë.', svg: draw({ view: 'back', hair: 'long', under: `<rect x="112" y="120" width="56" height="116" fill="#d4d4d4"/>`, extra: dash('M112 120 L168 120 L168 236 L112 236 Z', 1.2) + label(140, 182, 'BRENDA') + arrow(140, 110, 140, 70) + label(150, 94, 'SHTRESA E SIPËRME', 'start', 'dw-small') }) },
+      { label: 'Prapa', title: 'Hiq peshën nga brenda', text: 'Ngri shtresën e sipërme dhe rrallo vetëm seksionin e brendshëm. Nga jashtë flokët mbeten të plotë.', svg: draw({ view: 'back', hair: 'long', under: `<rect x="112" y="110" width="56" height="86" fill="#d4d4d4"/>`, extra: dash('M112 110 L168 110 L168 196 L112 196 Z', 1.2) + label(140, 156, 'BRENDA') + arrow(140, 104, 140, 66) + label(150, 88, 'SHTRESA E SIPËRME', 'start', 'dw-small') }) },
       { label: 'Përpara', title: 'Flokët pas veshëve', text: 'Anët duhet të bien natyrshëm pas veshëve. Përpara ruaj gjatësinë që lejon krehjen pas.', svg: draw({ view: 'front', hair: 'long', extra: arrow(104, 92, 82, 132) + arrow(176, 92, 198, 132) + num(104, 84, 1) + num(176, 84, 2) }) },
     ],
   };
@@ -290,44 +290,32 @@
   const ragged = (y, x0, x1) => { let d = `M${x0} ${y}`; for (let x = x0 + 8, i = 0; x <= x1; x += 8, i++) d += ` L${x} ${y + (i % 2 ? 4 : -3)}`; return d; };
 
   Object.assign(LONG_FIGS, {
-    'shtresat-rreth-fytyres': () => [
-      { label: 'Përpara', title: 'Seksioni trekëndësh', text: 'Ndaj vetëm seksionin përpara: nga vija e ndarjes deri te dy tempujt. Pjesa tjetër mbetet e lidhur pas.', svg: draw({ view: 'front', hair: 'long', extra: p('M141 46 L100 98 L182 98 Z', `fill="${SHADE}" fill-opacity=".9" stroke="${INK}" stroke-width="1.2" stroke-dasharray="4 3"`) + num(141, 82, 1) }) },
-      { label: 'Përpara', title: 'Pika më e shkurtër', text: 'Zgjidh ku fillon shtresa: mollëzat, buzët ose mjekra. Nga aty shtresa zbret drejt supeve.', svg: draw({ view: 'front', hair: 'long', vb: '0 0 300 260', extra: dash('M94 150 L72 246', 1.5) + dash('M188 150 L210 246', 1.5) + num(94, 150, 1) + num(188, 150, 2) + levelMarks() }) },
-      { label: 'Përpara', title: 'Prerja me rrëshqitje', text: 'Me gërshërë gjysmë të hapura rrëshqit poshtë në kënd (slide cutting). Shtresa lidhet butë me gjatësinë.', svg: draw({ view: 'front', hair: 'long', extra: arrow(92, 156, 72, 236) + scissors(70, 186, 75) + dash('M188 150 L210 246', 1.2) + label(60, 248, 'SLIDE CUT', 'middle', 'dw-small') }) },
-      { label: 'Përpara', title: 'Kontrollo simetrinë', text: 'Sill të dyja anët përpara dhe krahasoji me gishta në të njëjtën lartësi.', svg: draw({ view: 'front', hair: 'long', extra: dash(hline(232, 56, 224), 1.2) + arrow(122, 232, 78, 232) + arrow(158, 232, 202, 232) + num(140, 232, 1) }) },
-    ],
     'balluke-perde': () => [
       { label: 'Nga sipër', title: 'Seksioni përpara', text: 'Trekëndësh përpara: baza nga tempulli në tempull, maja te kurora e përparme. Ky seksion bëhet “curtains”.', svg: draw({ view: 'top', under: p('M98 92 L140 132 L182 92 C160 78 120 78 98 92 Z', `fill="${SHADE}"`), extra: dash('M98 92 L140 132 L182 92', 1.3) + num(140, 104, 1) + label(140, 150, 'PËRPARA'), vb: '0 18 280 244' }) },
       { label: 'Përpara', title: 'Ndarja në mes', text: 'Ndaje në mes sipas vorbullës natyrale. Çdo anë bie anash si perde, drejt mollëzave.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M141 44 L141 80', 1.3) + arrow(128, 118, 106, 140) + arrow(154, 118, 176, 140) + num(141, 34, 1) }) },
       { label: 'Përpara', title: 'Forma V e butë', text: 'Qendra te vetullat ose hunda, anët në diagonale drejt mollëzave. Prit më gjatë: kur thahen ngrihen.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M96 140 L141 128 L186 140', 1.5) + scissors(200, 140) + num(141, 116, 1) }) },
-      { label: 'Përpara', title: 'Lidhja me anët', text: 'Flokët përpara vazhdojnë butë te anët e kokës, pa vijë të prerë mes tyre.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M98 140 C88 170 80 204 74 246', 1.3) + dash('M184 140 C194 170 202 204 208 246', 1.3) }) },
-    ],
-    'forma-v-dhe-u': () => [
-      { label: 'Prapa', title: 'Forma U', text: 'Gjatësia më e madhe në qendër, anët pak më të shkurtra në vijë të lakuar. E butë dhe klasike.', svg: draw({ view: 'back', hair: 'long', extra: backEnd(U) + dash('M140 40 L140 250', 1) + scissors(220, 232, 200) + label(140, 30, 'U') }) },
-      { label: 'Prapa', title: 'Forma V', text: 'Maja e V-së në qendër pas, anët në vijë të drejtë diagonale. Më e guximshme se U.', svg: draw({ view: 'back', hair: 'long', extra: backEnd(VV) + dash('M140 40 L140 250', 1) + num(140, 252, 1) + label(140, 30, 'V') }) },
-      { label: 'Prapa', title: 'Sill anët drejt qendrës', text: 'Çdo anë krehet drejt qendrës pas dhe pritet aty. Kështu anët dalin vetvetiu pak më të shkurtra.', svg: draw({ view: 'back', hair: 'long', extra: dash('M140 40 L140 252', 1.3) + arrow(84, 160, 132, 230) + arrow(196, 160, 148, 230) + num(84, 150, 1) + num(196, 150, 2) }) },
-      { label: 'Anash', title: 'Mbi-drejtimi përpara', text: 'Për shtresa: sill gjithë flokët përpara mbi ballë dhe prit aty. Pas flokët dalin gradualisht më të gjatë.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: toPoint(130, -40, 24, 96, -10) + dash('M70 6 L110 -26', 1.4) + num(96, -10, 1) + label(60, -26, 'UDHËZUESI', 'middle', 'dw-small') + arrow(250, -10, 140, -20) }) },
+      { label: 'Përpara', title: 'Lidhja me anët', text: 'Flokët përpara vazhdojnë butë te anët e kokës, pa vijë të prerë mes tyre.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M98 140 C90 162 84 182 80 198', 1.3) + dash('M184 140 C192 162 198 182 202 198', 1.3) }) },
     ],
     'shag-wolf-cut': () => [
       { label: 'Nga sipër', title: 'Seksioni i majës (patkoi)', text: 'Ndaj majën në formë patkoi, nga tempulli në tempull përmes kurorës. Këtu dalin shtresat e shkurtra.', svg: draw({ view: 'top', under: p(horseshoe, `fill="${SHADE}"`), extra: line(horseshoe, 1.4) + num(92, 110, 1) + num(188, 110, 1) + label(140, 156, 'MAJA') + label(140, 214, 'KURORA', 'middle', 'dw-small'), vb: '0 18 280 244' }) },
       { label: 'Anash', title: 'Maja drejt lart, 180°', text: 'Ngri flokët e majës drejt lart te udhëzuesi dhe prit të sheshtë. Sipër dalin shtresa të shkurtra.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: toPoint(150, 30, 16, 192, -20) + dash(hline(-20, 150, 232), 1.4) + scissors(244, -20) + num(192, -32, 1) + label(146, -26, '180°', 'end') }) },
       { label: 'Anash', title: 'Lidhja me pjesën poshtë', text: 'Lësho anët dhe pjesën e pasme dhe lidhi me majën me ngritje 90°, që të mos dalin dy prerje të ndara.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: radial(40, -50, 14, 46) + dash(arcAt(42, -52, 114), 1.3) + label(282, 120, '90°') + num(...pt(40, 114), 2) }) },
-      { label: 'Anash', title: 'Silueta me shtresa', text: 'Rezultati: volum dhe teksturë në kurorë, gjatësi poshtë dhe balluke që lidhen me anët.', svg: draw({ view: 'side', hair: 'long', extra: thin(ragged(118, 204, 262), INK, 1.1) + thin(ragged(168, 206, 266), INK, 1.1) + thin(ragged(214, 210, 270), INK, 1.1) + line('M124 102 C116 116 112 128 114 140', 1.4) + label(240, 104, 'SHTRESA', 'middle', 'dw-small') }) },
+      { label: 'Anash', title: 'Silueta me shtresa', text: 'Rezultati: volum dhe teksturë në kurorë, gjatësi poshtë dhe balluke që lidhen me anët.', svg: draw({ view: 'side', hair: 'long', extra: thin(ragged(118, 204, 262), INK, 1.1) + thin(ragged(160, 206, 258), INK, 1.1) + thin(ragged(198, 212, 250), INK, 1.1) + line('M124 102 C116 116 112 128 114 140', 1.4) + label(240, 104, 'SHTRESA', 'middle', 'dw-small') }) },
     ],
   });
 
-  const MULLET = 'M230 130 C250 138 258 160 258 186 C258 208 262 230 266 250 L222 250 C220 230 214 210 206 194 C214 176 222 152 230 130 Z';
-  const mullet = () => filled(MULLET, LONG, 1.4) + thin('M238 150 C246 180 248 214 252 246 M228 160 C232 190 234 220 236 248', '#9a9a9a');
-  const BACK_MULLET = 'M104 150 C100 190 98 222 96 250 L184 250 C182 222 180 190 176 150 Z';
+  const MULLET = 'M230 130 C250 138 258 160 258 186 C258 200 260 214 262 228 L224 228 C220 216 214 204 206 194 C214 176 222 152 230 130 Z';
+  const mullet = () => filled(MULLET, LONG, 1.4) + thin('M238 150 C246 176 248 200 252 224 M228 160 C232 184 234 206 236 226', '#9a9a9a');
+  const BACK_MULLET = 'M104 150 C102 180 100 204 100 226 L180 226 C180 204 178 180 176 150 Z';
   const bunSide = () => thin('M124 100 C160 74 200 62 226 60 M150 98 C180 80 206 70 228 66 M168 118 C196 96 216 80 232 72 M196 128 C214 106 226 88 238 76', INK, 0.8) + `<circle cx="242" cy="58" r="18" fill="${LONG}" stroke="${INK}" stroke-width="1.6"/>` + thin('M232 50 q10 -6 20 4 M230 62 q12 -4 22 4', '#9a9a9a');
   const bunBack = () => thin('M92 110 C106 84 122 66 132 58 M188 110 C174 84 158 66 148 58 M112 96 C122 78 130 68 136 60 M168 96 C158 78 150 68 144 60', INK, 0.8) + `<circle cx="140" cy="46" r="17" fill="${LONG}" stroke="${INK}" stroke-width="1.6"/>`;
 
   Object.assign(LONG_FIGS, {
     'mullet-modern': () => [
-      { label: 'Anash', title: 'Tre zonat', text: '1 — maja me shtresa, 2 — anët të zbehura rreth veshit, 3 — pjesa e pasme e gjatë mbi qafë.', svg: draw({ view: 'side', fade: 'burst', extra: mullet() + num(190, 72, 1) + num(176, 136, 2) + num(244, 220, 3) }) },
+      { label: 'Anash', title: 'Tre zonat', text: '1 — maja me shtresa, 2 — anët të zbehura rreth veshit, 3 — pjesa e pasme e gjatë mbi qafë.', svg: draw({ view: 'side', fade: 'burst', extra: mullet() + num(190, 72, 1) + num(176, 136, 2) + num(244, 206, 3) }) },
       { label: 'Anash', title: 'Anët: burst rreth veshit', text: 'Zbehja bëhet në formë harku rreth veshit dhe ndalet pas tij. Qafa nuk zbehet — aty mbetet gjatësia.', svg: draw({ view: 'side', fade: 'burst', extra: mullet() + dash('M178 112 C200 92 236 98 240 132', 1.3) + label(212, 92, 'BURST', 'middle', 'dw-small') }) },
       { label: 'Anash', title: 'Maja me shtresa 90°', text: 'Ngri flokët e majës 90° nga koka dhe prit paralel me formën e saj, të lidhura me anët.', svg: draw({ view: 'side', fade: 'burst', vb: TALL, extra: mullet() + radial(150, 40, 12, 46) + dash(arcAt(150, 40, 114), 1.3) + label(190, 0, '90°') }) },
-      { label: 'Prapa', title: 'Gjatësia pas', text: 'Pjesa e pasme pritet në qafë me 0° dhe pesha hiqet me point cutting. Anët pas veshit mbeten të zbehura.', svg: draw({ view: 'back', fade: 'burst', extra: filled(BACK_MULLET, LONG, 1.4) + thin('M120 156 L118 248 M140 156 L140 248 M160 156 L162 248', '#9a9a9a') + dash(hline(244, 84, 196), 1.5) + scissors(208, 244) }) },
+      { label: 'Prapa', title: 'Gjatësia pas', text: 'Pjesa e pasme pritet në qafë me 0° dhe pesha hiqet me point cutting. Anët pas veshit mbeten të zbehura.', svg: draw({ view: 'back', fade: 'burst', extra: filled(BACK_MULLET, LONG, 1.4) + thin('M120 156 L119 224 M140 156 L140 224 M160 156 L161 224', '#9a9a9a') + dash(hline(222, 86, 194), 1.5) + scissors(206, 222) }) },
     ],
     'undercut-man-bun': () => [
       { label: 'Nga sipër', title: 'Maja mbetet e gjatë', text: 'Ndaj majën në formë patkoi dhe lidhe lart. Gjithçka jashtë patkoit bëhet undercut.', svg: draw({ view: 'top', under: p(horseshoe, `fill="${SHADE}"`), extra: line(horseshoe, 1.4) + label(140, 150, 'MAJA E GJATË') + label(140, 254, 'UNDERCUT ANASH DHE PAS', 'middle', 'dw-small'), vb: '0 18 280 244' }) },

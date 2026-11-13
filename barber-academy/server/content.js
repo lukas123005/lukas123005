@@ -214,12 +214,12 @@ export const TOPICS = [
   // ─────────────────────── FLOKËT E GJATA (MESHKUJ) ───────────────────────
   {
     section: 'floke-te-gjata', slug: 'floke-te-gjata-per-meshkuj', title: 'Flow — flokë të gjata për meshkuj',
-    summary: 'Flokë deri te qafa ose supet që bien natyrshëm pas veshëve — pa formën “trekëndësh” dhe pa volum të tepërt anash.',
+    summary: 'Flokë deri te qafa që bien natyrshëm pas veshëve — pa formën “trekëndësh” dhe pa volum të tepërt anash.',
     intro: 'Te flow-i synimi është forma: flokët krehen pas me dorë, bien pas veshëve dhe lëvizin bukur. Hiqet pesha në fund dhe brenda, ndërsa gjatësia ruhet.',
     steps: [
       'Konsultimi: si i mban (të lirë, pas veshëve, të lidhur), sa gjatësi do të ruajë.',
       'Lag flokët dhe krehi pas, në drejtimin e rritjes.',
-      'Prit vijën udhëzuese në fund (te qafa ose supet) me 0° ngritje.',
+      'Prit vijën udhëzuese në fund (te qafa) me 0° ngritje.',
       'Shtresa të gjata me ngritje të ulët (deri 45°) për të hequr peshën në fund.',
       'Anët: lëri të bien pas veshëve; hiq peshë nga brenda (internal layering).',
       'Përpara: ruaj gjatësinë që lejon flokët të krehen pas.',
@@ -259,7 +259,7 @@ export const TOPICS = [
     ],
   },
   {
-    section: 'floke-te-gjata', slug: 'prerja-e-njetrajtshme', title: 'Gjatësi e njëtrajtshme (te qafa ose supet)',
+    section: 'floke-te-gjata', slug: 'prerja-e-njetrajtshme', title: 'Gjatësi e njëtrajtshme (te qafa)',
     summary: 'Vijë e pastër dhe e fortë në fund — flokët e meshkujve bien në të njëjtën gjatësi.',
     intro: 'Prerja e njëtrajtshme bëhet me ngritje 0°: flokët krehen drejt poshtë dhe priten në të njëjtën vijë. Është baza për çdo prerje të gjatë për meshkuj.',
     steps: [
@@ -272,10 +272,10 @@ export const TOPICS = [
       'Thaj dhe rregullo vijën në të thatë.',
     ],
     tools: ['Gërshërë 6"–7"', 'Krehër prerjeje', 'Kapëse seksionimi', 'Spërkatëse uji'],
-    tips: ['Mos e tërhiq flokun mbi supe — supi e ngre flokun dhe vija del e shtrembër.', 'Te flokët e trashë, një rrallim i lehtë nga brenda e bën vijën të bjerë më mirë.'],
+    tips: ['Koka e klientit drejt, as e ulur as e ngritur — përndryshe vija te qafa del e pabarabartë.', 'Te flokët e trashë, një rrallim i lehtë nga brenda e bën vijën të bjerë më mirë.'],
     mistakes: [
       { problem: 'Vija del e pjerrët.', solution: 'Klienti duhet të jetë drejt; kontrollo pozicionin e kokës para çdo seksioni.' },
-      { problem: 'Flokët priten mbi supe dhe pastaj dalin më të shkurtër.', solution: 'Kërkoji klientit të përkulet pak përpara, që flokët të bien lirshëm.' },
+      { problem: 'Vija te qafa del e shkurtër në mes.', solution: 'Kur klienti e ul kokën flokët ngrihen; prit me kokën drejt dhe kontrollo me pasqyrë dore.' },
     ],
   },
   {
