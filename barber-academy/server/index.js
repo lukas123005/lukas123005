@@ -205,7 +205,7 @@ const ALLOWED = {
   'video/mp4': { ext: '.mp4', kind: 'video' }, 'video/webm': { ext: '.webm', kind: 'video' },
   'video/quicktime': { ext: '.mov', kind: 'video' },
 };
-const TAGS = ['shembull', 'procesi', 'para', 'pas', 'gabim', 'zgjidhje', 'mjeti'];
+const TAGS = ['shembull', 'procesi', 'para', 'pas', 'anash', 'prapa', 'perpara', 'gabim', 'zgjidhje', 'mjeti'];
 
 const upload = multer({
   storage: multer.diskStorage({

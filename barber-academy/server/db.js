@@ -90,13 +90,21 @@ CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS webhook_events (id TEXT PRIMARY KEY, received_at TEXT NOT NULL DEFAULT (datetime('now')));
 `);
 
-// Përmbajtja fillestare (vetëm nëse databaza është bosh)
-if (db.prepare('SELECT COUNT(*) AS n FROM topics').get().n === 0) {
-  const ins = db.prepare(`INSERT INTO topics (section, slug, title, summary, intro, diagram, steps, tools, tips, mistakes, sort_order)
+// Përmbajtja fillestare. Mësimet e shtuara në versione të reja (v: 2…) futen një herë
+// edhe në databazat ekzistuese, pa prekur ato që ke ndryshuar ose fshirë.
+const CONTENT_VERSION = 2;
+{
+  const fresh = db.prepare('SELECT COUNT(*) AS n FROM topics').get().n === 0;
+  const done = Number(db.prepare("SELECT value FROM settings WHERE key = 'content_version'").get()?.value || (fresh ? 0 : 1));
+  const ins = db.prepare(`INSERT OR IGNORE INTO topics (section, slug, title, summary, intro, diagram, steps, tools, tips, mistakes, sort_order)
     VALUES (?,?,?,?,?,?,?,?,?,?,?)`);
-  TOPICS.forEach((t, i) => ins.run(t.section, t.slug, t.title, t.summary, t.intro, t.diagram || null,
-    JSON.stringify(t.steps || []), JSON.stringify(t.tools || []), JSON.stringify(t.tips || []),
-    JSON.stringify(t.mistakes || []), i));
+  TOPICS.forEach((t, i) => {
+    if ((t.v || 1) <= done) return;
+    ins.run(t.section, t.slug, t.title, t.summary, t.intro, t.diagram || null,
+      JSON.stringify(t.steps || []), JSON.stringify(t.tools || []), JSON.stringify(t.tips || []),
+      JSON.stringify(t.mistakes || []), i);
+  });
+  db.prepare("INSERT INTO settings (key, value) VALUES ('content_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(String(CONTENT_VERSION));
 }
 {
   const ins = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');

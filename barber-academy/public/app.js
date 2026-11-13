@@ -43,7 +43,7 @@ const waHref = (p) => `https://wa.me/${String(p).replace(/[^\d]/g, '')}`;
 const igHref = (h) => (/^https?:\/\//.test(h) ? h : `https://instagram.com/${String(h).replace(/^@/, '')}`);
 const sectionOf = (key) => state.pub.sections.find((s) => s.key === key);
 const topicsOf = (key) => state.pub.topics.filter((t) => t.section === key);
-const TAGS = { shembull: 'Shembull', procesi: 'Procesi', para: 'Para', pas: 'Pas', gabim: 'Gabim', zgjidhje: 'Zgjidhje', mjeti: 'Mjeti' };
+const TAGS = { procesi: 'Video e procesit', para: 'Para', pas: 'Pas', anash: 'Anash', prapa: 'Nga pas', perpara: 'Nga përpara', mjeti: 'Mjeti nga afër', gabim: 'Gabimi', zgjidhje: 'Zgjidhja', shembull: 'Shembuj të tjerë' };
 const DIAGRAMS = { low: 'Low fade', mid: 'Mid fade', high: 'High fade', burst: 'Burst fade', taper: 'Taper fade', drop: 'Drop fade', skin: 'Skin fade' };
 
 // ───────────────────── Vizatimet (shiko drawings.js) ─────────────────────
@@ -267,6 +267,40 @@ function mediaItem(m, adminMode) {
   </figure>`;
 }
 
+// Vendet e caktuara për foto/video në çdo mësim
+const SLOT_HINTS = {
+  procesi: 'Qethja e plotë nga fillimi në fund', para: 'Klienti para qethjes', pas: 'Rezultati final',
+  anash: 'Profili anash — vija e fade-it', prapa: 'Pjesa e pasme dhe qafa', perpara: 'Pamja nga përpara',
+  mjeti: 'Mjeti nga afër', gabim: 'Si duket gabimi', zgjidhje: 'Si rregullohet', shembull: 'Punë të tjera me këtë teknikë',
+};
+const SLOTS = {
+  fade: ['procesi', 'para', 'pas', 'anash', 'prapa', 'perpara', 'gabim', 'zgjidhje', 'shembull'],
+  'floke-te-gjata': ['procesi', 'para', 'pas', 'anash', 'prapa', 'perpara', 'gabim', 'zgjidhje', 'shembull'],
+  mjetet: ['procesi', 'mjeti', 'gabim', 'zgjidhje', 'shembull'],
+  gabimet: ['gabim', 'zgjidhje', 'procesi', 'shembull'],
+};
+const SLOT_ICON = (tag) => raw(tag === 'procesi'
+  ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg>'
+  : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>');
+
+function mediaSlots(t, media) {
+  const order = SLOTS[t.section] || SLOTS.fade;
+  const groups = Object.fromEntries(order.map((g) => [g, []]));
+  for (const m of media) (groups[m.tag] || groups.shembull || (groups.shembull = [])).push(m);
+  const admin = isAdmin();
+  const filled = order.filter((g) => groups[g].length).length;
+  return html`<h2 id="galeria">Foto & video</h2>
+    <p class="muted small">${filled ? `${media.length} skedarë` : 'Fotot dhe videot shtohen këtu, secila në vendin e vet.'}${admin ? ' · Kliko një vend bosh ose “+ Shto” për të ngarkuar direkt aty.' : ''}</p>
+    <div class="slots">${order.map((g) => html`<section class="slot ${groups[g].length ? 'has' : 'empty'} ${g === 'procesi' ? 'wide' : ''}">
+      <header class="slot-head"><h3>${TAGS[g]}</h3><span class="muted small">${groups[g].length || ''}</span>
+        ${admin && groups[g].length ? html`<label class="btn sm ghost slot-add">+ Shto<input type="file" multiple accept="${g === 'procesi' ? 'video/mp4,video/webm,video/quicktime,' : ''}image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" data-slot-upload data-topic="${t.id}" data-tag="${g}" hidden></label>` : ''}</header>
+      ${groups[g].length ? html`<div class="gallery">${groups[g].map((m) => mediaItem(m, admin))}</div>`
+        : admin ? html`<label class="slot-ph">${SLOT_ICON(g)}<strong>Ngarko ${g === 'procesi' ? 'videon' : 'foto ose video'}</strong><span>${SLOT_HINTS[g]}</span>
+            <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" data-slot-upload data-topic="${t.id}" data-tag="${g}" hidden><span class="slot-progress" hidden></span></label>`
+        : html`<div class="slot-ph">${SLOT_ICON(g)}<span>${SLOT_HINTS[g]}</span><em>Shtohet së shpejti</em></div>`}
+    </section>`)}</div>`;
+}
+
 async function viewTopic(slug) {
   let data;
   try { data = await api('GET', `/api/topics/${encodeURIComponent(slug)}`); } catch (e) {
@@ -291,16 +325,7 @@ async function viewTopic(slug) {
         ${t.steps.length ? html`<h2 id="procesi">Procesi hap pas hapi</h2><ol class="process">${t.steps.map((x) => html`<li>${x}</li>`)}</ol>` : ''}
         ${t.mistakes.length ? html`<h2 id="gabimet">Gabimet që bëhen & zgjidhja</h2>
           <div class="mistakes">${t.mistakes.map((m) => html`<div class="mistake"><div class="m-bad"><span>Gabimi</span>${m.problem}</div><div class="m-good"><span>Zgjidhja</span>${m.solution}</div></div>`)}</div>` : ''}
-        <h2 id="galeria">Foto & video</h2>
-        ${data.media.length ? html`
-          <div class="filters" role="tablist">
-            <button class="chip on" data-act="filter" data-f="all">Të gjitha (${data.media.length})</button>
-            ${photos ? html`<button class="chip" data-act="filter" data-f="photo">Foto (${photos})</button>` : ''}
-            ${videos ? html`<button class="chip" data-act="filter" data-f="video">Video (${videos})</button>` : ''}
-            ${usedTags.length > 1 ? usedTags.map((g) => html`<button class="chip" data-act="filter" data-f="tag:${g}">${TAGS[g] || g}</button>`) : ''}
-          </div>
-          <div class="gallery">${data.media.map((m) => mediaItem(m, isAdmin()))}</div>`
-        : html`<p class="muted empty">Fotot dhe videot për këtë mësim do të shtohen së shpejti.${isAdmin() ? raw(' <a href="#/admin/ngarko?topic=' + t.id + '">Ngarko tani →</a>') : ''}</p>`}
+        ${mediaSlots(t, data.media)}
       </article>
       <aside class="topic-side">
         ${t.tools.length ? html`<div class="card"><h3>Mjetet që duhen</h3><ul class="dots">${t.tools.map((x) => html`<li>${x}</li>`)}</ul></div>` : ''}
@@ -670,39 +695,55 @@ const FORMS = {
   },
   async settings(f, d) { await api('PUT', '/api/admin/settings', d); toast('Cilësimet u ruajtën.'); await refresh(); },
   async 'media-edit'(f, d) { await api('PATCH', `/api/admin/media/${f.dataset.id}`, d); toast('U ruajt.'); await refresh(); },
-  upload(f, d) {
+  async upload(f, d) {
     const input = f.elements.files;
     if (!input.files.length) throw new Error('Zgjidh të paktën një skedar.');
-    const fd = new FormData();
-    for (const [k, v] of Object.entries(d)) fd.append(k, v);
-    for (const file of input.files) fd.append('files', file);
     const bar = $('.progress', f);
     bar.hidden = false;
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/admin/media');
-      xhr.setRequestHeader('X-Requested-With', 'fetch');
-      xhr.upload.onprogress = (e) => {
-        if (!e.lengthComputable) return;
-        const p = Math.round((e.loaded / e.total) * 100);
-        $('div', bar).style.width = `${p}%`;
-        $('span', bar).textContent = `${p}% · ${fmtSize(e.loaded)} / ${fmtSize(e.total)}`;
-      };
-      xhr.onload = async () => {
-        let res = {};
-        try { res = JSON.parse(xhr.responseText); } catch { /* */ }
-        if (xhr.status >= 300) return reject(new Error(res.error || 'Ngarkimi dështoi.'));
-        toast(`U ngarkuan ${res.created.length} skedarë${res.rejected.length ? ` · ${res.rejected.length} u refuzuan (format i pavlefshëm)` : ''}.`);
-        const topic = state.admin.topics.find((t) => String(t.id) === d.topic_id);
-        if (topic) location.hash = `#/tema/${topic.slug}`;
-        await refresh(!topic);
-        resolve();
-      };
-      xhr.onerror = () => reject(new Error('Lidhja u ndërpre gjatë ngarkimit.'));
-      xhr.send(fd);
+    await uploadFiles(input.files, d, (p, e) => {
+      $('div', bar).style.width = `${p}%`;
+      $('span', bar).textContent = `${p}% · ${fmtSize(e.loaded)} / ${fmtSize(e.total)}`;
     });
+    const topic = state.admin.topics.find((t) => String(t.id) === d.topic_id);
+    if (topic) location.hash = `#/tema/${topic.slug}`;
+    await refresh(!topic);
   },
 };
+
+function uploadFiles(files, fields, onProgress) {
+  const fd = new FormData();
+  for (const [k, v] of Object.entries(fields)) fd.append(k, v);
+  for (const file of files) fd.append('files', file);
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/admin/media');
+    xhr.setRequestHeader('X-Requested-With', 'fetch');
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100), e); };
+    xhr.onload = () => {
+      let res = {};
+      try { res = JSON.parse(xhr.responseText); } catch { /* */ }
+      if (xhr.status >= 300) return reject(new Error(res.error || 'Ngarkimi dështoi.'));
+      toast(`U ngarkuan ${res.created.length} skedarë${res.rejected.length ? ` · ${res.rejected.length} u refuzuan (format i pavlefshëm)` : ''}.`);
+      resolve(res);
+    };
+    xhr.onerror = () => reject(new Error('Lidhja u ndërpre gjatë ngarkimit.'));
+    xhr.send(fd);
+  });
+}
+
+// Ngarkim direkt nga vendi (slot) në faqen e mësimit
+document.addEventListener('change', async (e) => {
+  const input = e.target.closest('input[data-slot-upload]');
+  if (!input || !input.files.length) return;
+  const slot = input.closest('.slot');
+  const prog = $('.slot-progress', slot) || slot.appendChild(Object.assign(document.createElement('span'), { className: 'slot-progress' }));
+  prog.hidden = false;
+  slot.classList.add('busy');
+  try {
+    await uploadFiles(input.files, { topic_id: input.dataset.topic, tag: input.dataset.tag }, (p) => { prog.textContent = `Duke ngarkuar… ${p}%`; });
+    await refresh();
+  } catch (err) { toast(err.message, 'err'); slot.classList.remove('busy'); prog.hidden = true; }
+});
 
 const ACTS = {
   menu(el) { const n = $('#nav'); n.classList.toggle('open'); el.setAttribute('aria-expanded', n.classList.contains('open')); },

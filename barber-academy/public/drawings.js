@@ -272,6 +272,43 @@
     ],
   };
 
+  // ───────────── Mësimet e reja të flokëve të gjata ─────────────
+  const curtain = () => line('M141 76 C126 96 110 112 98 140', 1.4) + line('M141 76 C156 96 172 112 184 140', 1.4) + thin('M141 76 C132 92 120 108 110 132 M141 76 C150 92 162 108 172 132', '#9a9a9a');
+  const levelMarks = () => [[150, 'MOLLËZAT'], [182, 'BUZËT'], [206, 'MJEKRA']].map(([yy, t]) => `<line x1="214" y1="${yy}" x2="230" y2="${yy}" stroke="#bbb" stroke-width="0.8"/>` + label(234, yy + 3, t, 'start', 'dw-small')).join('');
+  // Fundi i flokëve pas në formë U ose V (mbulon vijën e sheshtë dhe vizaton skajin e ri)
+  const backEnd = (d) => `<path d="M28 ${d.y0} L58 ${d.y0} ${d.path.replace(/^M\S+ \S+/, (m) => `L${m.slice(1)}`)} L224 ${d.y0} L254 ${d.y0} L254 262 L28 262 Z" fill="#fff"/>` + line(d.path, 1.6);
+  const U = { y0: 212, path: 'M73 214 C92 262 188 262 207 214' };
+  const VV = { y0: 204, path: 'M74 206 L140 252 L206 206' };
+  const horseshoe = 'M92 110 C88 150 92 192 140 200 C188 192 192 150 188 110 C170 96 150 92 140 92 C130 92 110 96 92 110 Z';
+  const ragged = (y, x0, x1) => { let d = `M${x0} ${y}`; for (let x = x0 + 8, i = 0; x <= x1; x += 8, i++) d += ` L${x} ${y + (i % 2 ? 4 : -3)}`; return d; };
+
+  Object.assign(LONG_FIGS, {
+    'shtresat-rreth-fytyres': () => [
+      { label: 'Përpara', title: 'Seksioni trekëndësh', text: 'Ndaj vetëm seksionin përpara: nga vija e ndarjes deri te dy tempujt. Pjesa tjetër mbetet e lidhur pas.', svg: draw({ view: 'front', hair: 'long', extra: p('M141 46 L100 98 L182 98 Z', `fill="${SHADE}" fill-opacity=".9" stroke="${INK}" stroke-width="1.2" stroke-dasharray="4 3"`) + num(141, 82, 1) }) },
+      { label: 'Përpara', title: 'Pika më e shkurtër', text: 'Zgjidh ku fillon shtresa: mollëzat, buzët ose mjekra. Nga aty shtresa zbret drejt supeve.', svg: draw({ view: 'front', hair: 'long', vb: '0 0 300 260', extra: dash('M94 150 L72 246', 1.5) + dash('M188 150 L210 246', 1.5) + num(94, 150, 1) + num(188, 150, 2) + levelMarks() }) },
+      { label: 'Përpara', title: 'Prerja me rrëshqitje', text: 'Me gërshërë gjysmë të hapura rrëshqit poshtë në kënd (slide cutting). Shtresa lidhet butë me gjatësinë.', svg: draw({ view: 'front', hair: 'long', extra: arrow(92, 156, 72, 236) + scissors(70, 186, 75) + dash('M188 150 L210 246', 1.2) + label(60, 248, 'SLIDE CUT', 'middle', 'dw-small') }) },
+      { label: 'Përpara', title: 'Kontrollo simetrinë', text: 'Sill të dyja anët përpara dhe krahasoji me gishta në të njëjtën lartësi.', svg: draw({ view: 'front', hair: 'long', extra: dash(hline(232, 56, 224), 1.2) + arrow(122, 232, 78, 232) + arrow(158, 232, 202, 232) + num(140, 232, 1) }) },
+    ],
+    'balluke-perde': () => [
+      { label: 'Nga sipër', title: 'Trekëndëshi i ballukeve', text: 'Seksion i vogël trekëndësh: baza nga tempulli në tempull, maja jo më thellë se kurora e përparme.', svg: draw({ view: 'top', under: p('M98 92 L140 132 L182 92 C160 78 120 78 98 92 Z', `fill="${SHADE}"`), extra: dash('M98 92 L140 132 L182 92', 1.3) + num(140, 104, 1) + label(140, 150, 'BALLUKET'), vb: '0 18 280 244' }) },
+      { label: 'Përpara', title: 'Ndarja në mes', text: 'Ndaje trekëndëshin në mes me vijë të drejtë. Çdo anë hapet si perde drejt mollëzave.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M141 44 L141 80', 1.3) + arrow(128, 118, 106, 140) + arrow(154, 118, 176, 140) + num(141, 34, 1) }) },
+      { label: 'Përpara', title: 'Forma V e butë', text: 'Qendra te vetullat, anët në diagonale drejt mollëzave. Prit më gjatë: kur thahen ngrihen.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M96 140 L141 128 L186 140', 1.5) + scissors(200, 140) + num(141, 116, 1) }) },
+      { label: 'Përpara', title: 'Lidhja me shtresat', text: 'Fundi i ballukeve vazhdon në shtresat rreth fytyrës, pa vijë të prerë mes tyre.', svg: draw({ view: 'front', hair: 'long', extra: curtain() + dash('M98 140 C88 170 80 204 74 246', 1.3) + dash('M184 140 C194 170 202 204 208 246', 1.3) }) },
+    ],
+    'forma-v-dhe-u': () => [
+      { label: 'Prapa', title: 'Forma U', text: 'Gjatësia më e madhe në qendër, anët pak më të shkurtra në vijë të lakuar. E butë dhe klasike.', svg: draw({ view: 'back', hair: 'long', extra: backEnd(U) + dash('M140 40 L140 250', 1) + scissors(220, 232, 200) + label(140, 30, 'U') }) },
+      { label: 'Prapa', title: 'Forma V', text: 'Maja e V-së në qendër pas, anët në vijë të drejtë diagonale. Më e guximshme se U.', svg: draw({ view: 'back', hair: 'long', extra: backEnd(VV) + dash('M140 40 L140 250', 1) + num(140, 252, 1) + label(140, 30, 'V') }) },
+      { label: 'Prapa', title: 'Sill anët drejt qendrës', text: 'Çdo anë krehet drejt qendrës pas dhe pritet aty. Kështu anët dalin vetvetiu pak më të shkurtra.', svg: draw({ view: 'back', hair: 'long', extra: dash('M140 40 L140 252', 1.3) + arrow(84, 160, 132, 230) + arrow(196, 160, 148, 230) + num(84, 150, 1) + num(196, 150, 2) }) },
+      { label: 'Anash', title: 'Mbi-drejtimi përpara', text: 'Për shtresa: sill gjithë flokët përpara mbi ballë dhe prit aty. Pas flokët dalin gradualisht më të gjatë.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: toPoint(130, -40, 24, 96, -10) + dash('M70 6 L110 -26', 1.4) + num(96, -10, 1) + label(60, -26, 'UDHËZUESI', 'middle', 'dw-small') + arrow(250, -10, 140, -20) }) },
+    ],
+    'shag-wolf-cut': () => [
+      { label: 'Nga sipër', title: 'Seksioni i majës (patkoi)', text: 'Ndaj majën në formë patkoi, nga tempulli në tempull përmes kurorës. Këtu dalin shtresat e shkurtra.', svg: draw({ view: 'top', under: p(horseshoe, `fill="${SHADE}"`), extra: line(horseshoe, 1.4) + num(92, 110, 1) + num(188, 110, 1) + label(140, 156, 'MAJA') + label(140, 214, 'KURORA', 'middle', 'dw-small'), vb: '0 18 280 244' }) },
+      { label: 'Anash', title: 'Maja drejt lart, 180°', text: 'Ngri flokët e majës drejt lart te udhëzuesi dhe prit të sheshtë. Sipër dalin shtresa të shkurtra.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: toPoint(150, 30, 16, 192, -20) + dash(hline(-20, 150, 232), 1.4) + scissors(244, -20) + num(192, -32, 1) + label(146, -26, '180°', 'end') }) },
+      { label: 'Anash', title: 'Lidhja me pjesën poshtë', text: 'Lësho anët dhe pjesën e pasme dhe lidhi me majën me ngritje 90°, që të mos dalin dy prerje të ndara.', svg: draw({ view: 'side', hair: 'none', vb: TALL, extra: radial(40, -50, 14, 46) + dash(arcAt(42, -52, 114), 1.3) + label(282, 120, '90°') + num(...pt(40, 114), 2) }) },
+      { label: 'Anash', title: 'Silueta me shtresa', text: 'Rezultati: volum dhe teksturë në kurorë, gjatësi poshtë dhe balluke që lidhen me anët.', svg: draw({ view: 'side', hair: 'long', extra: thin(ragged(118, 204, 262), INK, 1.1) + thin(ragged(168, 206, 266), INK, 1.1) + thin(ragged(214, 210, 270), INK, 1.1) + line('M124 102 C116 116 112 128 114 140', 1.4) + label(240, 104, 'SHTRESA', 'middle', 'dw-small') }) },
+    ],
+  });
+
   // ───────────── API publike ─────────────
   window.Drawings = {
     figures(topic) {
