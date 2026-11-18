@@ -1,0 +1,413 @@
+<title>Këshilltari i Flokëve</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one working column — capture (2 photo slots) → client details → analysis card; history below */
+:root {
+  --bg: #eceff1;
+  --surface: #ffffff;
+  --ink: #17212b;
+  --muted: #5d6974;
+  --line: #d3d9de;
+  --accent: #23468f;
+  --accent-ink: #ffffff;
+  --pole: #b4303a;
+  --ok: #2e7d4f;
+  --soft: #e3e8f2;
+  --f-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161b; --surface: #19212a; --ink: #e7ecf0; --muted: #96a3ae; --line: #2c3742;
+    --accent: #7d9ff0; --accent-ink: #0d1420; --pole: #ec6b73; --ok: #6cc893; --soft: #1f2a3a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161b; --surface: #19212a; --ink: #e7ecf0; --muted: #96a3ae; --line: #2c3742;
+  --accent: #7d9ff0; --accent-ink: #0d1420; --pole: #ec6b73; --ok: #6cc893; --soft: #1f2a3a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+header { display: flex; align-items: center; gap: 14px; }
+.pole { width: 14px; height: 52px; border-radius: 7px; flex: none;
+  background: repeating-linear-gradient(135deg, var(--pole) 0 7px, var(--surface) 7px 14px, var(--accent) 14px 21px, var(--surface) 21px 28px);
+  border: 1px solid var(--line); }
+h1 { font: 800 30px/1.05 var(--f-display); font-stretch: 80%; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 2px 0 0; font-size: 14px; }
+h2 { font: 700 13px/1 var(--f-display); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 0 0 10px; }
+
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.shot { position: relative; aspect-ratio: 3/4; max-width: 100%; border: 2px dashed var(--line); border-radius: 14px;
+  background: var(--surface); overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; cursor: pointer; color: var(--muted); text-align: center; padding: 10px; transition: border-color .15s; }
+.shot:hover, .shot:focus-within { border-color: var(--accent); }
+.shot.filled { border-style: solid; padding: 0; }
+.shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.shot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.shot svg { width: 56px; height: 56px; color: var(--accent); }
+.shot .lbl { font: 700 15px var(--f-display); color: var(--ink); }
+.shot .hint { font-size: 12px; }
+.tag { position: absolute; left: 8px; top: 8px; z-index: 1; background: var(--surface); color: var(--ink);
+  font: 600 11px var(--f-mono); padding: 3px 8px; border-radius: 99px; letter-spacing: .04em; }
+.retake { position: absolute; right: 8px; bottom: 8px; z-index: 2; background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 99px; padding: 5px 10px; font: 500 12px var(--f-body); pointer-events: none; }
+
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fields .full { grid-column: 1 / -1; }
+label.f { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--muted); min-width: 0; }
+input[type=text], select, textarea { font: 15px var(--f-body); color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; }
+textarea { resize: vertical; min-height: 64px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+button { font: 600 15px var(--f-body); border-radius: 12px; padding: 13px 20px; cursor: pointer; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); flex: 1; min-width: 200px;
+  font: 700 17px var(--f-display); letter-spacing: .02em; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.status { font-size: 14px; color: var(--muted); min-height: 1.4em; }
+.status.err { color: var(--pole); }
+
+.result { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.result .top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.result h3 { font: 800 26px/1.1 var(--f-display); font-stretch: 85%; margin: 0; text-wrap: balance; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--soft); color: var(--ink); border-radius: 99px; padding: 4px 11px; font-size: 13px; }
+.chip b { font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.block { min-width: 0; }
+.block p { margin: 0; }
+.block ul, .block ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.cut { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; }
+.prod { background: var(--soft); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.prod .name { font: 700 19px var(--f-display); }
+.avoid li::marker { color: var(--pole); }
+.conf { font: 500 12px var(--f-mono); color: var(--muted); }
+.note { font-size: 13px; color: var(--muted); }
+.copy { padding: 8px 14px; font-size: 13px; }
+
+.history { display: flex; flex-direction: column; gap: 8px; }
+.hrow { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 8px; cursor: pointer; text-align: left; width: 100%; font: inherit; }
+.hrow img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; flex: none; }
+.hrow .t { min-width: 0; flex: 1; }
+.hrow .t b { display: block; font-family: var(--f-display); }
+.hrow .t span { font-size: 12px; color: var(--muted); }
+.empty { color: var(--muted); font-size: 14px; }
+@media (max-width: 520px) {
+  .grid2, .fields { grid-template-columns: 1fr; }
+  h1 { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="pole" aria-hidden="true"></div>
+    <div>
+      <h1>Këshilltari i Flokëve</h1>
+      <p class="sub">Bëj 2 foto të klientit, ballë dhe profil, dhe merr modelin, llojin e flokut dhe produktin.</p>
+    </div>
+  </header>
+
+  <section>
+    <h2>1 · Fotot</h2>
+    <div class="shots">
+      <label class="shot" id="shot-front">
+        <span class="tag">BALLË</span>
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><ellipse cx="32" cy="30" rx="14" ry="18"/><path d="M18 26c2-12 26-14 28 0"/><circle cx="26" cy="29" r="1.6" fill="currentColor"/><circle cx="38" cy="29" r="1.6" fill="currentColor"/><path d="M28 39q4 3 8 0"/><path d="M14 62c2-10 10-14 18-14s16 4 18 14"/></svg>
+        <span class="lbl">Foto nga përpara</span>
+        <span class="hint">Shtyp për kamerën ose ngarko</span>
+        <input type="file" id="in-front" accept="image/*" capture="user" aria-label="Foto nga përpara">
+      </label>
+      <label class="shot" id="shot-side">
+        <span class="tag">PROFIL</span>
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M24 14c10-6 22 0 22 14 0 6-2 10-2 12l4 6-5 1v6c0 3-3 4-7 3"/><path d="M24 14c-6 4-8 12-6 20 1 5 5 8 6 14"/><circle cx="39" cy="28" r="1.6" fill="currentColor"/><path d="M14 62c2-8 8-12 14-12"/></svg>
+        <span class="lbl">Foto nga anash</span>
+        <span class="hint">Koka në profil, veshi i dukshëm</span>
+        <input type="file" id="in-side" accept="image/*" capture="environment" aria-label="Foto nga anash">
+      </label>
+    </div>
+  </section>
+
+  <section>
+    <h2>2 · Klienti</h2>
+    <div class="fields">
+      <label class="f">Emri (opsional)<input type="text" id="name" placeholder="p.sh. Arben"></label>
+      <label class="f">Gjinia
+        <select id="gender"><option value="mashkull">Mashkull</option><option value="femër">Femër</option><option value="pa specifikuar">Pa specifikuar</option></select>
+      </label>
+      <label class="f">Stili që do
+        <select id="vibe">
+          <option value="pa preferencë">Pa preferencë</option>
+          <option value="klasik dhe i rregullt">Klasik / i rregullt</option>
+          <option value="modern dhe në trend">Modern / në trend</option>
+          <option value="i lehtë për mirëmbajtje">I lehtë për mirëmbajtje</option>
+          <option value="i guximshëm">I guximshëm</option>
+        </select>
+      </label>
+      <label class="f">Gjatësia e dëshiruar
+        <select id="length">
+          <option value="pa preferencë">Pa preferencë</option>
+          <option value="shumë i shkurtër">Shumë i shkurtër</option>
+          <option value="i shkurtër">I shkurtër</option>
+          <option value="mesatar">Mesatar</option>
+          <option value="i gjatë">I gjatë</option>
+        </select>
+      </label>
+      <label class="f full">Shënime (opsional)<textarea id="notes" placeholder="p.sh. punon në zyrë, nuk do fade të lartë, flokët i bien pak përpara"></textarea></label>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="primary" id="go" disabled>Analizo klientin</button>
+    <button id="stop" hidden>Ndalo</button>
+    <button id="reset">Klient i ri</button>
+  </div>
+  <div class="status" id="status" role="status">Bëj të dyja fotot për të filluar.</div>
+
+  <section id="out" hidden></section>
+
+  <section>
+    <h2>Klientët e fundit</h2>
+    <div class="history" id="history"></div>
+    <p class="note">Ruhen vetëm në këtë pajisje.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const photos = { front: null, side: null };
+  let sample = null, ctl = null, current = null;
+  const HKEY = "hair-advisor-history-v1";
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const setStatus = (t, err) => { $("status").textContent = t; $("status").classList.toggle("err", !!err); };
+
+  // Resize photos to keep calls fast and small
+  function shrink(file, max = 1024, q = 0.85) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const s = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(b => b ? res({ blob: b, dataUrl: c.toDataURL("image/jpeg", q) }) : rej(new Error("x")), "image/jpeg", q);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("Foto nuk u lexua")); };
+      img.src = url;
+    });
+  }
+  function thumb(dataUrl) {
+    return new Promise(res => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas"); c.width = c.height = 96;
+        const s = Math.min(img.width, img.height);
+        c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 96, 96);
+        res(c.toDataURL("image/jpeg", 0.7));
+      };
+      img.onerror = () => res("");
+      img.src = dataUrl;
+    });
+  }
+
+  function bindShot(key) {
+    const input = $("in-" + key), box = $("shot-" + key);
+    input.addEventListener("change", async () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      try {
+        photos[key] = await shrink(f);
+        box.querySelectorAll("img,.retake").forEach(n => n.remove());
+        const img = document.createElement("img"); img.src = photos[key].dataUrl; img.alt = key === "front" ? "Foto nga përpara" : "Foto nga anash";
+        const r = document.createElement("span"); r.className = "retake"; r.textContent = "Ribëj";
+        box.prepend(img); box.append(r); box.classList.add("filled");
+        refresh();
+      } catch { setStatus("Kjo foto nuk u hap. Provo një tjetër.", true); }
+    });
+  }
+  bindShot("front"); bindShot("side");
+
+  function refresh() {
+    const ready = photos.front && photos.side;
+    $("go").disabled = !ready || !sample;
+    if (!sample) return;
+    setStatus(ready ? "Gati. Shtyp \"Analizo klientin\"." : (photos.front || photos.side ? "Mungon edhe një foto." : "Bëj të dyja fotot për të filluar."));
+  }
+
+  function prompt() {
+    return `Je një berber dhe stilist flokësh me shumë përvojë. Të jepen 2 foto të të njëjtit klient: e para nga përpara (ballë), e dyta nga anash (profil).
+Analizo formën e fytyrës, profilin (balli, hunda, mjekra, nofulla, forma e kokës nga mbrapa), llojin e flokut (drejt/valëzuar/kaçurrel/shumë kaçurrel, me sistemin 1A–4C), trashësinë e fijes, dendësinë, vijën e flokëve (rrallim, kënde, "cowlick") dhe gjendjen e tyre.
+Pastaj sugjero modelin më të mirë të prerjes, 2 alternativa, çfarë duhet shmangur dhe 1 produkt styling-u që i shkon këtij lloji flokësh dhe këtij modeli.
+
+Të dhëna nga berberi:
+- Gjinia: ${$("gender").value}
+- Stili që do: ${$("vibe").value}
+- Gjatësia e dëshiruar: ${$("length").value}
+- Shënime: ${$("notes").value.trim() || "asnjë"}
+
+Shkruaj gjithçka në shqip, qartë dhe shkurt, si për një berber. Udhëzimet e prerjes duhet të jenë konkrete (numra makinerie, gjatësi në cm, ku fillon fade, si punohet sipër, me gërshërë apo makinë).
+Për produktin jep llojin (p.sh. clay mat, pomadë me bazë uji, paste, krem për kaçurrela, sea salt spray), pse, 2–3 shembuj markash reale të njohura dhe si përdoret.
+Nëse fotot nuk tregojnë qartë fytyrën ose flokët, thuaje në "shenim" dhe ul besueshmërinë.
+
+Kthe VETËM JSON, pa tekst tjetër, me këtë formë:
+{
+ "forma_fytyres": "p.sh. ovale",
+ "pse_forma": "1 fjali",
+ "profili": "1 fjali për çfarë tregon profili",
+ "floket": { "lloji": "p.sh. 2A – lehtë i valëzuar", "trashesia": "e hollë | mesatare | e trashë", "dendesia": "e ulët | mesatare | e lartë", "vija_e_flokeve": "1 fjali", "gjendja": "1 fjali" },
+ "modeli": { "emri": "emri i modelit", "pse": "2 fjali pse i shkon", "prerja": ["hapi 1", "hapi 2", "..."], "mirembajtja": "p.sh. çdo 3 javë" },
+ "alternativa": [ { "emri": "", "pse": "1 fjali" }, { "emri": "", "pse": "1 fjali" } ],
+ "shmang": ["...", "..."],
+ "produkti": { "lloji": "", "pse": "1–2 fjali", "shembuj": ["", ""], "si_perdoret": "1–2 fjali", "mbajtja": "e lehtë | mesatare | e fortë", "shkelqimi": "mat | natyral | i lartë" },
+ "mjekra": "këshillë e shkurtër për mjekrën, ose bosh nëse nuk ka vend",
+ "besueshmeria": "e lartë | mesatare | e ulët",
+ "shenim": "bosh ose paralajmërim i shkurtër"
+}`;
+  }
+
+  function list(arr) { return (arr || []).filter(Boolean).map(x => `<li>${esc(x)}</li>`).join(""); }
+
+  function render(r, meta) {
+    const f = r.floket || {}, m = r.modeli || {}, p = r.produkti || {};
+    const out = $("out");
+    out.hidden = false;
+    out.innerHTML = `
+      <h2>3 · Rekomandimi${meta.name ? " për " + esc(meta.name) : ""}</h2>
+      <div class="result">
+        <div class="top">
+          <h3>${esc(m.emri || "Model")}</h3>
+          <span class="conf">besueshmëria: ${esc(r.besueshmeria || "–")}</span>
+        </div>
+        <div class="chips">
+          <span class="chip"><b>Fytyra:</b> ${esc(r.forma_fytyres || "–")}</span>
+          <span class="chip"><b>Floku:</b> ${esc(f.lloji || "–")}</span>
+          <span class="chip"><b>Fija:</b> ${esc(f.trashesia || "–")}</span>
+          <span class="chip"><b>Dendësia:</b> ${esc(f.dendesia || "–")}</span>
+        </div>
+        <div class="block"><p>${esc(m.pse)}</p></div>
+        <div class="block cut">
+          <h2>Si pritet</h2>
+          <ol>${list(m.prerja)}</ol>
+          ${m.mirembajtja ? `<p class="note" style="margin-top:8px">Mirëmbajtja: ${esc(m.mirembajtja)}</p>` : ""}
+        </div>
+        <div class="prod">
+          <h2 style="margin:0">Produkti</h2>
+          <div class="name">${esc(p.lloji || "–")}</div>
+          <div class="chips">
+            ${p.mbajtja ? `<span class="chip"><b>Mbajtja:</b> ${esc(p.mbajtja)}</span>` : ""}
+            ${p.shkelqimi ? `<span class="chip"><b>Shkëlqimi:</b> ${esc(p.shkelqimi)}</span>` : ""}
+          </div>
+          <p style="margin:0">${esc(p.pse)}</p>
+          ${(p.shembuj || []).length ? `<p style="margin:0"><b>Shembuj:</b> ${(p.shembuj).map(esc).join(" · ")}</p>` : ""}
+          ${p.si_perdoret ? `<p style="margin:0" class="note">${esc(p.si_perdoret)}</p>` : ""}
+        </div>
+        <div class="grid2">
+          <div class="block">
+            <h2>Alternativa</h2>
+            <ul>${(r.alternativa || []).map(a => `<li><b>${esc(a.emri)}</b> – ${esc(a.pse)}</li>`).join("")}</ul>
+          </div>
+          <div class="block avoid">
+            <h2>Shmang</h2>
+            <ul>${list(r.shmang)}</ul>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="block">
+            <h2>Flokët</h2>
+            <p>${esc(f.vija_e_flokeve)} ${esc(f.gjendja)}</p>
+          </div>
+          <div class="block">
+            <h2>Fytyra & profili</h2>
+            <p>${esc(r.pse_forma)} ${esc(r.profili)}</p>
+          </div>
+        </div>
+        ${r.mjekra ? `<div class="block"><h2>Mjekra</h2><p>${esc(r.mjekra)}</p></div>` : ""}
+        ${r.shenim ? `<p class="note">⚠ ${esc(r.shenim)}</p>` : ""}
+        <div class="actions"><button class="copy" id="copy">Kopjo për klientin</button><span class="note" id="copied"></span></div>
+      </div>`;
+    $("copy").onclick = async () => {
+      const txt = `${meta.name ? meta.name + " – " : ""}Modeli: ${m.emri}\n${m.pse || ""}\n\nProdukti: ${p.lloji}${(p.shembuj || []).length ? " (" + p.shembuj.join(", ") + ")" : ""}\n${p.si_perdoret || ""}`;
+      try { await navigator.clipboard.writeText(txt); $("copied").textContent = "U kopjua."; }
+      catch { $("copied").textContent = "Kopjimi nuk u lejua këtu."; }
+    };
+    out.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }
+
+  // History (this device only)
+  function loadHist() { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch { return []; } }
+  function saveHist(h) { try { localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 30))); } catch {} }
+  function drawHist() {
+    const h = loadHist(), box = $("history");
+    if (!h.length) { box.innerHTML = `<p class="empty">Asnjë klient ende. Analizat e tua do të shfaqen këtu.</p>`; return; }
+    box.innerHTML = h.map((e, i) => `<button class="hrow" data-i="${i}">
+      ${e.thumb ? `<img src="${e.thumb}" alt="">` : ""}
+      <span class="t"><b>${esc(e.name || "Pa emër")} · ${esc(e.result?.modeli?.emri || "")}</b>
+      <span>${esc(new Date(e.at).toLocaleString("sq-AL", { dateStyle: "medium", timeStyle: "short" }))} · ${esc(e.result?.produkti?.lloji || "")}</span></span>
+    </button>`).join("");
+    box.querySelectorAll(".hrow").forEach(b => b.onclick = () => { const e = h[+b.dataset.i]; render(e.result, e); });
+  }
+  drawHist();
+
+  const errCopy = {
+    not_granted: "Nuk u dha leja për Claude. Rihap faqen për ta lejuar.",
+    rate_limited: "Shumë kërkesa njëherësh. Prit pak dhe provo sërish.",
+    image_rejected: "Një nga fotot nuk u pranua. Bëj një foto tjetër.",
+    images_unavailable: "Kjo pamje nuk mund të dërgojë foto. Hape faqen në claude.ai.",
+    refused: "Claude nuk e analizoi këtë foto. Provo foto më të qarta të fytyrës dhe flokëve.",
+    cancelled: "U ndalua.",
+  };
+
+  $("go").onclick = async () => {
+    if (!sample || !photos.front || !photos.side) return;
+    ctl = new AbortController();
+    $("go").disabled = true; $("stop").hidden = false;
+    setStatus("Duke analizuar fotot… zakonisht 15–40 sekonda.");
+    try {
+      const r = await sample.json(prompt(), { images: [photos.front.blob, photos.side.blob], signal: ctl.signal, modelTier: "default", cache: false });
+      const meta = { name: $("name").value.trim(), at: Date.now() };
+      render(r, meta);
+      const h = loadHist();
+      h.unshift({ ...meta, thumb: await thumb(photos.front.dataUrl), result: r });
+      saveHist(h); drawHist();
+      setStatus("Gati.");
+    } catch (e) {
+      setStatus(errCopy[e && e.code] || "Diçka nuk shkoi. Provo sërish.", e && e.code !== "cancelled");
+    } finally {
+      $("stop").hidden = true; refresh();
+    }
+  };
+  $("stop").onclick = () => ctl && ctl.abort();
+  $("reset").onclick = () => {
+    for (const k of ["front", "side"]) {
+      photos[k] = null; $("in-" + k).value = "";
+      const box = $("shot-" + k); box.classList.remove("filled"); box.querySelectorAll("img,.retake").forEach(n => n.remove());
+    }
+    $("name").value = ""; $("notes").value = ""; $("out").hidden = true; refresh();
+  };
+
+  (async () => {
+    try { sample = window.claude ? await window.claude.use("sample") : null; } catch { sample = null; }
+    if (!sample) { setStatus("Analiza me Claude punon vetëm kur faqja hapet në claude.ai ose në aplikacionin Claude.", true); return; }
+    try { const lim = await sample.limits(); if (!lim.images) setStatus("Kjo pamje nuk mund të dërgojë foto te Claude. Hape faqen në claude.ai.", true); else refresh(); }
+    catch { refresh(); }
+  })();
+})();
+</script>
