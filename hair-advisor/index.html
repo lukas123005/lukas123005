@@ -1,34 +1,24 @@
-<title>Këshilltari i Flokëve</title>
+<title>Hairstudiobyluka</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 /* Layout: one working column — capture (2 photo slots) → client details → analysis card; history below */
+/* Single committed look: black and greys only (studio brand), same in every theme */
 :root {
-  --bg: #eceff1;
-  --surface: #ffffff;
-  --ink: #17212b;
-  --muted: #5d6974;
-  --line: #d3d9de;
-  --accent: #23468f;
-  --accent-ink: #ffffff;
-  --pole: #b4303a;
-  --ok: #2e7d4f;
-  --soft: #e3e8f2;
+  --bg: #0b0b0b;
+  --surface: #161616;
+  --ink: #f2f2f2;
+  --muted: #9a9a9a;
+  --line: #2e2e2e;
+  --accent: #d6d6d6;
+  --accent-ink: #0b0b0b;
+  --pole: #6e6e6e;
+  --ok: #bdbdbd;
+  --soft: #232323;
   --f-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
   --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #11161b; --surface: #19212a; --ink: #e7ecf0; --muted: #96a3ae; --line: #2c3742;
-    --accent: #7d9ff0; --accent-ink: #0d1420; --pole: #ec6b73; --ok: #6cc893; --soft: #1f2a3a;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #11161b; --surface: #19212a; --ink: #e7ecf0; --muted: #96a3ae; --line: #2c3742;
-  --accent: #7d9ff0; --accent-ink: #0d1420; --pole: #ec6b73; --ok: #6cc893; --soft: #1f2a3a;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -41,7 +31,7 @@ body {
 .wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
 header { display: flex; align-items: center; gap: 14px; }
 .pole { width: 14px; height: 52px; border-radius: 7px; flex: none;
-  background: repeating-linear-gradient(135deg, var(--pole) 0 7px, var(--surface) 7px 14px, var(--accent) 14px 21px, var(--surface) 21px 28px);
+  background: repeating-linear-gradient(135deg, var(--pole) 0 7px, var(--bg) 7px 14px, var(--accent) 14px 21px, var(--bg) 21px 28px);
   border: 1px solid var(--line); }
 h1 { font: 800 30px/1.05 var(--f-display); font-stretch: 80%; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 .sub { color: var(--muted); margin: 2px 0 0; font-size: 14px; }
@@ -78,7 +68,16 @@ button.primary { background: var(--accent); color: var(--accent-ink); border-col
   font: 700 17px var(--f-display); letter-spacing: .02em; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 .status { font-size: 14px; color: var(--muted); min-height: 1.4em; }
-.status.err { color: var(--pole); }
+.status.err { color: var(--ink); font-weight: 600; }
+.status.err::before { content: "⚠ "; }
+.brand { font: 800 34px/1 var(--f-display); font-stretch: 75%; margin: 0; letter-spacing: .01em; text-transform: uppercase; }
+.brand span { color: var(--muted); font-weight: 500; text-transform: lowercase; letter-spacing: 0; }
+.ai { background: var(--soft); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ai ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.ai pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: 12px/1.5 var(--f-mono); color: var(--muted);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; max-height: 160px; overflow: auto; }
+.ai .actions button { padding: 9px 14px; font-size: 13px; }
+.ai a { color: var(--ink); font-weight: 600; }
 
 .result { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
 .result .top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
@@ -93,7 +92,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .cut { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; }
 .prod { background: var(--soft); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
 .prod .name { font: 700 19px var(--f-display); }
-.avoid li::marker { color: var(--pole); }
+.avoid li::marker { color: var(--muted); }
 .conf { font: 500 12px var(--f-mono); color: var(--muted); }
 .note { font-size: 13px; color: var(--muted); }
 .copy { padding: 8px 14px; font-size: 13px; }
@@ -117,7 +116,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   <header>
     <div class="pole" aria-hidden="true"></div>
     <div>
-      <h1>Këshilltari i Flokëve</h1>
+      <h1 class="brand">Hairstudio<span>byluka</span></h1>
       <p class="sub">Bëj 2 foto të klientit, ballë dhe profil, dhe merr modelin, llojin e flokut dhe produktin.</p>
     </div>
   </header>
@@ -191,7 +190,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 (() => {
   const $ = (id) => document.getElementById(id);
   const photos = { front: null, side: null };
-  let sample = null, ctl = null, current = null;
+  let sample = null, downloads = null, ctl = null;
   const HKEY = "hair-advisor-history-v1";
 
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -278,9 +277,21 @@ Kthe VETËM JSON, pa tekst tjetër, me këtë formë:
  "shmang": ["...", "..."],
  "produkti": { "lloji": "", "pse": "1–2 fjali", "shembuj": ["", ""], "si_perdoret": "1–2 fjali", "mbajtja": "e lehtë | mesatare | e fortë", "shkelqimi": "mat | natyral | i lartë" },
  "mjekra": "këshillë e shkurtër për mjekrën, ose bosh nëse nuk ka vend",
+ "pershkrim_imazhi": "IN ENGLISH: a precise visual description of the recommended haircut for an image editing model (length on top in cm, sides and back, fade type and height, texture, parting, fringe, how it is styled and with what finish), also keeping the client's natural hair type and color",
  "besueshmeria": "e lartë | mesatare | e ulët",
  "shenim": "bosh ose paralajmërim i shkurtër"
 }`;
+  }
+
+  function imagePrompt(r) {
+    const m = r.modeli || {}, f = r.floket || {};
+    const cut = r.pershkrim_imazhi || `${m.emri || "the recommended haircut"}. Cutting steps: ${(m.prerja || []).join("; ")}. Natural hair type: ${f.lloji || ""}.`;
+    return `Edit the attached photo of this person. Keep the face, identity, facial features, skin tone, expression, beard, clothing, background, camera angle and lighting exactly the same. Change ONLY the hairstyle to this:
+
+${cut}
+
+Hairstyle name: ${m.emri || ""}.
+The result must look like a real, photorealistic photo taken right after a fresh professional barber cut, with natural hairline and realistic hair texture. Do not beautify or change the person.`;
   }
 
   function list(arr) { return (arr || []).filter(Boolean).map(x => `<li>${esc(x)}</li>`).join(""); }
@@ -341,8 +352,36 @@ Kthe VETËM JSON, pa tekst tjetër, me këtë formë:
         </div>
         ${r.mjekra ? `<div class="block"><h2>Mjekra</h2><p>${esc(r.mjekra)}</p></div>` : ""}
         ${r.shenim ? `<p class="note">⚠ ${esc(r.shenim)}</p>` : ""}
+        <div class="ai">
+          <h2 style="margin:0">Shiko klientin me modelin e ri (ChatGPT)</h2>
+          <ol>
+            <li>Ruaj foton nga përpara${photos.front ? "" : " (ose përdor foton që e ke në telefon)"}.</li>
+            <li>Kopjo tekstin më poshtë.</li>
+            <li>Hap ChatGPT, bashkëngjit foton, ngjit tekstin dhe dërgoje.</li>
+          </ol>
+          <pre id="imgprompt">${esc(imagePrompt(r))}</pre>
+          <div class="actions">
+            ${photos.front && downloads ? `<button id="savephoto">Ruaj foton</button>` : ""}
+            <button id="copyprompt">Kopjo tekstin për ChatGPT</button>
+            <a href="https://chatgpt.com/" target="_blank" rel="noopener">Hap ChatGPT ↗</a>
+            <span class="note" id="aimsg"></span>
+          </div>
+        </div>
         <div class="actions"><button class="copy" id="copy">Kopjo për klientin</button><span class="note" id="copied"></span></div>
       </div>`;
+    $("copyprompt").onclick = async () => {
+      try { await navigator.clipboard.writeText(imagePrompt(r)); $("aimsg").textContent = "Teksti u kopjua."; }
+      catch {
+        const sel = getSelection(), rg = document.createRange(); rg.selectNodeContents($("imgprompt")); sel.removeAllRanges(); sel.addRange(rg);
+        $("aimsg").textContent = "Teksti u zgjodh. Kopjoje me dorë.";
+      }
+    };
+    if ($("savephoto")) $("savephoto").onclick = async () => {
+      try {
+        await downloads.save({ filename: (meta.name ? meta.name.replace(/[^\w-]+/g, "_") : "klienti") + "-perpara.jpg", data: photos.front.blob });
+        $("aimsg").textContent = "Foto u ruajt.";
+      } catch (e) { $("aimsg").textContent = e && e.code === "cancelled" ? "" : "Foto nuk u ruajt."; }
+    };
     $("copy").onclick = async () => {
       const txt = `${meta.name ? meta.name + " – " : ""}Modeli: ${m.emri}\n${m.pse || ""}\n\nProdukti: ${p.lloji}${(p.shembuj || []).length ? " (" + p.shembuj.join(", ") + ")" : ""}\n${p.si_perdoret || ""}`;
       try { await navigator.clipboard.writeText(txt); $("copied").textContent = "U kopjua."; }
@@ -404,6 +443,7 @@ Kthe VETËM JSON, pa tekst tjetër, me këtë formë:
   };
 
   (async () => {
+    window.claude?.use("downloads").then(d => { downloads = d; }).catch(() => {});
     try { sample = window.claude ? await window.claude.use("sample") : null; } catch { sample = null; }
     if (!sample) { setStatus("Analiza me Claude punon vetëm kur faqja hapet në claude.ai ose në aplikacionin Claude.", true); return; }
     try { const lim = await sample.limits(); if (!lim.images) setStatus("Kjo pamje nuk mund të dërgojë foto te Claude. Hape faqen në claude.ai.", true); else refresh(); }
