@@ -77,7 +77,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .ai pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: 12px/1.5 var(--f-mono); color: var(--muted);
   background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; max-height: 160px; overflow: auto; }
 .ai .actions button { padding: 9px 14px; font-size: 13px; }
-.ai a { color: var(--ink); font-weight: 600; }
+.ai a.gpt { display: inline-block; background: var(--accent); color: var(--accent-ink); text-decoration: none; font: 700 15px var(--f-display);
+  letter-spacing: .02em; border-radius: 12px; padding: 11px 18px; }
+.ai a.gpt:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 .result { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
 .result .top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
@@ -286,13 +288,18 @@ Kthe VETËM JSON, pa tekst tjetër, me këtë formë:
   function imagePrompt(r) {
     const m = r.modeli || {}, f = r.floket || {};
     const cut = r.pershkrim_imazhi || `${m.emri || "the recommended haircut"}. Cutting steps: ${(m.prerja || []).join("; ")}. Natural hair type: ${f.lloji || ""}.`;
-    return `Edit the attached photo of this person. Keep the face, identity, facial features, skin tone, expression, beard, clothing, background, camera angle and lighting exactly the same. Change ONLY the hairstyle to this:
+    return `I am a barber. In my next message I will send you a photo of my client. As soon as you get the photo, do not ask any questions: immediately generate the edited image.
+
+Edit: keep the face, identity, facial features, skin tone, expression, beard, clothing, background, camera angle and lighting exactly the same. Change ONLY the hairstyle to this:
 
 ${cut}
 
 Hairstyle name: ${m.emri || ""}.
-The result must look like a real, photorealistic photo taken right after a fresh professional barber cut, with natural hairline and realistic hair texture. Do not beautify or change the person.`;
+The result must look like a real, photorealistic photo taken right after a fresh professional barber cut, with a natural hairline and realistic hair texture. Do not beautify or change the person.
+
+For now just reply: "Dërgo foton e klientit."`;
   }
+  function chatgptUrl(r) { return "https://chatgpt.com/?q=" + encodeURIComponent(imagePrompt(r)); }
 
   function list(arr) { return (arr || []).filter(Boolean).map(x => `<li>${esc(x)}</li>`).join(""); }
 
@@ -354,28 +361,15 @@ The result must look like a real, photorealistic photo taken right after a fresh
         ${r.shenim ? `<p class="note">⚠ ${esc(r.shenim)}</p>` : ""}
         <div class="ai">
           <h2 style="margin:0">Shiko klientin me modelin e ri (ChatGPT)</h2>
-          <ol>
-            <li>Ruaj foton nga përpara${photos.front ? "" : " (ose përdor foton që e ke në telefon)"}.</li>
-            <li>Kopjo tekstin më poshtë.</li>
-            <li>Hap ChatGPT, bashkëngjit foton, ngjit tekstin dhe dërgoje.</li>
-          </ol>
-          <pre id="imgprompt">${esc(imagePrompt(r))}</pre>
           <div class="actions">
-            ${photos.front && downloads ? `<button id="savephoto">Ruaj foton</button>` : ""}
-            <button id="copyprompt">Kopjo tekstin për ChatGPT</button>
-            <a href="https://chatgpt.com/" target="_blank" rel="noopener">Hap ChatGPT ↗</a>
-            <span class="note" id="aimsg"></span>
+            ${photos.front && downloads ? `<button id="savephoto">1 · Ruaj foton</button>` : ""}
+            <a class="gpt" href="${esc(chatgptUrl(r))}" target="_blank" rel="noopener">${photos.front && downloads ? "2 · " : ""}Krijo foton në ChatGPT ↗</a>
           </div>
+          <p class="note" style="margin:0">ChatGPT hapet me udhëzimet e modelit të gatshme. Aty vetëm bashkëngjit foton e klientit dhe dërgoje, foto me modelin e ri del direkt.</p>
+          <span class="note" id="aimsg"></span>
         </div>
         <div class="actions"><button class="copy" id="copy">Kopjo për klientin</button><span class="note" id="copied"></span></div>
       </div>`;
-    $("copyprompt").onclick = async () => {
-      try { await navigator.clipboard.writeText(imagePrompt(r)); $("aimsg").textContent = "Teksti u kopjua."; }
-      catch {
-        const sel = getSelection(), rg = document.createRange(); rg.selectNodeContents($("imgprompt")); sel.removeAllRanges(); sel.addRange(rg);
-        $("aimsg").textContent = "Teksti u zgjodh. Kopjoje me dorë.";
-      }
-    };
     if ($("savephoto")) $("savephoto").onclick = async () => {
       try {
         await downloads.save({ filename: (meta.name ? meta.name.replace(/[^\w-]+/g, "_") : "klienti") + "-perpara.jpg", data: photos.front.blob });
